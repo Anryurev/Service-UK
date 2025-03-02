@@ -1,21 +1,23 @@
-import React from 'react';
 import {Navbar} from './components/Navbar'
 import {Routes, Route} from 'react-router-dom'
 import {Calendar} from "./pages/Calendar";
 import {Objects} from "./pages/Objects";
+import {Authorization} from "./pages/Authorization";
+import {Registration} from "./pages/Registration";
 
 function App() {
-  return (
-      <>
-        <Navbar/>
-          <div style={{ paddingTop: '56px' }}>
-              <Routes>
-                  <Route path="/" element={ <Calendar /> } />
-                  <Route path="/objects" element={ <Objects /> } />
-              </Routes>
-          </div>
-      </>
-  );
+
+
+    return (
+        <>
+            <Routes>
+                <Route path="/" element={<Authorization/>} />
+                <Route path="/home" element={<Calendar/>}/>
+                <Route path="/objects" element={<Objects/>}/>
+                <Route path="/registration" element={<Registration/>}/>
+            </Routes>
+        </>
+    );
 }
 
 export default App;

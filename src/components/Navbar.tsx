@@ -5,7 +5,7 @@ export const Navbar = () => {
     return(
         <nav className="navbar fixed-top" style={{background: "#6096ba"}}>
             <div className="container-fluid">
-                <NavLink className="navbar-brand"  style={{marginLeft: "2px"}} to="/">Edem-Service</NavLink>
+                <NavLink className="navbar-brand"  style={{marginLeft: "2px"}} to="/home">Edem-Service</NavLink>
                 <button className="navbar-toggler" type="button" data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar"
                         aria-label="Toggle navigation">
