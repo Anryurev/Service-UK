@@ -1,21 +1,24 @@
-import {Navbar} from './components/Navbar'
 import {Routes, Route} from 'react-router-dom'
-import {Calendar} from "./pages/Calendar";
-import {Objects} from "./pages/Objects";
-import {Authorization} from "./pages/Authorization";
-import {Registration} from "./pages/Registration";
+import {CalendarPage} from "./pages/CalendarPage";
+import {ObjectsPage} from "./pages/ObjectsPage";
+import {AuthorizationPage} from "./pages/AuthorizationPage";
+import {RegistrationPage} from "./pages/RegistrationPage";
+import {UsersPage} from "./pages/UsersPage";
 
 function App() {
 
 
     return (
         <>
-            <Routes>
-                <Route path="/" element={<Authorization/>} />
-                <Route path="/home" element={<Calendar/>}/>
-                <Route path="/objects" element={<Objects/>}/>
-                <Route path="/registration" element={<Registration/>}/>
-            </Routes>
+            <div className="vh-100" style={ {background: "#e7ecef"} } >
+                <Routes>
+                        <Route path="/" element={<AuthorizationPage/>} />
+                        <Route path="/home" element={<CalendarPage/>}/>
+                        <Route path="/objects" element={<ObjectsPage/>}/>
+                        <Route path="/users" element={<UsersPage/>}/>
+                        <Route path="/registration" element={<RegistrationPage/>}/>
+                </Routes>
+            </div>
         </>
     );
 }

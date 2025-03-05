@@ -21,18 +21,18 @@ export const Navbar = () => {
                     <div className="offcanvas-body">
                         <ul className="navbar-nav justify-content-end flex-grow-1 pe-3">
                             <li className="nav-item">
-                                <NavLink className="nav-link active" aria-current="page" to="/">Календарь</NavLink>
+                                <NavLink className="nav-link active" aria-current="page" to="/home">Календарь</NavLink>
                             </li>
                             <li className="nav-item">
                                 <NavLink className="nav-link" to="/objects">Объекты</NavLink>
                             </li>
+                            <li className="nav-item">
+                                <NavLink className="nav-link" to="/users">Список работников</NavLink>
+                            </li>
+                            <li className="nav-item">
+                                <NavLink className="nav-link text-danger" to="/">Выйти</NavLink>
+                            </li>
                         </ul>
-
-
-                        {/*<form className="d-flex mt-3" role="search">*/}
-                        {/*    <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>*/}
-                        {/*        <button className="btn btn-outline-success" type="submit">Search</button>*/}
-                        {/*</form>*/}
                     </div>
                 </div>
             </div>

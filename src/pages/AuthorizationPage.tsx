@@ -1,16 +1,41 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
+import {IUsers} from "../models";
+import axios from "axios";
 
-export function Authorization(){
+export function AuthorizationPage(){
+
+    // ЭТО НАДО БУДЕТ УДАЛИТЬ
+    const [users, setUsers] = useState<IUsers[]>([])
+
+    async function fetchUsers(){
+        const response = await axios.get<IUsers[]>('https://fakestoreapi.com/users')
+        setUsers(response.data)
+    }
+
+    useEffect(() => {
+        fetchUsers()
+    }, [])
+
+    ////////////////////////////////////////
+
+
+
+
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate()
 
     const submitHandler = (event: React.FormEvent) => {
         event.preventDefault()
-        if (username === 'user@mail.ru' && password === 'pass') {
-            // Перенаправление на главную страницу после успешной авторизации
-            navigate('/home');
+        const hasUserName = users.some(user => user['email'] === username)
+
+        if (hasUserName) {
+            const hasUserPass = users.some(user => user['password'] === password)
+            if(hasUserPass){
+                navigate('/home');
+            }
         } else {
             alert('Неверный логин или пароль');
         }

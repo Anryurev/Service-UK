@@ -1,14 +1,16 @@
 import React from "react";
 import {Navbar} from "../components/Navbar";
 
-export function Objects(){
-    return(
+
+export function CalendarPage() {
+
+    return (
         <>
             <Navbar/>
             <div style={{paddingTop: '56px'}}>
                 <div className="container-fluid" style={{ minHeight: '100vh' }}>
                     <h1 style={{color: "black"}}>
-                        Тут будут объекты
+                        Тут будет шахматка
                     </h1>
                 </div>
             </div>

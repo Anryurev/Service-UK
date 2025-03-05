@@ -2,7 +2,7 @@ import React from "react";
 import {Link} from "react-router-dom";
 import {useNavigate} from "react-router-dom";
 
-export function Registration(){
+export function RegistrationPage(){
     const navigate = useNavigate()
     const submitHandler = (event: React.FormEvent) => {
         event.preventDefault()
@@ -18,10 +18,10 @@ export function Registration(){
                         <input type="text" className="form-control" id="nameUser" placeholder="Введите имя..."/>
                     </div>
                     <div className="mb-3">
-                        <input type="text" className="form-control" id="secondNameUser" placeholder="Введите фамилию..."/>
+                        <input type="text" className="form-control" id="surnameUser" placeholder="Введите фамилию..."/>
                     </div>
                     <div className="mb-3">
-                        <input type="text" className="form-control" id="patronymicUser" placeholder="Введите отчество..."/>
+                        <input type="text" className="form-control" id="fatherNameUser" placeholder="Введите отчество..."/>
                     </div>
                     <div className="mb-3">
                         <input type="email" className="form-control" id="login" placeholder="Введите email..."/>
