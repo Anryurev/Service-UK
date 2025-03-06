@@ -2,7 +2,6 @@ import {Routes, Route} from 'react-router-dom'
 import {CalendarPage} from "./pages/CalendarPage";
 import {ObjectsPage} from "./pages/ObjectsPage";
 import {AuthorizationPage} from "./pages/AuthorizationPage";
-import {RegistrationPage} from "./pages/RegistrationPage";
 import {UsersPage} from "./pages/UsersPage";
 
 function App() {
@@ -16,7 +15,6 @@ function App() {
                         <Route path="/home" element={<CalendarPage/>}/>
                         <Route path="/objects" element={<ObjectsPage/>}/>
                         <Route path="/users" element={<UsersPage/>}/>
-                        <Route path="/registration" element={<RegistrationPage/>}/>
                 </Routes>
             </div>
         </>

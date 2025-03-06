@@ -36,25 +36,25 @@ export function ModalCreateUser({ onSubmit, onClose }: ModalCreateUserProps){
     const [isModalOpen, setIsModalOpen] = useState(true)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target
 
         // Разделяем имя поля на части (например, "address.city" -> ["address", "city"])
-        const keys = name.split(".");
+        const keys = name.split(".")
 
         setFormData((prev) => {
             // Создаем глубокую копию объекта
-            const newData = JSON.parse(JSON.stringify(prev));
+            const newData = JSON.parse(JSON.stringify(prev))
 
             // Обновляем вложенные свойства
-            let current: any = newData;
+            let current: any = newData
             for (let i = 0; i < keys.length - 1; i++) {
-                current = current[keys[i]];
+                current = current[keys[i]]
             }
 
             // Устанавливаем значение
-            current[keys[keys.length - 1]] = value;
+            current[keys[keys.length - 1]] = value
 
-            return newData;
+            return newData
         });
     };
 
@@ -72,7 +72,7 @@ export function ModalCreateUser({ onSubmit, onClose }: ModalCreateUserProps){
 
             setIsModalOpen(false)
         } catch (error) {
-            console.error("Ошибка при создании пользователя:", error);
+            console.error("Ошибка при создании пользователя:", error)
         }
     };
 

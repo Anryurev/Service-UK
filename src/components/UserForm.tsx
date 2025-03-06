@@ -3,7 +3,7 @@ import {IUsers} from "../models";
 
 interface UserFormProps{
     formData: IUsers,
-    onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+    onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
 }
 
 export const UserForm: React.FC<UserFormProps> = ({ formData, onChange }) => {

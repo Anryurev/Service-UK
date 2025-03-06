@@ -61,6 +61,8 @@ export function AuthorizationPage(){
                     />
                     <button type="submit" className="btn mt-5" style={{background: "#6096ba", color: "white"}}>Войти</button>
                     <Link className="d-block" to="/registration">Регистрация</Link>
+                    <p>john@gmail.com"</p>
+                    <p>m38rmF$</p>
                 </div>
             </form>
         </>
