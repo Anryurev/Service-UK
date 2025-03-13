@@ -19,6 +19,8 @@ export function ModalCreateObject({ onSubmit, onClose }: ModalCreateObjectProps)
         apartment: "",
         rooms: 0,
         status: "Свободно",
+        check_in: "01.01.2000",
+        leaving: "01.02.2000",
         area: 0,
         kitchen: false,
         balcony: true

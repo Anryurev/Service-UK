@@ -7,6 +7,8 @@ export const objects = [
         apartment: '42',
         rooms: 2,
         status: 'Забронировано',
+        check_in: "27.03.2025",
+        leaving: "12.04.2025",
         area: 52,
         kitchen: true,
         balcony: true
@@ -19,6 +21,8 @@ export const objects = [
         apartment: '124',
         rooms: 4,
         status: 'Свободно', // rent, spare
+        check_in: "29.03.2025",
+        leaving: "06.04.2025",
         area: 89.2,
         kitchen: true,
         balcony: true
@@ -31,6 +35,8 @@ export const objects = [
         apartment: '15',
         rooms: 1,
         status: 'Сдается', // rent, spare
+        check_in: "10.03.2025",
+        leaving: "12.05.2025",
         area: 26,
         kitchen: false,
         balcony: false

@@ -1,33 +1,33 @@
 import {Action, IState} from "../../models";
 import {
-    GET_ALL_OBJECT,
+    GET_ALL_OBJECTS,
     GET_ONE_OBJECT,
     GET_AREND_OBJECT,
     GET_OBJECT_1_FILIAL,
-    GET_WORKERS,
+    GET_ALL_USERS,
     GET_REQUEST,
     GET_ACTIVE_REQUEST,
     GET_ENDED_REQUEST,
     GET_ADDITIONAL_MATERIAL,
     CREATE_OBJECT,
-    CREATE_WORKER,
+    CREATE_USER,
     CREATE_FILIAL,
     CREATE_ADDITIONAL_MATERIAL,
     CREATE_ROLE,
     CREATE_REQUEST,
     UPDATE_OBJECT,
-    UPDATE_WORKER,
+    UPDATE_USER,
     UPDATE_ADDITIONAL_MATERIAL,
     UPDATE_ROLE,
     DELETE_OBJECT,
-    DELETE_WORKER,
+    DELETE_USER,
     DELETE_ROLE,
     DELETE_PHOTO,
     DELETE_ADDITIONAL_MATERIAL,
 } from '../typesAction'
 
 const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
-    [GET_ALL_OBJECT]: (state, {payload}) => ({...state, objects: payload}),
+    [GET_ALL_OBJECTS]: (state, {payload}) => ({...state, objects: payload}),
     [GET_ONE_OBJECT]: (state, {payload}) => ({
         ...state,
         objects: state.objects.filter(object => object.id === payload)
@@ -40,7 +40,7 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
         ...state,
         objects: state.objects.filter(object => object.office_id === payload)
     }),
-    [GET_WORKERS]: (state, {payload}) => ({...state, users: payload}),
+    [GET_ALL_USERS]: (state, {payload}) => ({...state, users: payload}),
     // [GET_REQUEST]: state => ({...state}),
     // [GET_ACTIVE_REQUEST]: state => ({...state}),
     // [GET_ENDED_REQUEST]: state => ({...state}),
@@ -49,7 +49,7 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
         ...state,
         objects: [...state.objects, payload]
     }),
-    [CREATE_WORKER]: (state, {payload}) => ({
+    [CREATE_USER]: (state, {payload}) => ({
         ...state,
         users: [...state.users, payload]
     }),
@@ -61,7 +61,7 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
         ...state,
         objects: state.objects.map(object => object.id === payload.id ? payload : object)
     }),
-    [UPDATE_WORKER]: (state, {payload}) => ({
+    [UPDATE_USER]: (state, {payload}) => ({
         ...state,
         users: state.users.map(user => user.id === payload.id ? payload : user)
     }),
@@ -71,7 +71,7 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
         ...state,
         objects: state.objects.filter(object => object.id !== payload)
     }),
-    [DELETE_WORKER]: (state, {payload}) => ({
+    [DELETE_USER]: (state, {payload}) => ({
         ...state,
         users: state.users.filter(user => user.id !== payload)
     }),

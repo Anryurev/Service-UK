@@ -4,6 +4,8 @@ import {ObjectsPage} from "./pages/ObjectsPage";
 import {AuthorizationPage} from "./pages/AuthorizationPage";
 import {UsersPage} from "./pages/UsersPage";
 import {UserPage} from "./pages/UserPage";
+import {CreateBookingPage} from "./pages/CreateBookingPage";
+import {ObjectPage} from "./pages/ObjectPage";
 
 function App() {
 
@@ -16,7 +18,9 @@ function App() {
                         <Route path="/home" element={<CalendarPage/>}/>
                         <Route path="/objects" element={<ObjectsPage/>}/>
                         <Route path="/users" element={<UsersPage/>}/>
-                        <Route path="/user/:userId" element={<UserPage/>}/>
+                        <Route path="/users/:userId" element={<UserPage/>}/>
+                        <Route path="/objects/:objectId" element={<ObjectPage/>}/>
+                        <Route path="/booking/create" element={<CreateBookingPage/>}/>
                 </Routes>
             </div>
         </>

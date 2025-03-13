@@ -7,14 +7,11 @@ export interface IObject{
     apartment: string,
     rooms: number,
     status: string,
+    check_in: string,
+    leaving: string,
     area: number,
     kitchen: boolean,
     balcony: boolean
-}
-
-export interface IState {
-    users: IUsers[],
-    objects: IObject[]
 }
 
 export interface IUsers{
@@ -51,6 +48,11 @@ export interface IUsers{
     // idOffice: number,
     // login: string,
     // password: string
+}
+
+export interface IState {
+    users: IUsers[],
+    objects: IObject[]
 }
 
 export type Action = {type: string, payload?: any}

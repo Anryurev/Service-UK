@@ -4,14 +4,18 @@ import {IObject} from "../../models";
 interface ObjectProps {
     object: IObject
     onRemove: (objectId: number) => void
+    onClick: (objectId: number) => void
 }
 
-export function Object({ object, onRemove }: ObjectProps){
+export function Object({ object, onRemove, onClick }: ObjectProps){
     return(
-        <div className="border px-2 py-2 rounded mb-2 d-flex justify-content-between">
+        <div className="border px-2 py-2 rounded mb-2 d-flex justify-content-between" onClick={() => onClick(object.id)}>
             <p className="mb-0" style={{display: "inline-block"}}>{object.street + ' д. ' + object.house + ' кв. ' + object.apartment}</p>
             <p className="mb-0" style={{display: "inline-block"}}>{object.status}</p>
-            <button className="btn btn-danger p-1" onClick={() => onRemove(object.id)}>
+            <button className="btn btn-danger p-1" onClick={(e) => {
+                e.stopPropagation()
+                onRemove(object.id)
+            }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x"
                      viewBox="0 0 16 16">
                     <path

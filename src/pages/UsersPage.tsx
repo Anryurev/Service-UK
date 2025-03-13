@@ -29,7 +29,7 @@ export function UsersPage(){
     }
 
     const handleClickUser = (userId: number) => {
-        navigate(`/user/${userId}`)
+        navigate(`/users/${userId}`)
     }
 
     return(
@@ -47,7 +47,7 @@ export function UsersPage(){
                 }
             </div>
             <div className="position-fixed bottom-0 end-0 p-3">
-                <button className="btn btn-primary rounded-circle px-3 py-2" onClick={() => setIsModalOpen(true)}>
+                <button className="btn btn-primary rounded-circle px-1 py-0" onClick={() => setIsModalOpen(true)}>
                     <i className="bi bi-plus fs-3"></i>
                 </button>
             </div>
