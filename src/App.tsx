@@ -3,6 +3,7 @@ import {CalendarPage} from "./pages/CalendarPage";
 import {ObjectsPage} from "./pages/ObjectsPage";
 import {AuthorizationPage} from "./pages/AuthorizationPage";
 import {UsersPage} from "./pages/UsersPage";
+import {UserPage} from "./pages/UserPage";
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
                         <Route path="/home" element={<CalendarPage/>}/>
                         <Route path="/objects" element={<ObjectsPage/>}/>
                         <Route path="/users" element={<UsersPage/>}/>
+                        <Route path="/user/:userId" element={<UserPage/>}/>
                 </Routes>
             </div>
         </>

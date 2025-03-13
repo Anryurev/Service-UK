@@ -1,5 +1,5 @@
 import React, {ChangeEvent} from "react";
-import {IUsers} from "../models";
+import {IUsers} from "../../models";
 
 interface UserFormProps{
     formData: IUsers,

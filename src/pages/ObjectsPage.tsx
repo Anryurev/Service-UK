@@ -1,8 +1,8 @@
 import React, {ReactNode, useState} from "react";
 import {Navbar} from "../components/Navbar";
-import {Object} from "../components/Object";
+import {Object} from "../components/Object/Object";
 import {objects} from "../data/objectsdata";
-import {ModalCreateObject} from "../components/ModalCreateObject";
+import {ModalCreateObject} from "../components/Object/ModalCreateObject";
 import {IObject} from "../models";
 
 export function ObjectsPage(){
@@ -19,7 +19,7 @@ export function ObjectsPage(){
     }
 
     const handleRemove = (objectId: number) => {
-        setObjectList(objectsList.filter(item => item.id !== objectId))
+        setObjectList((prev) => prev.filter(object => object.id !== objectId))
     }
 
     return(

@@ -1,7 +1,7 @@
 import React, {useState} from "react";
-import {IUsers} from "../models";
+import {IUsers} from "../../models";
 import {UserForm} from "./UserForm";
-import {Modal} from "./Modal";
+import {Modal} from "../Modal";
 import axios from "axios";
 
 interface ModalCreateUserProps {

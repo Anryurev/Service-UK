@@ -1,7 +1,7 @@
 import React, {ChangeEvent, useState} from "react";
-import {Modal} from "./Modal";
+import {Modal} from "../Modal";
 import {ObjectForm} from "./ObjectForm";
-import {IObject} from "../models";
+import {IObject} from "../../models";
 
 interface ModalCreateObjectProps {
     onSubmit: (newObject: IObject) => void

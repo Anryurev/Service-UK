@@ -1,5 +1,5 @@
 import React, {ChangeEvent} from "react";
-import {IObject} from "../models";
+import {IObject} from "../../models";
 
 interface ObjectFormProps{
     formData: IObject,

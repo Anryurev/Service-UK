@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {IUsers} from "../models";
 import axios from "axios";
 
 export function AuthorizationPage(){
 
     // ЭТО НАДО БУДЕТ УДАЛИТЬ
+
     const [users, setUsers] = useState<IUsers[]>([])
 
     async function fetchUsers(){
@@ -31,6 +32,7 @@ export function AuthorizationPage(){
         event.preventDefault()
         const hasUserName = users.some(user => user['email'] === username)
 
+        navigate('/home');
         if (hasUserName) {
             const hasUserPass = users.some(user => user['password'] === password)
             if(hasUserPass){
@@ -51,17 +53,18 @@ export function AuthorizationPage(){
                         inputMode="email"
                         className="form-control mt-5"
                         placeholder="Введите ваш email..."
+                        value="john@gmail.com"
                         onChange={(e) => setUsername(e.target.value)}
                     />
                     <input
                         type="password"
                         className="form-control mt-3"
                         placeholder="Введите пароль..."
+                        value="m38rmF$"
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    <button type="submit" className="btn mt-5" style={{background: "#6096ba", color: "white"}}>Войти</button>
-                    <Link className="d-block" to="/registration">Регистрация</Link>
-                    <p>john@gmail.com"</p>
+                    <button type="submit" className="btn mt-5" id='btnAuth' style={{background: "#6096ba", color: "white"}}>Войти</button>
+                    <p>john@gmail.com</p>
                     <p>m38rmF$</p>
                 </div>
             </form>

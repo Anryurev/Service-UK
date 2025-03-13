@@ -12,6 +12,11 @@ export interface IObject{
     balcony: boolean
 }
 
+export interface IState {
+    users: IUsers[],
+    objects: IObject[]
+}
+
 export interface IUsers{
     address: {
         geolocation: {
@@ -47,3 +52,5 @@ export interface IUsers{
     // login: string,
     // password: string
 }
+
+export type Action = {type: string, payload?: any}
