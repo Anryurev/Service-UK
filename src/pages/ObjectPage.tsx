@@ -1,12 +1,15 @@
-import React from "react";
+import React, {useContext} from "react";
 import {Navbar} from "../components/Navbar";
 import {objects} from "../data/objectsdata";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {IObject} from "../models";
+import {EdembackContext} from "../context/edemback/EdembackContext";
 
 export function ObjectPage() {
     const { objectId } = useParams<{ objectId: string }>()
+    const edemContext = useContext(EdembackContext)
     const object: IObject | undefined = objects.find(object => object.id === Number(objectId));
+    const navigate = useNavigate()
 
     if(!object){
         return (
@@ -14,6 +17,11 @@ export function ObjectPage() {
                 <h1>Объект не найден</h1>
             </div>
         )
+    }
+
+    const removeClick = (objectID: number) => {
+        navigate(`/objects`)
+        edemContext.deleteObject(objectID)
     }
 
     return(
@@ -53,8 +61,8 @@ export function ObjectPage() {
                                             </ul>
                                         </div>
                                         <div className="card-footer bg-light d-flex justify-content-between align-items-center">
-                                            <button className="btn btn-sm btn-outline-primary">Редактировать</button>
-                                            <button className="btn btn-sm btn-outline-danger">Удалить</button>
+                                            <button className="btn btn-sm btn-outline-primary" >Редактировать</button>
+                                            <button className="btn btn-sm btn-outline-danger" onClick={() => removeClick(object.id)}>Удалить</button>
                                         </div>
                                     </div>
                                 </div>

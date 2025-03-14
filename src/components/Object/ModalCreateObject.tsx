@@ -10,8 +10,7 @@ interface ModalCreateObjectProps {
 
 export function ModalCreateObject({ onSubmit, onClose }: ModalCreateObjectProps){
     const [isModalOpen, setIsModalOpen] = useState(true)
-    const [isValid, setIsValid] = useState(true)
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<IObject>({
         id: 0,
         office_id: 0,
         street: "",
@@ -23,18 +22,22 @@ export function ModalCreateObject({ onSubmit, onClose }: ModalCreateObjectProps)
         leaving: "01.02.2000",
         area: 0,
         kitchen: false,
-        balcony: true
+        balcony: false
     })
 
     const handleSubmit = () => {
+        let isValid = true;
         (Object.keys(formData) as Array<keyof IObject>).forEach(key => {
-            console.log(String(formData[key]).trim().length)
-            if(String(formData[key]).trim().length === 0) setIsValid(false)
-        });
-        console.log(isValid)
+            const value = formData[key as keyof IObject] // Явное приведение типа ключа
+            console.log(`${key as keyof IObject} `, String(value).trim().length === 0)
+            if (String(value).trim().length === 0) {
+                isValid = false
+            }
+        })
+
         if(isValid) onSubmit(formData)
         onClose()
-    };
+    }
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const {name, value} = e.target
@@ -42,18 +45,26 @@ export function ModalCreateObject({ onSubmit, onClose }: ModalCreateObjectProps)
         const keys = name.split(".")
 
         setFormData((prev) => {
-            const newData = JSON.parse(JSON.stringify(prev))
+            const newData = JSON.parse(JSON.stringify(prev)) as IObject
 
             let current: any = newData
             for (let i = 0; i < keys.length - 1; i++){
                 current = current[keys[i]]
             }
 
-            current[keys[keys.length - 1]] = value
+            const lastKey = keys[keys.length - 1];
+            if (lastKey === "id" || lastKey === "office_id" || lastKey === "rooms" || lastKey === "area") {
+                current[lastKey] = Number(value); // Преобразуем в число
+            } else if (lastKey === "kitchen" || lastKey === "balcony") {
+                current[lastKey] = true // Преобразуем в boolean
+            } else {
+                current[lastKey] = value; // Оставляем строкой
+            }
+
             return newData
         })
 
-    };
+    }
 
     return(
         <Modal

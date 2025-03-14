@@ -1,12 +1,15 @@
-import React, {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import React, {useContext, useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import {IUsers} from "../models";
 import {Navbar} from "../components/Navbar";
 import axios from "axios";
+import {EdembackContext} from "../context/edemback/EdembackContext";
 
 export function UserPage(){
     const { userId } = useParams<{ userId: string }>()
     const [isEditingMod, setIsEditingMod] = useState(false)
+    const edemContext = useContext(EdembackContext)
+    const navigate = useNavigate()
     const [user, setUser] = useState<IUsers>({
         address: {
             geolocation: {
@@ -43,9 +46,9 @@ export function UserPage(){
         setIsEditingMod(true)
     }
 
-    const handleRemoveUser = async () => {
-        const response = await axios.get<IUsers>(`https://fakestoreapi.com/users`)
-
+    const handleRemoveUser = async (userID: number) => {
+        edemContext.deleteUser(userID)
+        navigate(`/users`)
     }
 
     return(
@@ -86,7 +89,7 @@ export function UserPage(){
                                         </div>
                                         <div className="card-footer bg-light d-flex justify-content-between align-items-center">
                                             <button className="btn btn-sm btn-outline-primary" onClick={handleEditUser}>Редактировать</button>
-                                            <button className="btn btn-sm btn-outline-danger" onClick={handleRemoveUser}>Удалить</button>
+                                            <button className="btn btn-sm btn-outline-danger" onClick={() => handleRemoveUser(user.id)}>Удалить</button>
                                         </div>
                                     </div>
                                 </div>

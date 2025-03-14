@@ -28,7 +28,7 @@ export const EdemBackState = ({children}: IEdemBackState) => {
     const [state, dispatch] = useReducer(edemBackReducer, initialState)
 
     const getAllObjects = async () => {
-        const res = await axios.get(`${url}`)
+        // const res = await axios.get(`${url}`)
 
         dispatch({
             type: GET_ALL_OBJECTS,
@@ -73,7 +73,7 @@ export const EdemBackState = ({children}: IEdemBackState) => {
 
     const getAllUsers = async () => {
         const response = await axios.get<IUsers[]>('https://fakestoreapi.com/users')
-
+        // console.log('reducer', response.data)
         dispatch({
             type: GET_ALL_USERS,
             payload: response.data
@@ -127,8 +127,8 @@ export const EdemBackState = ({children}: IEdemBackState) => {
     }
 
     const deleteObject = async (objectID: number) => {
-        const res = await axios.delete(`${url}/objects/${objectID}`) // ? Как правильно писать запрос
-
+        // const res = await axios.delete(`${url}/objects/${objectID}`) // ? Как правильно писать запрос
+        objects.filter(object => object.id !== objectID)
         dispatch({
             type: DELETE_OBJECT,
             payload: objectID
@@ -154,11 +154,18 @@ export const EdemBackState = ({children}: IEdemBackState) => {
     return (
         <EdembackContext.Provider value={{
             state,
-            dispatch
-            // getAllObjects, getOneObject, getArendObject,
-            // getObject1Filial, getAllUsers, createObject,
-            // createUser, updateObject, updateUser,
-            // deleteObject, deleteUser,
+            dispatch,
+            getAllObjects,
+            getOneObject,
+            getArendObject,
+            getObject1Filial,
+            getAllUsers,
+            createObject,
+            createUser,
+            updateObject,
+            updateUser,
+            deleteObject,
+            deleteUser,
             // TODO Реализовать интерфейс для передавчи функций
         }}>
             {children}

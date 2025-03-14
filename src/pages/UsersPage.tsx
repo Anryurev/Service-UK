@@ -1,32 +1,20 @@
-import React, {useEffect, useState} from "react";
-import {IUsers} from "../models";
-import axios from "axios";
+import React, {useContext, useEffect, useState} from "react";
 import {Navbar} from "../components/Navbar";
 import {User} from "../components/User/User";
 import {ModalCreateUser} from "../components/User/ModalCreateUser";
 import {useNavigate} from "react-router-dom";
+import {EdembackContext} from "../context/edemback/EdembackContext";
 
 export function UsersPage(){
-    const [users, setUsers] = useState<IUsers[]>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
     const navigate = useNavigate()
-
-    async function fetchUsers(){
-        const response = await axios.get<IUsers[]>('https://fakestoreapi.com/users')
-        setUsers(response.data)
-    }
+    const edemContext = useContext(EdembackContext)
 
     useEffect(() => {
-        fetchUsers()
+        edemContext.getAllUsers()
+        console.log('useEffect')
+        // eslint-disable-next-line
     }, [])
-
-    const handleCreateUser = (newUser: IUsers) => {
-        setUsers((prev) => [...prev, newUser])
-    }
-
-    const handleRemoveUser = (userId: number) => {
-        setUsers(prev => prev.filter(user => user.id !== userId))
-    }
 
     const handleClickUser = (userId: number) => {
         navigate(`/users/${userId}`)
@@ -34,13 +22,13 @@ export function UsersPage(){
 
     return(
         <>
-        { isModalOpen && <ModalCreateUser onSubmit={handleCreateUser} onClose={() => setIsModalOpen(false)}/>}
+        { isModalOpen && <ModalCreateUser onSubmit={(newUser) => edemContext.createUser(newUser)} onClose={() => setIsModalOpen(false)}/>}
             <Navbar/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
-                { users.map(user =>
+                { edemContext.state.users.map(user =>
                     <User
                         user={user}
-                        onRemove={handleRemoveUser}
+                        onRemove={() => edemContext.deleteUser(user.id)}
                         onClick={handleClickUser}
                         key={user.id + user.v}
                     />)

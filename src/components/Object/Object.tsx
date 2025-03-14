@@ -1,5 +1,6 @@
-import React from "react";
+import React, {useContext} from "react";
 import {IObject} from "../../models";
+import {EdembackContext} from "../../context/edemback/EdembackContext";
 
 interface ObjectProps {
     object: IObject
@@ -8,13 +9,17 @@ interface ObjectProps {
 }
 
 export function Object({ object, onRemove, onClick }: ObjectProps){
+    const edemContext = useContext(EdembackContext)
+
     return(
         <div className="border px-2 py-2 rounded mb-2 d-flex justify-content-between" onClick={() => onClick(object.id)}>
             <p className="mb-0" style={{display: "inline-block"}}>{object.street + ' д. ' + object.house + ' кв. ' + object.apartment}</p>
             <p className="mb-0" style={{display: "inline-block"}}>{object.status}</p>
             <button className="btn btn-danger p-1" onClick={(e) => {
                 e.stopPropagation()
-                onRemove(object.id)
+                // onRemove(object.id)
+                edemContext.deleteObject(object.id)
+                console.log(edemContext.state.objects)
             }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x"
                      viewBox="0 0 16 16">

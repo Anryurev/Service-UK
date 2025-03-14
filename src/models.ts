@@ -12,6 +12,7 @@ export interface IObject{
     area: number,
     kitchen: boolean,
     balcony: boolean
+    [key: string]: string | number | boolean
 }
 
 export interface IUsers{

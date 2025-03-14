@@ -6,14 +6,16 @@ import {UsersPage} from "./pages/UsersPage";
 import {UserPage} from "./pages/UserPage";
 import {CreateBookingPage} from "./pages/CreateBookingPage";
 import {ObjectPage} from "./pages/ObjectPage";
+import {EdemBackState} from "./context/edemback/EdemBackState";
 
 function App() {
 
 
     return (
         <>
-            <div className="vh-100" style={ {background: "#e7ecef"} } >
-                <Routes>
+            <EdemBackState>
+                <div className="vh-100" style={ {background: "#e7ecef"} } >
+                    <Routes>
                         <Route path="/" element={<AuthorizationPage/>} />
                         <Route path="/home" element={<CalendarPage/>}/>
                         <Route path="/objects" element={<ObjectsPage/>}/>
@@ -21,8 +23,9 @@ function App() {
                         <Route path="/users/:userId" element={<UserPage/>}/>
                         <Route path="/objects/:objectId" element={<ObjectPage/>}/>
                         <Route path="/booking/create" element={<CreateBookingPage/>}/>
-                </Routes>
-            </div>
+                    </Routes>
+                </div>
+            </EdemBackState>
         </>
     );
 }
