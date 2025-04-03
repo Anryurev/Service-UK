@@ -1,5 +1,6 @@
 import React from "react";
 import {IUsers} from "../../models";
+import {roles} from "../../data/rolesdata";
 
 interface UserProps{
     user: IUsers
@@ -7,11 +8,17 @@ interface UserProps{
     onClick: (userId: number) => void
 }
 
-export function User({user, onRemove, onClick}: UserProps){
+const getRoleNameById = (roleId: number): string => {
+    const role = roles.find((role) => role.id === roleId)
+    return role ? role.nameRole : "Роль не найдена"
+}
+
+export function UserNote({user, onRemove, onClick}: UserProps){
     return(
         <div className="border px-2 py-2 rounded mb-2 d-flex justify-content-between" onClick={() => onClick(user.id)}>
-            <p className="mb-0" style={{display: "inline-block"}}>{user.name.firstname + ' ' + user.name.lastname}</p>
-            <p className="mb-0" style={{display: "inline-block"}}>{user.address.city + ' ' + user.address.street}</p>
+            <p className="mb-0" style={{display: "inline-block"}}>{user.name + ' ' + user.surname + ' ' + user.fathername}</p>
+            <p className="mb-0" style={{display: "inline-block"}}>{getRoleNameById(user.id_Role)}</p>
+            <p className="mb-0" style={{display: "inline-block"}}>{user.phoneNumber}</p>
             <button
                 className="btn btn-danger p-1"
                 onClick={(e) => {

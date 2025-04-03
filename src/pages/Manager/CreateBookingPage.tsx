@@ -1,6 +1,6 @@
 import React, {useState} from "react";
-import {objects} from "../data/objectsdata";
-import {Navbar} from "../components/Navbar";
+import {objectsData} from "../../data/objectsData";
+import {Navbar} from "../../components/Navbar";
 
 export function CreateBookingPage() {
     const [selectedObject, setSelectedObject] = useState<number | null>(null);
@@ -18,7 +18,7 @@ export function CreateBookingPage() {
                         <option value="" disabled>
                             Выберите объект
                         </option>
-                        {objects.map(obj => (
+                        {objectsData.map(obj => (
                             <option key={obj.id} value={obj.id}>
                                 {`${obj.street}, ${obj.house}, кв. ${obj.apartment}`}
                             </option>

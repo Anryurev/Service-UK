@@ -10,49 +10,48 @@ export const UserForm: React.FC<UserFormProps> = ({ formData, onChange }) => {
     return (
         <form className="form-control">
             {[
-                { id: "lat", placeholder: "Введите lat...", value: formData.address.geolocation.lat, name: "address.geolocation.lat" },
-                { id: "long", placeholder: "Введите long...", value: formData.address.geolocation.long, name: "address.geolocation.long" },
-                { id: "city", placeholder: "Введите city...", value: formData.address.city, name: "address.city" },
-                { id: "street", placeholder: "Введите street...", value: formData.address.street, name: "address.street" },
-                { id: "number", placeholder: "Введите number...", value: formData.address.number, name: "address.number" },
-                { id: "zipcode", placeholder: "Введите zipcode...", value: formData.address.zipcode, name: "address.zipcode" },
-                { id: "email", placeholder: "Введите email...", value: formData.email, type: "email", name: "email" },
-                { id: "username", placeholder: "Введите имя пользователя...", value: formData.username, name: "username" },
-                { id: "password", placeholder: "Введите пароль...", value: formData.password, type: "password", name: "password" },
-                { id: "firstname", placeholder: "Введите имя...", value: formData.name.firstname, name: "name.firstname" },
-                { id: "lastname", placeholder: "Введите фамилию...", value: formData.name.lastname, name: "name.lastname" },
-                { id: "phone", placeholder: "Введите номер телефона...", value: formData.phone, name: "phone" },
-                { id: "v", placeholder: "Введите v...", value: formData.v, name: "v" },
+                { id: "id", placeholder: "Введите id...", value: formData.id },
+                { id: "name", placeholder: "Введите имя...", value: formData.name },
+                { id: "surname", placeholder: "Введите фамилию...", value: formData.surname },
+                { id: "fatherName", placeholder: "Введите отчество...", value: formData.fathername },
+                { id: "phoneNumber", placeholder: "Введите номер телефона...", value: formData.phoneNumber },
+                { id: "email", placeholder: "Введите email...", value: formData.email },
+                { id: "birthday", placeholder: "Введите дату рождения...", value: formData.birthday },
+                { id: "idRole", placeholder: "Введите id роли...", value: formData.id_Role},
+                { id: "idOffice", placeholder: "Введите id офиса...", value: formData.id_Office},
+                { id: "password", placeholder: "Введите пароль...", value: formData.password },
             ].map((field) => (
                 <div className="mb-3" key={field.id}>
                     <input
-                        type={field.type || "text"}
+                        type="text"
                         className="form-control"
                         id={field.id}
                         placeholder={field.placeholder}
-                        value={field.value}
+                        value={field.value || ''}
                         onChange={onChange}
-                        name={field.name}
+                        name={field.id}
                     />
                 </div>
             ))}
+
+            <select
+                className="form-select mt-3"
+                value={formData.id_Role}
+                onChange={onChange}
+                name="role"
+            >
+                <option value="-1">Выберите роль</option>
+                <option value="1">Оператор</option>
+                <option value="2">Администратор</option>
+                <option value="3">Менеджер</option>
+                <option value="4">Электрик</option>
+                <option value="5">Сантехник</option>
+                <option value="6">Уборощик</option>
+                <option value="7">Завхоз</option>
+            </select>
         </form>
     )
 }
 
 
 
-// <select
-//     className="form-select mt-3"
-//     aria-label="Default select example"
-//     value={formData.role}
-//     onChange={onChange}
-//     name="role"
-// >
-//     <option value="-1">Выберите роль</option>
-//     <option value="1">Администратор</option>
-//     <option value="2">Оператор</option>
-//     <option value="3">Уборщица</option>
-//     <option value="4">Электрик</option>
-//     <option value="5">Сантехник</option>
-// </select>

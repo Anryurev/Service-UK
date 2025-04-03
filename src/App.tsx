@@ -1,20 +1,26 @@
 import {Routes, Route} from 'react-router-dom'
-import {CalendarPage} from "./pages/CalendarPage";
-import {ObjectsPage} from "./pages/ObjectsPage";
+import {CalendarPage} from "./pages/Manager/CalendarPage";
+import {ObjectsPage} from "./pages/Manager/ObjectsPage";
 import {AuthorizationPage} from "./pages/AuthorizationPage";
-import {UsersPage} from "./pages/UsersPage";
-import {UserPage} from "./pages/UserPage";
-import {CreateBookingPage} from "./pages/CreateBookingPage";
-import {ObjectPage} from "./pages/ObjectPage";
+import {UsersPage} from "./pages/Manager/UsersPage";
+import {UserPage} from "./pages/Manager/UserPage";
+import {CreateBookingPage} from "./pages/Manager/CreateBookingPage";
+import {ObjectPage} from "./pages/Manager/ObjectPage";
 import {EdemBackState} from "./context/edemback/EdemBackState";
+import {MainExecutorPage} from "./pages/Executors/MainExecutorPage";
+import {ReportPage} from "./pages/Executors/ReportPage";
+import  { RemoveScrollBar }  from  'react-remove-scroll-bar'
+import {UserState} from "./context/userContext/UserState";
 
 function App() {
 
 
     return (
         <>
+            {/*< RemoveScrollBar  />*/}
             <EdemBackState>
-                <div className="vh-100" style={ {background: "#e7ecef"} } >
+                <UserState>
+                    <div className="fullscreen-background"></div>
                     <Routes>
                         <Route path="/" element={<AuthorizationPage/>} />
                         <Route path="/home" element={<CalendarPage/>}/>
@@ -23,8 +29,10 @@ function App() {
                         <Route path="/users/:userId" element={<UserPage/>}/>
                         <Route path="/objects/:objectId" element={<ObjectPage/>}/>
                         <Route path="/booking/create" element={<CreateBookingPage/>}/>
+                        <Route path="/execut" element={<MainExecutorPage/>}/>
+                        <Route path="/execut/report" element={<ReportPage/>}/>
                     </Routes>
-                </div>
+                </UserState>
             </EdemBackState>
         </>
     );

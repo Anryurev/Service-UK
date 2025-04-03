@@ -30,7 +30,7 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
     [GET_ALL_OBJECTS]: (state, {payload}) => ({...state, objects: payload}),
     [GET_ONE_OBJECT]: (state, {payload}) => ({
         ...state,
-        objects: state.objects.filter(object => object.id === payload)
+        objects: payload
     }),
     [GET_AREND_OBJECT]: (state, {payload}) => ({
         ...state,
@@ -55,7 +55,10 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
     }),
     // [CREATE_FILIAL]: state => ({...state}),
     // [CREATE_ADDITIONAL_MATERIAL]: state => ({...state}),
-    // [CREATE_ROLE]: state => ({...state}),
+    [CREATE_ROLE]: (state, {payload}) => ({
+        ...state,
+        roles: [...state.roles, payload]
+    }),
     // [CREATE_REQUEST]: state => ({...state}),
     [UPDATE_OBJECT]: (state, {payload}) => ({
         ...state,
@@ -66,7 +69,10 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
         users: state.users.map(user => user.id === payload.id ? payload : user)
     }),
     // [UPDATE_ADDITIONAL_MATERIAL]: state => ({...state}),
-    // [UPDATE_ROLE]: state => ({...state}),
+    [UPDATE_ROLE]: (state, {payload}) => ({
+        ...state,
+    roles: state.roles.map(role => role.id === payload.id ? payload : role)
+    }),
     [DELETE_OBJECT]: (state, {payload}) => ({
         ...state,
         objects: state.objects.filter(object => object.id !== payload)
@@ -75,7 +81,10 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
         ...state,
         users: state.users.filter(user => user.id !== payload)
     }),
-    // [DELETE_ROLE]: state => ({...state}),
+    [DELETE_ROLE]: (state, {payload}) => ({
+        ...state,
+        roles: state.roles.filter(role => role.id !== payload.id)
+    }),
     // [DELETE_PHOTO]: state => ({...state}),
     // [DELETE_ADDITIONAL_MATERIAL]: state => ({...state}),
     DEFAULT: (state) => state,

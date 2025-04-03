@@ -11,3 +11,59 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.fullscreen-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background-color: #e7ecef;
+  background-size: cover;
+  background-position: center;
+}
+
+
+.sidebar {
+  width: 250px; /* Ширина сайдбара */
+  height: 100vh; /* Высота на весь экран */
+  position: fixed; /* Фиксированное положение */
+  top: 0;
+  left: 0;
+  background-color: #f8f9fa; /* Цвет фона */
+  border-right: 1px solid #ddd; /* Граница справа */
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Тень справа */
+}
+
+.sidebar ul {
+  list-style-type: none; /* Убираем маркеры списка */
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  margin-bottom: 15px; /* Отступ между пунктами меню */
+}
+
+.sidebar ul li a {
+  text-decoration: none; /* Убираем подчеркивание ссылок */
+  color: #333; /* Цвет текста */
+  font-size: 16px;
+  display: block; /* Ссылка занимает всю ширину */
+  padding: 8px 12px; /* Отступы внутри ссылок */
+  border-radius: 4px; /* Скругление углов */
+  transition: background-color 0.3s ease; /* Плавный переход */
+}
+
+.sidebar ul li a:hover {
+  background-color: #e9ecef; /* Цвет фона при наведении */
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}

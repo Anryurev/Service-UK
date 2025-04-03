@@ -18,7 +18,7 @@ interface IEdembackContext {
 }
 
 export const EdembackContext = createContext<IEdembackContext>({
-    state: { users: [], objects: [] },
+    state: { users: [], objects: [], roles: [] },
     dispatch: () => {},
     getAllObjects: async () => {},
     getOneObject: async () => {},

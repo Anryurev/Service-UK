@@ -1,42 +1,44 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {IUsers} from "../models";
 import axios from "axios";
+import {users} from "../data/usersdata";
+import {UserContext} from "../context/userContext/UserContext";
 
 export function AuthorizationPage(){
-
-    // ЭТО НАДО БУДЕТ УДАЛИТЬ
-
-    const [users, setUsers] = useState<IUsers[]>([])
-
-    async function fetchUsers(){
-        const response = await axios.get<IUsers[]>('https://fakestoreapi.com/users')
-        setUsers(response.data)
-    }
-
-    useEffect(() => {
-        fetchUsers()
-    }, [])
-
-    ////////////////////////////////////////
-
-
-
-
-
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate()
+    const userContext = useContext(UserContext)
 
     const submitHandler = (event: React.FormEvent) => {
         event.preventDefault()
-        const hasUserName = users.some(user => user['email'] === username)
+        const foundUser = users.find(user => user.email === username && user.password === password)
 
-        navigate('/home');
-        if (hasUserName) {
-            const hasUserPass = users.some(user => user['password'] === password)
-            if(hasUserPass){
-                navigate('/home');
+        if (foundUser) {
+            userContext?.setUser(foundUser)
+            switch (foundUser.id_Role) {
+                case 1:
+                    navigate('/home')
+                    break
+                case 2:
+                    navigate('/home')
+                    break
+                case 3:
+                    navigate('/home')
+                    break
+                case 4:
+                    navigate('/execut')
+                    break
+                case 5:
+                    navigate('/execut')
+                    break
+                case 6:
+                    navigate('/execut')
+                    break
+                case 7:
+                    navigate('/execut')
+                    break
             }
         } else {
             alert('Неверный логин или пароль');
@@ -53,19 +55,17 @@ export function AuthorizationPage(){
                         inputMode="email"
                         className="form-control mt-5"
                         placeholder="Введите ваш email..."
-                        value="john@gmail.com"
+                        value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
                     <input
                         type="password"
                         className="form-control mt-3"
                         placeholder="Введите пароль..."
-                        value="m38rmF$"
+                        value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     <button type="submit" className="btn mt-5" id='btnAuth' style={{background: "#6096ba", color: "white"}}>Войти</button>
-                    <p>john@gmail.com</p>
-                    <p>m38rmF$</p>
                 </div>
             </form>
         </>

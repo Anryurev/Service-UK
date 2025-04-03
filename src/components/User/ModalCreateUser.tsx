@@ -1,8 +1,7 @@
 import React, {useState} from "react";
-import {IUsers} from "../../models";
+import {IObject, IUsers} from "../../models";
 import {UserForm} from "./UserForm";
 import {Modal} from "../Modal";
-import axios from "axios";
 
 interface ModalCreateUserProps {
     onSubmit: (newUser: IUsers) => void
@@ -11,26 +10,16 @@ interface ModalCreateUserProps {
 
 export function ModalCreateUser({ onSubmit, onClose }: ModalCreateUserProps){
     const [formData, setFormData] = useState<IUsers>({
-        address: {
-            geolocation: {
-                lat: "",
-                long: ""
-            },
-            city: "",
-            street: "",
-            number: 0,
-            zipcode: ""
-        },
         id: 0,
+        name: "",
+        surname: "",
+        fathername: "",
+        phoneNumber: "",
         email: "",
-        username: "",
-        password: "",
-        name: {
-            firstname: "",
-            lastname: ""
-        },
-        phone: "",
-        v: 0
+        birthday: "",
+        id_Role: 0,
+        id_Office: 0,
+        password: ""
     });
 
     const [isModalOpen, setIsModalOpen] = useState(true)
@@ -38,42 +27,38 @@ export function ModalCreateUser({ onSubmit, onClose }: ModalCreateUserProps){
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target
 
-        // Разделяем имя поля на части (например, "address.city" -> ["address", "city"])
         const keys = name.split(".")
 
         setFormData((prev) => {
-            // Создаем глубокую копию объекта
-            const newData = JSON.parse(JSON.stringify(prev))
+            const newData = JSON.parse(JSON.stringify(prev)) as IUsers
 
-            // Обновляем вложенные свойства
             let current: any = newData
             for (let i = 0; i < keys.length - 1; i++) {
                 current = current[keys[i]]
             }
 
-            // Устанавливаем значение
-            current[keys[keys.length - 1]] = value
-
+            const lastKey = keys[keys.length - 1];
+            if (lastKey === "id" || lastKey === "idOffice" || lastKey === "idRole") {
+                current[lastKey] = Number(value); // Преобразуем в число
+            } else {
+                current[lastKey] = value; // Оставляем строкой
+            }
             return newData
         });
     };
 
     const handleSubmit = async () => {
-        try{
-            const response = await axios.post<IUsers>("https://fakestoreapi.com/users", formData)
-
-            const newUser = {
-                ...formData,
-                id: response.data.id
+        let isValid = true;
+        (Object.keys(formData) as Array<keyof IUsers>).forEach(key => {
+            const value = formData[key as keyof IUsers] // Явное приведение типа ключа
+            // console.log(`${key as keyof IUsers} `, String(value).trim().length === 0)
+            if (String(value).trim().length === 0) {
+                isValid = false
             }
+        })
 
-            onSubmit(newUser)
-            onClose()
-
-            setIsModalOpen(false)
-        } catch (error) {
-            console.error("Ошибка при создании пользователя:", error)
-        }
+        if(isValid) onSubmit(formData)
+        onClose()
     };
 
 

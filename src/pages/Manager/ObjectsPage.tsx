@@ -1,11 +1,11 @@
-import React, {ReactNode, useContext, useEffect, useState} from "react";
-import {Navbar} from "../components/Navbar";
-import {Object} from "../components/Object/Object";
-import {objects} from "../data/objectsdata";
-import {ModalCreateObject} from "../components/Object/ModalCreateObject";
-import {IObject} from "../models";
+import React, { useContext, useEffect, useState} from "react";
+import {Navbar} from "../../components/Navbar";
+import {ObjectNote} from "../../components/Object/ObjectNote";
+import {objectsData} from "../../data/objectsData";
+import {ModalCreateObject} from "../../components/Object/ModalCreateObject";
+import {IObject} from "../../models";
 import {useNavigate} from "react-router-dom";
-import {EdembackContext} from "../context/edemback/EdembackContext";
+import {EdembackContext} from "../../context/edemback/EdembackContext";
 
 export function ObjectsPage(){
     const [isOpenModal, setIsOpenModal] = useState(false)
@@ -14,11 +14,11 @@ export function ObjectsPage(){
 
     useEffect(() => {
         edemContext.getAllObjects()
+        console.log('useEffect')
     }, [])
 
     const handleCreateObject = (newObject: IObject) => {
-        objects.push(newObject)
-        console.log(objects)
+        edemContext.createObject(newObject)
     }
 
     const handleClickObject = (objectId: number) => {
@@ -30,10 +30,10 @@ export function ObjectsPage(){
             {isOpenModal && <ModalCreateObject onSubmit={handleCreateObject} onClose={() => setIsOpenModal(false)} />}
             <Navbar/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
-                { edemContext.state.objects.map(object => <Object object={object}
-                                                                  onRemove={() => edemContext.deleteObject(object.id)}
-                                                                  onClick={handleClickObject}
-                                                                  key={object.id}
+                { edemContext.state.objects.map(object => <ObjectNote object={object}
+                                                                      onRemove={() => edemContext.deleteObject(object.id)}
+                                                                      onClick={handleClickObject}
+                                                                      key={object.id}
                     />
                 ) }
             </div>

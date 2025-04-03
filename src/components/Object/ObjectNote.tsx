@@ -8,7 +8,7 @@ interface ObjectProps {
     onClick: (objectId: number) => void
 }
 
-export function Object({ object, onRemove, onClick }: ObjectProps){
+export function ObjectNote({ object, onRemove, onClick }: ObjectProps){
     const edemContext = useContext(EdembackContext)
 
     return(

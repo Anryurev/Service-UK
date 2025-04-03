@@ -1,46 +1,48 @@
 import React, {useContext, useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {IUsers} from "../models";
-import {Navbar} from "../components/Navbar";
+import {IUsers} from "../../models";
+import {Navbar} from "../../components/Navbar";
 import axios from "axios";
-import {EdembackContext} from "../context/edemback/EdembackContext";
+import {EdembackContext} from "../../context/edemback/EdembackContext";
+import {users} from "../../data/usersdata";
+import {roles} from "../../data/rolesdata";
 
 export function UserPage(){
     const { userId } = useParams<{ userId: string }>()
     const [isEditingMod, setIsEditingMod] = useState(false)
     const edemContext = useContext(EdembackContext)
     const navigate = useNavigate()
-    const [user, setUser] = useState<IUsers>({
-        address: {
-            geolocation: {
-                lat: "",
-                long: ""
-            },
-            city: "",
-            street: "",
-            number: 0,
-            zipcode: ""
-        },
+    const [user, setUser] = useState<IUsers | undefined>({
         id: 0,
+        name: "",
+        surname: "",
+        fathername: "",
+        phoneNumber: "",
         email: "",
-        username: "",
-        password: "",
-        name: {
-            firstname: "",
-            lastname: ""
-        },
-        phone: "",
-        v: 0
+        birthday: "",
+        id_Role: 0,
+        id_Office: 0,
+        password: ""
     })
 
     async function fetchUsers(){
-        const response = await axios.get<IUsers>(`https://fakestoreapi.com/users/${userId}`)
-        setUser(response.data)
+        // const response = await axios.get<IUsers>(`https://fakestoreapi.com/users/${userId}`)
+
+        const user_current: IUsers | undefined = users.find(user => user.id === Number(userId));
+        setUser(user_current)
     }
 
     useEffect(() => {
         fetchUsers()
     }, [])
+
+    if(!user){
+        return (
+            <div className="container" style={{paddingTop: "60px"}}>
+                <h1>Пользователь не найден</h1>
+            </div>
+        )
+    }
 
     const handleEditUser = () => {
         setIsEditingMod(true)
@@ -49,6 +51,11 @@ export function UserPage(){
     const handleRemoveUser = async (userID: number) => {
         edemContext.deleteUser(userID)
         navigate(`/users`)
+    }
+
+    const getRoleNameById = (roleId: number): string => {
+        const role = roles.find((role) => role.id === roleId)
+        return role ? role.nameRole : "Роль не найдена"
     }
 
     return(
@@ -65,25 +72,28 @@ export function UserPage(){
                                 <div className="card-body">
                                     <div className="row">
                                         <div className="col-md-4 text-center d-flex align-items-center">
-                                            <h5 className="mb-1"><strong>Имя: </strong> {user.name.firstname}</h5>
+                                            <h5 className="mb-1"><strong>Имя: </strong> {user.name}</h5>
                                         </div>
                                         <div className="col-md-4 text-center d-flex align-items-center">
-                                            <h5 className="mb-1"><strong>Фамилия: </strong> {user.name.lastname}</h5>
+                                            <h5 className="mb-1"><strong>Фамилия: </strong> {user.surname}</h5>
+                                        </div>
+                                        <div className="col-md-4 text-center d-flex align-items-center">
+                                            <h5 className="mb-1"><strong>Отчество: </strong> {user.fathername}</h5>
                                         </div>
 
                                         <div className="col-md-8">
                                             <ul className="list-group list-group-flush">
                                                 <li className="list-group-item">
-                                                    <strong>Номер телефона: </strong>{user.phone}
+                                                    <strong>Номер телефона: </strong>{user.phoneNumber}
                                                 </li>
                                                 <li className="list-group-item">
                                                     <strong>Электронная почта: </strong>{user.email}
                                                 </li>
                                                 <li className="list-group-item">
-                                                    <strong>Имя пользователя: </strong>{user.username}
+                                                    <strong>Должность: </strong>{getRoleNameById(user.id_Role)}
                                                 </li>
                                                 <li className="list-group-item">
-                                                    <strong>Место жительства: </strong>{user.address.city + ' ' + user.address.street}
+                                                    <strong>Дата рождения: </strong>{user.birthday}
                                                 </li>
                                             </ul>
                                         </div>

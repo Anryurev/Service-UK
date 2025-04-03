@@ -29,7 +29,6 @@ export function ModalCreateObject({ onSubmit, onClose }: ModalCreateObjectProps)
         let isValid = true;
         (Object.keys(formData) as Array<keyof IObject>).forEach(key => {
             const value = formData[key as keyof IObject] // Явное приведение типа ключа
-            console.log(`${key as keyof IObject} `, String(value).trim().length === 0)
             if (String(value).trim().length === 0) {
                 isValid = false
             }

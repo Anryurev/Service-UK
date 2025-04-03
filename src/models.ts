@@ -7,8 +7,6 @@ export interface IObject{
     apartment: string,
     rooms: number,
     status: string,
-    check_in: string,
-    leaving: string,
     area: number,
     kitchen: boolean,
     balcony: boolean
@@ -16,44 +14,55 @@ export interface IObject{
 }
 
 export interface IUsers{
-    address: {
-        geolocation: {
-            lat: string,
-            long: string
-        },
-        city: string,
-        street: string,
-        number: number,
-        zipcode: string
-    },
     id: number,
+    name: string,
+    surname: string,
+    fathername: string,
+    phoneNumber: string,
     email: string,
-    username: string,
-    password: string,
-    name: {
-        firstname: string,
-        lastname: string
-    },
-    phone: string,
-    v: number
+    birthday: string,
+    id_Role: number,
+    id_Office: number,
+    password: string
+}
 
+export interface IRole{
+    id: number,
+    nameRole: string,
+    salary: number // оклад
+}
 
-    // id: number,
-    // username: string,
-    // surname: string,
-    // fatherName: string,
-    // phoneNumber: string,
-    // email: string,
-    // birthday: Date,
-    // idRole: number,
-    // idOffice: number,
-    // login: string,
-    // password: string
+export interface IRequest {
+    id: number,
+    idRole: number,
+    idUser: number,
+    idObject: number,
+    status: string,
+    urgency: boolean // срочность
+}
+
+export interface IOffice {
+    id: number,
+    street: string,
+    house: string
 }
 
 export interface IState {
     users: IUsers[],
-    objects: IObject[]
+    objects: IObject[],
+    roles: IRole[]
+}
+
+export interface IDayCard {
+    date: Date;
+    objects: IObject[];
+}
+
+export interface IBooking {
+    id: number,
+    idObject: number,
+    dateStart: Date,
+    dateEnd: Date
 }
 
 export type Action = {type: string, payload?: any}
