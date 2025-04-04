@@ -1,7 +1,6 @@
 import React, {useState} from "react";
-import {IObject, IUsers} from "../../models";
+import {IUsers} from "../../models";
 import {UserForm} from "./UserForm";
-import {Modal} from "../Modal";
 
 interface ModalCreateUserProps {
     onSubmit: (newUser: IUsers) => void
@@ -64,33 +63,7 @@ export function ModalCreateUser({ onSubmit, onClose }: ModalCreateUserProps){
 
     return (
         <div className="container mt-5">
-            <Modal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                title="Создание нового пользователя"
-                footer={
-                    <>
-                        <button
-                            type="button"
-                            className="btn text-white"
-                            style={{ background: "#8b8c89" }}
-                            onClick={onClose}
-                        >
-                            Закрыть
-                        </button>
-                        <button
-                            type="submit"
-                            className="btn text-white"
-                            style={{ background: "#6096ba" }}
-                            onClick={handleSubmit}
-                        >
-                            Создать
-                        </button>
-                    </>
-                }
-            >
-                <UserForm formData={formData} onChange={handleChange} />
-            </Modal>
+            <UserForm formData={formData} onChange={handleChange} />
         </div>
     );
 }

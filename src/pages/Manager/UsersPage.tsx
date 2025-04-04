@@ -6,6 +6,7 @@ import {useNavigate} from "react-router-dom";
 import {EdembackContext} from "../../context/edemback/EdembackContext";
 import {Form} from "react-bootstrap";
 import {SidebarMenu} from "../../components/SidebarMenu";
+import {SidebarOptions} from "../../components/SidebarOptions";
 
 export function UsersPage(){
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -15,7 +16,7 @@ export function UsersPage(){
 
     useEffect(() => {
         edemContext.getAllUsers()
-        console.log('useEffect')
+        console.log(edemContext.state.roles)
         // eslint-disable-next-line
     }, [])
 
@@ -35,9 +36,11 @@ export function UsersPage(){
             { isModalOpen && <ModalCreateUser onSubmit={(newUser) => edemContext.createUser(newUser)} onClose={() => setIsModalOpen(false)}/>}
             <Navbar/>
             <SidebarMenu isOpen={true}/>
+            <SidebarOptions/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
+                <h1>Список сотрудников</h1>
                 <Form.Group className="mb-4">
-                    <Form.Label>Поиск работников:</Form.Label>
+                    <Form.Label>Поиск по сотрудникам:</Form.Label>
                     <Form.Control
                         type="text"
                         value={searchQuery}
@@ -56,11 +59,6 @@ export function UsersPage(){
                         key={user.id}
                     />)
                 }
-            </div>
-            <div className="position-fixed bottom-0 end-0 p-3">
-                <button className="btn btn-primary rounded-circle px-1 py-0" onClick={() => setIsModalOpen(true)}>
-                    <i className="bi bi-plus fs-3"></i>
-                </button>
             </div>
         </>
     )

@@ -4,16 +4,21 @@ import {IUsers} from "../models";
 import axios from "axios";
 import {users} from "../data/usersdata";
 import {UserContext} from "../context/userContext/UserContext";
+import {EdembackContext} from "../context/edemback/EdembackContext";
 
 export function AuthorizationPage(){
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate()
     const userContext = useContext(UserContext)
+    const edemContext = useContext(EdembackContext)
+    useEffect(() => {
+        edemContext.getAllUsers()
+    }, [])
 
     const submitHandler = (event: React.FormEvent) => {
         event.preventDefault()
-        const foundUser = users.find(user => user.email === username && user.password === password)
+        const foundUser = edemContext.state.users.find(user => user.email === username && user.password === password)
 
         if (foundUser) {
             userContext?.setUser(foundUser)

@@ -23,12 +23,12 @@ export interface IUsers{
     birthday: string,
     id_Role: number,
     id_Office: number,
-    password: string
+    password: string,
 }
 
 export interface IRole{
-    id: number,
-    nameRole: string,
+    role_Id: number,
+    name: string,
     salary: number // оклад
 }
 

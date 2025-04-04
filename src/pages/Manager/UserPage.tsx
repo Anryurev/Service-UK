@@ -54,8 +54,9 @@ export function UserPage(){
     }
 
     const getRoleNameById = (roleId: number): string => {
-        const role = roles.find((role) => role.id === roleId)
-        return role ? role.nameRole : "Роль не найдена"
+        console.log("roles", edemContext.state.roles)
+        const role = roles.find((role) => role.role_Id === roleId)
+        return role ? role.name : "Роль не найдена"
     }
 
     return(

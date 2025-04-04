@@ -4,6 +4,7 @@ import {DayCard} from "../../components/Calendar/DayCard";
 import {BookingObjectProps, bookingObjects} from "../../data/bookingdata";
 import {IBooking} from "../../models";
 import Calendar from "../../components/Calendar/Calendar";
+import {SidebarMenu} from "../../components/SidebarMenu";
 
 
  export  const CalendarPage: React.FC = () => {
@@ -38,9 +39,17 @@ import Calendar from "../../components/Calendar/Calendar";
 
 
     return (
-        <>
+        <div className="container-fluid">
+            <div className="row h-100">
+                <div className="col-md-2 p-0">
+                    <SidebarMenu isOpen={true}/>
+                </div>
+                <div className="col-md-10 h-100 overflow-auto">
+                    <Calendar/>
+                </div>
+            </div>
             <Navbar/>
-            <Calendar/>
+
             {/*<div className="calendar-view"  style={{paddingTop: "60px"}}>*/}
             {/*    <h2>Календарь сдачи квартир</h2>*/}
             {/*    <div className="calendar-grid">*/}
@@ -53,6 +62,6 @@ import Calendar from "../../components/Calendar/Calendar";
             {/*        ))}*/}
             {/*    </div>*/}
             {/*</div>*/}
-        </>
+        </div>
     )
 }

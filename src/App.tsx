@@ -11,6 +11,8 @@ import {MainExecutorPage} from "./pages/Executors/MainExecutorPage";
 import {ReportPage} from "./pages/Executors/ReportPage";
 import  { RemoveScrollBar }  from  'react-remove-scroll-bar'
 import {UserState} from "./context/userContext/UserState";
+import {CreateUserPage} from "./pages/Manager/CreateUserPage";
+import {RolesPage} from "./pages/Manager/RolesPage";
 
 function App() {
 
@@ -31,6 +33,8 @@ function App() {
                         <Route path="/booking/create" element={<CreateBookingPage/>}/>
                         <Route path="/execut" element={<MainExecutorPage/>}/>
                         <Route path="/execut/report" element={<ReportPage/>}/>
+                        <Route path="/users/create" element={<CreateUserPage/>}/>
+                        <Route path="/roles" element={<RolesPage/>}/>
                     </Routes>
                 </UserState>
             </EdemBackState>

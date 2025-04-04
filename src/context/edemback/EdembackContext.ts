@@ -3,7 +3,6 @@ import {Action, IObject, IState, IUsers} from "../../models";
 
 interface IEdembackContext {
     state: IState
-    dispatch: Dispatch<Action>
     getAllObjects: () => Promise<void>
     getOneObject: (objectID: number) => Promise<void>
     getArendObject: (status: string) => Promise<void>
@@ -15,11 +14,12 @@ interface IEdembackContext {
     updateUser: (user: IUsers) => Promise<void>
     deleteObject: (objectID: number) => Promise<void>
     deleteUser: (userID: number) => Promise<void>
+    getAllRoles: () => Promise<void>
+    deleteRole: (roleID: number) => Promise<void>
 }
 
 export const EdembackContext = createContext<IEdembackContext>({
     state: { users: [], objects: [], roles: [] },
-    dispatch: () => {},
     getAllObjects: async () => {},
     getOneObject: async () => {},
     getArendObject: async () => {},
@@ -31,4 +31,6 @@ export const EdembackContext = createContext<IEdembackContext>({
     updateUser: async () => {},
     deleteObject: async () => {},
     deleteUser: async () => {},
+    getAllRoles: async () => {},
+    deleteRole: async () => {}
 })
