@@ -1,6 +1,6 @@
 import {IUsers} from "../models";
 
-export const users: IUsers[] = [
+export const Users: IUsers[] = [
     {
         id: 1,
         name: "Василий",

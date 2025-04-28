@@ -1,7 +1,9 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Navbar} from "../../components/Navbar";
 import { Button, Card, Form, ListGroup, Badge } from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
+import {IRequest} from "../../models";
+import api from "../../api";
 
 interface ITask {
     id: number;
@@ -32,20 +34,29 @@ const initialTasks: ITask[] = [
 ]
 
 export function MainExecutorPage(){
-    const [tasks, setTasks] = useState<ITask[]>(initialTasks)
+    const [requests, setRequests] = useState<IRequest[]>([])
     const [filterStatus, setFilterStatus] = useState<"all" | ITask["status"]>("all")
     const navigate = useNavigate()
 
+    const LoadingData = async () => {
+        const response = await api.get(`/Requests`)
+        setRequests(response.data)
+    }
+
+    useEffect(() => {
+        LoadingData()
+    }, [])
+
     // Фильтрация заданий по статусу
-    const filteredTasks = tasks.filter(task =>
-        filterStatus === "all" ? true : task.status === filterStatus
+    const filteredTasks = requests.filter(request =>
+        filterStatus === "all" ? true : request.status === filterStatus
     )
 
     // Изменение статуса задания
-    const updateTaskStatus = (taskId: number, newStatus: ITask["status"]) => {
-        setTasks((prevTasks) =>
-            prevTasks.map((task) =>
-                task.id === taskId ? { ...task, status: newStatus } : task
+    const updateRequestStatus = (requestId: number, newStatus: IRequest["status"]) => {
+        setRequests((prevRequests) =>
+            prevRequests.map((request) =>
+                request.request_Id === requestId ? { ...request, status: newStatus } : request
             )
         )
     }
@@ -76,25 +87,28 @@ export function MainExecutorPage(){
 
                     {/* Список заданий */}
                     <ListGroup>
-                        {filteredTasks.map((task) => (
-                            <ListGroup.Item key={task.id} className="mb-3">
+                        {filteredTasks.map((request) => (
+                            <ListGroup.Item key={request.request_Id} className="mb-3">
                                 <Card>
                                     <Card.Body>
-                                        <Card.Title>{task.title}</Card.Title>
-                                        <Card.Text>{task.description}</Card.Text>
+                                        {/*Тут выводится тип задания*/}
+                                        <Card.Title>{request.request_Id}</Card.Title>
+                                        {/*Тут выводится описание задания*/}
+                                        <Card.Text>{request.worker_Id}</Card.Text>
+                                        {/*Создано Назначено В процессе Завершено*/}
                                         <Badge
                                             bg={
-                                                task.status === "pending"
+                                                request.status === "pending"
                                                     ? "warning"
-                                                    : task.status === "in_progress"
+                                                    : request.status === "in_progress"
                                                         ? "primary"
                                                         : "success"
                                             }
                                             className="mb-2"
                                         >
-                                            {task.status === "pending"
+                                            {request.status === "pending"
                                                 ? "Ожидает выполнения"
-                                                : task.status === "in_progress"
+                                                : request.status === "in_progress"
                                                     ? "В процессе"
                                                     : "Завершено"}
                                         </Badge>
@@ -103,9 +117,9 @@ export function MainExecutorPage(){
                                                 variant="outline-primary"
                                                 size="sm"
                                                 onClick={() =>
-                                                    updateTaskStatus(task.id, "in_progress")
+                                                    updateRequestStatus(request.request_Id, "in_progress")
                                                 }
-                                                disabled={task.status !== "pending"}
+                                                disabled={request.status !== "pending"}
                                             >
                                                 Начать выполнение
                                             </Button>
@@ -113,10 +127,10 @@ export function MainExecutorPage(){
                                                 variant="outline-success"
                                                 size="sm"
                                                 onClick={() => {
-                                                    updateTaskStatus(task.id, "completed")
+                                                    updateRequestStatus(request.request_Id, "completed")
                                                     navigate('/execut/report')
                                                 }}
-                                                disabled={task.status !== "in_progress"}
+                                                disabled={request.status !== "in_progress"}
                                             >
                                                 Перейти к отчету
                                             </Button>

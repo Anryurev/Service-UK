@@ -1,8 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {IUsers} from "../models";
-import axios from "axios";
-import {users} from "../data/usersdata";
 import {UserContext} from "../context/userContext/UserContext";
 import {EdembackContext} from "../context/edemback/EdembackContext";
 
@@ -30,13 +27,13 @@ export function AuthorizationPage(){
                     navigate('/home')
                     break
                 case 3:
-                    navigate('/home')
+                    navigate('/execut')
                     break
                 case 4:
-                    navigate('/execut')
+                    navigate('/home')
                     break
                 case 5:
-                    navigate('/execut')
+                    navigate('/calendar')
                     break
                 case 6:
                     navigate('/execut')

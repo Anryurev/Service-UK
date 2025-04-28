@@ -67,3 +67,12 @@ code {
   gap: 20px;
   padding: 20px;
 }
+
+.button_calendar {
+  padding: 8px;
+  background: #6096ba;
+  border: 1px;
+  border-radius: 5px;
+  font-size: 18px;
+  color: white;
+}

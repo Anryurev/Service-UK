@@ -1,12 +1,12 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Navbar} from "../../components/Navbar";
-import {UserNote} from "../../components/User/UserNote";
-import {ModalCreateUser} from "../../components/User/ModalCreateUser";
+import {Navbar} from "../../../components/Navbar";
+import {WorkerNote} from "../../../components/Worker/WorkerNote";
+import {ModalCreateWorker} from "../../../components/Worker/ModalCreateWorker";
 import {useNavigate} from "react-router-dom";
-import {EdembackContext} from "../../context/edemback/EdembackContext";
+import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {Form} from "react-bootstrap";
-import {SidebarMenu} from "../../components/SidebarMenu";
-import {SidebarOptions} from "../../components/SidebarOptions";
+import {SidebarMenu} from "../../../components/SidebarMenu";
+import {SidebarOptions} from "../../../components/SidebarOptions";
 
 export function UsersPage(){
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -16,12 +16,11 @@ export function UsersPage(){
 
     useEffect(() => {
         edemContext.getAllUsers()
-        console.log(edemContext.state.roles)
         // eslint-disable-next-line
     }, [])
 
     const handleClickUser = (userId: number) => {
-        navigate(`/users/${userId}`)
+        navigate(`/Users/${userId}`)
     }
 
     const filteredUsers = edemContext.state.users.filter((user) =>
@@ -33,10 +32,10 @@ export function UsersPage(){
 
     return(
         <>
-            { isModalOpen && <ModalCreateUser onSubmit={(newUser) => edemContext.createUser(newUser)} onClose={() => setIsModalOpen(false)}/>}
+            { isModalOpen && <ModalCreateWorker onSubmit={(newUser) => edemContext.createUser(newUser)} onClose={() => setIsModalOpen(false)}/>}
             <Navbar/>
             <SidebarMenu isOpen={true}/>
-            <SidebarOptions/>
+            <SidebarOptions handleClick={() => navigate('/Users/create')}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Список сотрудников</h1>
                 <Form.Group className="mb-4">
@@ -52,7 +51,7 @@ export function UsersPage(){
                     </Form.Control>
                 </Form.Group>
                 { filteredUsers.map(user =>
-                    <UserNote
+                    <WorkerNote
                         user={user}
                         onRemove={() => edemContext.deleteUser(user.id)}
                         onClick={handleClickUser}

@@ -2,6 +2,7 @@ import React, {useContext, useEffect} from "react";
 import {IUsers} from "../../models";
 import {roles} from "../../data/rolesdata";
 import {EdembackContext} from "../../context/edemback/EdembackContext";
+import {useNavigate} from "react-router-dom";
 
 interface UserProps{
     user: IUsers
@@ -9,8 +10,9 @@ interface UserProps{
     onClick: (userId: number) => void
 }
 
-export function UserNote({user, onRemove, onClick}: UserProps){
+export function WorkerNote({user, onRemove, onClick}: UserProps){
     const edemContext = useContext(EdembackContext)
+    const navigate = useNavigate()
     const getRoleNameById = (roleId: number): string => {
         const role = edemContext.state.roles.find((role) => role.role_Id === roleId)
         return role ? role.name : "Роль не найдена"
@@ -22,6 +24,12 @@ export function UserNote({user, onRemove, onClick}: UserProps){
             <div className="col mb-0 text-center" style={{display: "inline-block"}}>{getRoleNameById(user.id_Role)}</div>
             <div className="col mb-0 text-center" style={{display: "inline-block"}}>{user.phoneNumber}</div>
             <div className="col text-end">
+                <button className="btn" onClick={(e) => {
+                    e.stopPropagation()
+                    navigate(`/user/${user.id}`)
+                }}>
+                    <i className="bi bi-pencil"></i>
+                </button>
                 <button
                     className="btn-close"
                     onClick={(e) => {

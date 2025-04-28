@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from "react";
-import {Navbar} from "../../components/Navbar";
-import {DayCard} from "../../components/Calendar/DayCard";
-import {BookingObjectProps, bookingObjects} from "../../data/bookingdata";
-import {IBooking} from "../../models";
-import Calendar from "../../components/Calendar/Calendar";
-import {SidebarMenu} from "../../components/SidebarMenu";
+import {Navbar} from "../../../components/Navbar";
+import {BookingObjectProps, bookingObjects} from "../../../data/bookingdata";
+import Calendar from "../../../components/Calendar/Calendar";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 
  export  const CalendarPage: React.FC = () => {
@@ -50,18 +48,6 @@ import {SidebarMenu} from "../../components/SidebarMenu";
             </div>
             <Navbar/>
 
-            {/*<div className="calendar-view"  style={{paddingTop: "60px"}}>*/}
-            {/*    <h2>Календарь сдачи квартир</h2>*/}
-            {/*    <div className="calendar-grid">*/}
-            {/*        {dayCards.map((dayCard, index) => (*/}
-            {/*            <DayCard*/}
-            {/*                key={index}*/}
-            {/*                date={dayCard.date}*/}
-            {/*                bookingObjects={dayCard.objects}*/}
-            {/*            />*/}
-            {/*        ))}*/}
-            {/*    </div>*/}
-            {/*</div>*/}
         </div>
     )
 }

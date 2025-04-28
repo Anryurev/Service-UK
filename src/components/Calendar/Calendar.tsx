@@ -1,46 +1,140 @@
-import React, { useState } from 'react';
-import { IBooking } from '../../models';
-import { BookingObjectProps, bookingObjects } from '../../data/bookingdata';
+import React, {useContext, useEffect, useState} from 'react';
+import {IBooking, IObject, IStatus} from '../../models';
 import '../../Calendar.css';
-import {objectsData} from "../../data/objectsData";
+import {EdembackContext} from "../../context/edemback/EdembackContext";
+import {useNavigate} from "react-router-dom";
+import api from "../../api";
+import {BookingDatePage} from "../../pages/Operator/BookingDatePage";
 
 interface CalendarDay {
-    date: Date;
-    bookings: IBooking[];
+    date: Date
+    bookings: IBooking[],
+    isCurrentMonth: boolean
 }
 
 const Calendar: React.FC = () => {
-    const [currentMonth, setCurrentMonth] = useState(new Date());
-    const [selectedBooking, setSelectedBooking] = useState<IBooking | null>(null);
+    const [currentMonth, setCurrentMonth] = useState(new Date())
+    const [selectedBooking, setSelectedBooking] = useState<IBooking | null>(null)
+    const [selectedObject, setSelectedObject] = useState<IObject | null>(null)
+    const [firstDayOfMonth, setFirstDayOfMonth] = useState(0)
+    const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([])
+    const [statusBooking, setStatusBooking] = useState<Record<string, number>>({})
+    const navigate = useNavigate()
+    const [objectsAll, setObjectsAll] = useState<IObject[]>([])
+    const [bookingsAll, setBookingsAll] = useState<IBooking[]>([])
+    const [statuses, setStatuses] = useState<IStatus[]>([])
+    const [statusFilter, setStatusFilter] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
+    const LoadingData = async () => {
+        try{
+            setLoading(true)
+            setError(null)
+            const responseObj = await api.get(`/Objects`)
+            const responseBookings = await api.get(`/Bookings`)
+            const responseStatuses = await api.get(`/Status`)
+
+            setObjectsAll(responseObj.data)
+            setBookingsAll(responseBookings.data)
+            setStatuses(responseStatuses.data)
+        } catch (err) {
+            setError('Не удалось загрузить данные')
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+
+    }, [bookingsAll])
+
+    useEffect(() => {
+        LoadingData()
+    }, [selectedBooking])
 
     // Генерация дней месяца с бронированиями
-    const generateCalendarDays = (): CalendarDay[] => {
-        const year = currentMonth.getFullYear();
-        const month = currentMonth.getMonth();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+    useEffect(() => {
+        const year = currentMonth.getFullYear()
+        const month = currentMonth.getMonth()
 
-        return Array.from({ length: daysInMonth }, (_, i) => {
-            const day = i + 1;
-            const date = new Date(year, month, day);
+        // Устанавливаем первый день месяца
+        setFirstDayOfMonth(new Date(year, month, 1).getDay())
 
-            // Находим бронирования для этой даты
-            const bookings = bookingObjects.flatMap(bookingObj =>
-                bookingObj.objects.filter(booking =>
-                    date >= new Date(booking.dateStart) && date <= new Date(booking.dateEnd)
-                )
-            );
+        // Фильтруем бронирования по статусу, если фильтр активен
+        const filteredBookings = statusFilter
+            ? bookingsAll.filter(booking => booking.status === statusFilter)
+            : bookingsAll;
 
-            return { date, bookings };
-        });
+        // Генерация дней месяца
+        const daysInMonth = new Date(year, month + 1, 0).getDate()
+        const generatedDays = Array.from({ length: daysInMonth }, (_, i) => {
+            const day = i + 1
+            const date = new Date(year, month, day)
+            const isCurrentMonth = true
+
+            const bookings = filteredBookings.filter(booking =>
+                date >= new Date(booking.date_Start) && date <= new Date(booking.date_End)
+            )
+
+            return { date, bookings, isCurrentMonth }
+        })
+
+        setCalendarDays(generatedDays)
+
+        // const countByStatus = bookingsAll.reduce((acc, booking) => {
+        //     const status = booking.status
+        //     acc[status] = (acc[status] || 0) + 1 // Если статус встречается впервые, инициализируем 0
+        //     return acc
+        // }, {} as Record<string, number>)
+        setStatusBooking(countOfBookingsByStatus(bookingsAll))
+    }, [currentMonth, bookingsAll, statusFilter])
+
+    const getWeeksWithPadding = (days: CalendarDay[], firstDayOfWeek: number): CalendarDay[][] => {
+        const weeks: CalendarDay[][] = [];
+        let firstWeekDays = 0
+
+        // Создаем пустые элементы для первой недели
+        const firstWeek: CalendarDay[] = [];
+        if (firstDayOfWeek !== 0){
+            for (let i = 0; i < firstDayOfWeek - 1; i++) {
+                firstWeek.push({ date: new Date(-1), bookings: [], isCurrentMonth: false }); // Пустой элемент
+            }
+            // Добавляем дни первой недели
+            firstWeekDays = 8 - firstDayOfWeek;
+            firstWeek.push(...days.slice(0, firstWeekDays));
+            weeks.push(firstWeek);
+        } else {
+            for (let i = 0; i < 6; i++) {
+                firstWeek.push({ date: new Date(-1), bookings: [], isCurrentMonth: false }); // Пустой элемент
+            }
+            // Добавляем дни первой недели
+            firstWeekDays = 1;
+            firstWeek.push(...days.slice(0, firstWeekDays));
+            weeks.push(firstWeek);
+        }
+
+        // Обрабатываем остальные недели
+        for (let i = firstWeekDays; i < days.length; i += 7) {
+            const weekDays = days.slice(i, i + 7);
+
+            // Если последняя неделя содержит меньше 7 дней, дополняем пустыми элементами
+            if (weekDays.length < 7) {
+                const lastWeek = [...weekDays];
+                while (lastWeek.length < 7) {
+                    lastWeek.push({ date: new Date(-1), bookings: [], isCurrentMonth: false });
+                }
+                weeks.push(lastWeek);
+            } else {
+                weeks.push(weekDays);
+            }
+        }
+
+        return weeks;
     };
 
-    const calendarDays = generateCalendarDays();
-
-    // Разбивка на недели
-    const weeks: CalendarDay[][] = [];
-    for (let i = 0; i < calendarDays.length; i += 7) {
-        weeks.push(calendarDays.slice(i, i + 7));
-    }
+    const weeks = getWeeksWithPadding(calendarDays, firstDayOfMonth);
 
     // Навигация по месяцам
     const changeMonth = (increment: number) => {
@@ -48,17 +142,101 @@ const Calendar: React.FC = () => {
             currentMonth.getFullYear(),
             currentMonth.getMonth() + increment,
             1
-        ));
-    };
+        ))
+    }
+
+    const countOfBookingsByStatus = (bookings: IBooking[]) => {
+        return bookings.reduce((acc, booking) => {
+            const status = booking.status
+            acc[status] = (acc[status] || 0) + 1 // Если статус встречается впервые, инициализируем 0
+            return acc
+        }, {} as Record<string, number>)
+    }
+
+    const handleAddBooking = (date: Date) => {
+        const day = String(date.getDate()).padStart(2, '0')
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const year = date.getFullYear()
+        const dateString = `${day}.${month}.${year}`
+
+        navigate(`/booking/create?date=${dateString}`)
+    }
+
+    const styleItem = (status: string) => {
+        switch (status) {
+            case 'Свободна':
+                return statusFilter === status
+                    ? "btn btn-success active"
+                    : "btn btn-outline-success"
+            case 'Бронь':
+                return statusFilter === status
+                    ? "btn btn-warning active"
+                    : "btn btn-outline-warning"
+            case 'Сдана':
+                return statusFilter === status
+                    ? "btn btn-danger active"
+                    : "btn btn-outline-danger"
+            case 'Ремонт/Уборка':
+                return statusFilter === status
+                    ? "btn btn-primary active"
+                    : "btn btn-outline-primary"
+        }
+    }
+
+    const getBookingItemClass = (status: string) => {
+        switch (status) {
+            case 'Свободна':
+                return "bg-success text-white"
+            case 'Бронь':
+                return "bg-warning text-dark"
+            case 'Сдана':
+                return "bg-danger text-white"
+            case 'Ремонт/Уборка':
+                return "bg-primary text-white"
+            default:
+                return "bg-secondary text-white"
+        }
+    }
+
+    const getBookingCountClass = (status: string) => {
+        switch (status) {
+            case 'Свободна':
+                return "day-number text-success col"
+            case 'Бронь':
+                return "day-number text-warning col"
+            case 'Сдана':
+                return "day-number text-danger col"
+            case 'Ремонт/Уборка':
+                return "day-number text-primary col"
+            default:
+                return "day-number text-secondary col"
+        }
+    }
+
+    const handleClickFilter = (status: string) => {
+        setStatusFilter(current => current === status ? null : status);
+    }
+
+    const handleClickDate = (bookings: IBooking[], date: Date) => {
+        navigate(`/bookings/${date.toDateString()}`)  //YYYY-MM-DD
+    }
+
+    if (error) return <div>{error}</div>
 
     return (
         <div className="calendar-container" style={{paddingTop: "60px"}}>
+
             <div className="calendar-header">
                 <button onClick={() => changeMonth(-1)}>Предыдущий месяц</button>
                 <h2>
                     {currentMonth.toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}
                 </h2>
                 <button onClick={() => changeMonth(1)}>Следующий месяц</button>
+            </div>
+            <div className="btn-group" role="group">
+                {Object.entries(statusBooking).map(([status, count]) => (
+                    <button type="button" key={status} className={styleItem(status)} onClick={() => handleClickFilter(status)}>{status}: <strong>{count}</strong></button>
+                ))}
             </div>
 
             <table className="calendar-table">
@@ -75,20 +253,48 @@ const Calendar: React.FC = () => {
                         {week.map((day, dayIndex) => (
                             <td
                                 key={dayIndex}
-                                className={`calendar-day ${day.bookings.length > 0 ? 'has-bookings' : ''}`}
+                                className={`calendar-day ${day.bookings.length > 0 ? 'has-bookings' : ''} ${day.isCurrentMonth ? 'has-add-button' : ''}`}
+                                onClick={() => handleClickDate(day.bookings, day.date)}
                             >
-                                <div className="day-number">{day.date.getDate()}</div>
-                                <div className="day-bookings">
-                                    {day.bookings.map(booking => (
-                                        <div
-                                            key={booking.id}
-                                            className="booking-item"
-                                            onClick={() => setSelectedBooking(booking)}
-                                        >
-                                            Объект #{booking.idObject}
+                                <div className="row">
+                                    {day.isCurrentMonth && <div className="day-number col">{day.date.getDate()}</div>}
+                                    <div className="col">
+                                        <div className="row text-start">
+                                            {Object.entries(countOfBookingsByStatus(day.bookings)).map(([status, count]) => (
+                                                <div className={getBookingCountClass(status)} key={status}>{count}</div>
+                                            ))}
                                         </div>
-                                    ))}
+                                    </div>
                                 </div>
+                                <div className="day-bookings">
+                                    {day.bookings.map(booking => {
+                                        const object = objectsAll?.find(obj => obj.id === booking.object_id)
+
+                                        return(
+                                        <div
+                                            key={booking.id_Booking}
+                                            className={`booking-item ${getBookingItemClass(booking.status)}`}
+
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                setSelectedBooking(booking)
+                                                setSelectedObject(object || null)
+                                            }}
+                                        >
+                                            {object ? `ул. ${object.street} д. ${object.house} кв. ${object.apartment}`
+                                            : 'Неизвестный объект'}
+                                        </div>
+                                    )})}
+                                </div>
+                                <button
+                                    className="add-button"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleAddBooking(day.date)
+                                    }}
+                                >
+                                    <i className="bi bi-plus-lg"></i>
+                                </button>
                             </td>
                         ))}
                     </tr>
@@ -96,9 +302,10 @@ const Calendar: React.FC = () => {
                 </tbody>
             </table>
 
-            {selectedBooking && (
+            {selectedBooking && selectedObject && (
                 <BookingDetails
                     booking={selectedBooking}
+                    object={selectedObject}
                     onClose={() => setSelectedBooking(null)}
                 />
             )}
@@ -106,7 +313,8 @@ const Calendar: React.FC = () => {
     );
 };
 
-const BookingDetails: React.FC<{ booking: IBooking, onClose: () => void }> = ({ booking, onClose }) => {
+const BookingDetails: React.FC<{ booking: IBooking, object: IObject, onClose: () => void }> = ({ booking, object,  onClose }) => {
+    const edemContext = useContext(EdembackContext)
     return (
         <div className="modal-overlay">
             <div className="modal-content">
@@ -114,16 +322,27 @@ const BookingDetails: React.FC<{ booking: IBooking, onClose: () => void }> = ({ 
                 <h3>Детали бронирования</h3>
 
                 <div className="booking-details">
-                    <p><strong>Объект:</strong> {'ул. ' + objectsData[booking.idObject].street + ' д. ' + objectsData[booking.idObject].house + ' кв. ' + objectsData[booking.idObject].apartment}</p>
-                    <p><strong>Дата начала:</strong> {booking.dateStart.toLocaleDateString()}</p>
-                    <p><strong>Дата окончания:</strong> {booking.dateEnd.toLocaleDateString()}</p>
+                    <p><strong>Объект:</strong> {'ул. ' + object.street + ' д. ' + object.house + ' кв. ' + object.apartment}</p>
+                    <p><strong>Дата начала:</strong> {new Date(booking.date_Start).toLocaleDateString()}</p>
+                    <p><strong>Дата окончания:</strong> {new Date(booking.date_End).toLocaleDateString()}</p>
                     <p><strong>Длительность:</strong> {Math.ceil(
-                        (booking.dateEnd.getTime() - booking.dateStart.getTime()) / (1000 * 60 * 60 * 24)
+                        (new Date(booking.date_End).getTime() - new Date(booking.date_Start).getTime()) / (1000 * 60 * 60 * 24)
                     )} дней</p>
+                </div>
+                <div className="modal-footer justify-content-between">
+                    <button className="btn btn-sm btn-outline-primary">Редактировать</button>
+                    <button className="btn btn-sm btn-outline-danger"
+                            onClick={() => {
+                                edemContext.deleteBooking(booking.id_Booking)
+                                onClose()
+                            }}
+                    >
+                        Удалить
+                    </button>
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
 export default Calendar;

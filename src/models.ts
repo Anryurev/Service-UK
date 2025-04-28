@@ -1,7 +1,7 @@
 // Файл для интерфейсов разных объектов
 export interface IObject{
     id: number,
-    office_id: number,
+    office_Id: number,
     street: string,
     house: string,
     apartment: string,
@@ -33,36 +33,49 @@ export interface IRole{
 }
 
 export interface IRequest {
-    id: number,
-    idRole: number,
-    idUser: number,
-    idObject: number,
+    request_Id: number,
+    role_Id: number,
+    worker_Id?: number,
+    object_Id: number,
     status: string,
     urgency: boolean // срочность
 }
 
 export interface IOffice {
-    id: number,
+    office_Id: number,
     street: string,
     house: string
+}
+
+export interface IBooking {
+    id_Booking: number,
+    object_id: number,
+    date_Start: Date | string,
+    date_End: Date | string,
+    status: string
+}
+
+export interface IStatus{
+    id_status: number,
+    name: string
 }
 
 export interface IState {
     users: IUsers[],
     objects: IObject[],
-    roles: IRole[]
+    roles: IRole[],
+    offices: IOffice[],
+    requests: IRequest[],
+    bookings: IBooking[],
+    user: IUsers,
+    object: IObject,
+    role: IRole,
+    office: IOffice,
 }
 
 export interface IDayCard {
     date: Date;
     objects: IObject[];
-}
-
-export interface IBooking {
-    id: number,
-    idObject: number,
-    dateStart: Date,
-    dateEnd: Date
 }
 
 export type Action = {type: string, payload?: any}

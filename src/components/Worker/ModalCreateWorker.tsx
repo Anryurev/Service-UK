@@ -1,13 +1,13 @@
 import React, {useState} from "react";
 import {IUsers} from "../../models";
-import {UserForm} from "./UserForm";
+import {WorkerForm} from "./WorkerForm";
 
-interface ModalCreateUserProps {
+interface ModalCreateWorkerProps {
     onSubmit: (newUser: IUsers) => void
     onClose: () => void
 }
 
-export function ModalCreateUser({ onSubmit, onClose }: ModalCreateUserProps){
+export function ModalCreateWorker({ onSubmit, onClose }: ModalCreateWorkerProps){
     const [formData, setFormData] = useState<IUsers>({
         id: 0,
         name: "",
@@ -63,7 +63,7 @@ export function ModalCreateUser({ onSubmit, onClose }: ModalCreateUserProps){
 
     return (
         <div className="container mt-5">
-            <UserForm formData={formData} onChange={handleChange} />
+            {/*<WorkerForm formData={formData} onChange={handleChange} />*/}
         </div>
     );
 }

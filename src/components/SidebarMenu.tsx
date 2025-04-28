@@ -13,16 +13,16 @@ export const SidebarMenu: React.FC<SidebarProps> = ({ isOpen}) => {
              style={{ width: '250px', zIndex: 1000, overflowY: 'auto', paddingTop: "60px" }}>
             <div className="d-flex flex-column h-100 p-3 border-start">
                 {/* Заголовок сайдбара */}
-                <div className="sidebar-header mb-4">
-                    <h5 className="text-center">Навигация</h5>
-                </div>
+                {/*<div className="sidebar-header mb-4">*/}
+                {/*    <h5 className="text-center">Навигация</h5>*/}
+                {/*</div>*/}
 
                 {/* Основные ссылки */}
                 <ul className="nav nav-pills flex-column mb-auto">
                     <li className="nav-item">
                         <Link to="/home" className="nav-link" style={{color: "#274c77"}} aria-current="page">
                             <i className="bi bi-calendar-check me-2"></i>
-                            Календарь бронирований
+                            Календарь
                         </Link>
                     </li>
                     <li className="nav-item">
@@ -32,7 +32,7 @@ export const SidebarMenu: React.FC<SidebarProps> = ({ isOpen}) => {
                         </Link>
                     </li>
                     <li className="nav-item">
-                        <Link to="/users" className="nav-link" style={{color: "#274c77"}}>
+                        <Link to="/Users" className="nav-link" style={{color: "#274c77"}}>
                             <i className="bi bi-people me-2"></i>
                             Сотрудники
                         </Link>

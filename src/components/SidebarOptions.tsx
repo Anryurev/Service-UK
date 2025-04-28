@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
 
+interface SidebarOptionsProps{
+    handleClick: () => void
+}
 
-export const SidebarOptions: React.FC = () => {
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+export function SidebarOptions ({handleClick}: SidebarOptionsProps) {
 
     return (
         <div className="position-fixed end-0 top-0 h-100"
@@ -13,7 +14,7 @@ export const SidebarOptions: React.FC = () => {
                 <div className="sidebar-header mb-4">
                     <h5 className="text-center">Опции</h5>
                 </div>
-                <button className="btn" style={{background: "#6096ba", color: "white"}}>Добавить</button>
+                <button className="btn" style={{background: "#6096ba", color: "white"}} onClick={handleClick}>Добавить</button>
 
             </div>
         </div>

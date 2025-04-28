@@ -1,7 +1,7 @@
 import React, {useReducer} from "react"
 import {EdembackContext} from "./EdembackContext";
 import {edemBackReducer} from "./EdemBackReducer";
-import {IObject, IState, IUsers} from "../../models";
+import {IBooking, IObject, IOffice, IRequest, IRole, IState, IUsers} from "../../models";
 import axios from "axios";
 import {objectsData} from "../../data/objectsData";
 import {
@@ -9,18 +9,30 @@ import {
     GET_AREND_OBJECT,
     GET_OBJECT_1_FILIAL,
     GET_ONE_OBJECT,
-    GET_ALL_USERS,
+    GET_ALL_Users,
     CREATE_OBJECT,
     CREATE_USER,
     UPDATE_OBJECT,
     UPDATE_USER,
     DELETE_OBJECT,
-    DELETE_USER, GET_ALL_ROLES, DELETE_ROLE
+    DELETE_USER,
+    GET_ALL_ROLES,
+    DELETE_ROLE,
+    GET_ALL_OFFICES,
+    DELETE_OFFICE,
+    CREATE_OFFICE,
+    CREATE_ROLE,
+    GET_ONE_USER,
+    DELETE_BOOKING,
+    UPDATE_BOOKING,
+    CREATE_BOOKING,
+    GET_ALL_BOOKINGS,
+    GET_REQUEST,
+    CREATE_REQUEST,
+    UPDATE_REQUEST,
+    DELETE_REQUEST
 } from "../typesAction";
-import {users} from "../../data/usersdata";
 import api from "../../api";
-
-const url = 'ENTER_URL_HERE' // TODO Вставить url
 
 interface IEdemBackState{
     children: React.ReactNode
@@ -29,7 +41,14 @@ interface IEdemBackState{
 const initialState: IState = {
     users: [],
     objects: [],
-    roles: []
+    roles: [],
+    offices: [],
+    bookings: [],
+    requests: [],
+    user: {id: 0, id_Role: 0, id_Office: 0, birthday: "", password: "", email: "", name: "", phoneNumber: "", surname: "", fathername: ""},
+    role: {role_Id: 0, name: "", salary: 0},
+    object: {id: 0, kitchen: false, balcony: false, area: 0, rooms: 0, house: "", street: "", status: "", apartment: "", office_Id: 0},
+    office: {office_Id: 0, house: "", street: ""}
 }
 
 export const EdemBackState = ({children}: IEdemBackState) => {
@@ -75,15 +94,13 @@ export const EdemBackState = ({children}: IEdemBackState) => {
         // TODO Реализвовать пролучение всех объектов с одного филиала с сервера (необходим вид данных, которые приходят)
     }
     const createObject = async (object: IObject) => {
-        //const res = await axios.post(`${url}/`, object)
-        const res = objectsData.push(object)
+        const response = await api.post(`/Object`, object)
+        console.log('response', response.data)
 
         dispatch({
             type: CREATE_OBJECT,
-            payload: objectsData[objectsData.length - 1]
+            payload: object
         })
-
-        // TODO Реализвовать добавление на сервер новый объект
     }
     const deleteObject = async (objectID: number) => {
         const response = await api.delete(`/Object/${objectID}`)
@@ -95,14 +112,12 @@ export const EdemBackState = ({children}: IEdemBackState) => {
         })
     }
     const updateObject = async (object: IObject) => {
-        const res = await axios.post(`${url}`, object) // ? Как правильно писать запрос
+        const response = await api.put(`/UpdateObject`, object)
 
         dispatch({
             type: UPDATE_OBJECT,
             payload: object
         })
-
-        // TODO Реализовать обновление информации об объекте
     }
 
 
@@ -111,48 +126,45 @@ export const EdemBackState = ({children}: IEdemBackState) => {
     // Users
     const getAllUsers = async () => {
         const response = await api.get(`/Workers`)
-        console.log('Get all users: ', response.data)
+        console.log('Get all Users: ', response.data)
         dispatch({
-            type: GET_ALL_USERS,
+            type: GET_ALL_Users,
+            payload: response.data
+        })
+    }
+    const getOneUser = async (userId: number) => {
+        const response = await api.get(`/Worker/${userId}`)
+        console.log('Get one user', response.data)
+
+        dispatch({
+            type: GET_ONE_USER,
             payload: response.data
         })
     }
     const createUser = async (user: IUsers) => {
-        // const res = await axios.post(`https://fakestoreapi.com/users`, user)
-
-        const res = users.push(user)
+        const response = await api.post(`/Worker`, user)
+        console.log(response.data)
 
         dispatch({
             type: CREATE_USER,
-            payload: user
+            payload: response.data
         })
-
-        // TODO Реализвовать добавление на сервер нового пользователя
     }
     const updateUser = async (user: IUsers) => {
-        const res = await axios.post(`${url}`, user) // ? Как правильно писать запрос
+        const response = await api.put(`/UpdateWorker`, user)
 
         dispatch({
             type: UPDATE_USER,
             payload: user
         })
-
-        // TODO Реализовать обновление информации о пользователе
     }
     const deleteUser = async (userID: number) => {
-        // const res = await axios.delete(`https://fakestoreapi.com/users/${userID}`) // ? Как правильно писать запрос
-
-        const index = users.findIndex(user => user.id === userID)
-        if (index !== -1) {
-            users.splice(index, 1)
-        }
+        const response = await api.delete(`/Worker/${userID}`)
 
         dispatch({
             type: DELETE_USER,
             payload: userID
         })
-
-        // TODO Реализовать удвление объекта
     }
 
 
@@ -167,14 +179,143 @@ export const EdemBackState = ({children}: IEdemBackState) => {
         })
     }
     const deleteRole = async (roleId: number) => {
-        const respone = await  api.delete(`/Roles/${roleId}`)
+        const respone = await  api.delete(`/Role/${roleId}`)
 
         dispatch({
             type: DELETE_ROLE,
             payload: roleId
         })
     }
+    const createRole = async (role: IRole) => {
+        const response = await api.post(`/Role`, role)
 
+        dispatch({
+            type: CREATE_ROLE,
+            payload: role
+        })
+    }
+
+
+
+
+    // Offices
+    const getAllOffices = async () => {
+        const response = await api.get(`/Offices`)
+        console.log(response.data)
+
+        dispatch({
+            type: GET_ALL_OFFICES,
+            payload: response.data
+        })
+    }
+    const createOffice = async (office: IOffice) => {
+        const response = await api.post(`/Office`, office)
+
+        dispatch({
+            type: CREATE_OFFICE,
+            payload: office
+        })
+    }
+    // const updateOffice = async (office: IOffice) => {
+    //     const response = await api.put(`/UpdateWorker`, user)
+    //
+    //     dispatch({
+    //         type: UPDATE_USER,
+    //         payload: user
+    //     })
+    // }
+    const deleteOffice = async (officeId: number) => {
+        const response = await api.delete(`/Office/${officeId}`)
+
+        dispatch({
+            type: DELETE_OFFICE,
+            payload: officeId
+        })
+    }
+
+
+
+
+    // Bookings
+    const getAllBookings = async () => {
+        const response = await api.get(`/Bookings`)
+        console.log('Get all booking: ', response.data)
+        dispatch({
+            type: GET_ALL_BOOKINGS,
+            payload: response.data
+        })
+    }
+    // const getOneBooking = async (userId: number) => {
+    //     const response = await api.get(`/Worker/${userId}`)
+    //     console.log('Get one user', response.data)
+    //
+    //     dispatch({
+    //         type: GET_ONE_USER,
+    //         payload: response.data
+    //     })
+    // }
+    const createBooking = async (booking: IBooking) => {
+        console.log('booking in state', booking)
+        const response = await api.post(`/Booking`, booking)
+        console.log('CreateBooking', response.data)
+
+        dispatch({
+            type: CREATE_BOOKING,
+            payload: response.data
+        })
+    }
+    const updateBooking = async (booking: IBooking) => {
+        const response = await api.put(`/UpdateBooking`, booking)
+
+        dispatch({
+            type: UPDATE_BOOKING,
+            payload: booking
+        })
+    }
+    const deleteBooking = async (bookingId: number) => {
+        const response = await api.delete(`/Booking/${bookingId}`)
+
+        dispatch({
+            type: DELETE_BOOKING,
+            payload: bookingId
+        })
+    }
+
+
+    // Requests
+    const getAllRequests = async () => {
+        const response = await api.get(`/Requests`)
+        console.log('Get all requests: ', response.data)
+        dispatch({
+            type: GET_REQUEST,
+            payload: response.data
+        })
+    }
+    const createRequest = async (request: IRequest) => {
+        console.log('request in state', request)
+        const response = await api.post(`/Request`, request)
+
+        dispatch({
+            type: CREATE_REQUEST,
+            payload: response.data
+        })
+    }
+    const updateRequest = async (request: IRequest) => {
+        const response = await api.put(`/UpdateRequest`, request)
+
+        dispatch({
+            type: UPDATE_REQUEST,
+            payload: request
+        })
+    }
+    const deleteRequest = async (requestId: number) => {
+        const response = await api.delete(`/Request/${requestId}`)
+
+        dispatch({
+            type: DELETE_REQUEST,
+            payload: requestId
+        })
+    }
 
 
     return (
@@ -193,7 +334,19 @@ export const EdemBackState = ({children}: IEdemBackState) => {
             deleteUser,
             getAllRoles,
             deleteRole,
-            // TODO Реализовать интерфейс для передавчи функций
+            getAllOffices,
+            deleteOffice,
+            createOffice,
+            createRole,
+            getOneUser,
+            getAllBookings,
+            createBooking,
+            updateBooking,
+            deleteBooking,
+            getAllRequests,
+            createRequest,
+            updateRequest,
+            deleteRequest,
         }}>
             {children}
         </EdembackContext.Provider>

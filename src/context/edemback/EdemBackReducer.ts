@@ -4,7 +4,7 @@ import {
     GET_ONE_OBJECT,
     GET_AREND_OBJECT,
     GET_OBJECT_1_FILIAL,
-    GET_ALL_USERS,
+    GET_ALL_Users,
     GET_REQUEST,
     GET_ACTIVE_REQUEST,
     GET_ENDED_REQUEST,
@@ -23,7 +23,14 @@ import {
     DELETE_USER,
     DELETE_ROLE,
     DELETE_PHOTO,
-    DELETE_ADDITIONAL_MATERIAL, GET_ALL_ROLES,
+    DELETE_ADDITIONAL_MATERIAL,
+    GET_ALL_ROLES,
+    GET_ALL_OFFICES,
+    CREATE_OFFICE,
+    GET_ONE_USER,
+    GET_ONE_ROLE,
+    DELETE_REQUEST,
+    UPDATE_REQUEST, GET_ALL_BOOKINGS, CREATE_BOOKING, UPDATE_BOOKING, DELETE_BOOKING
 } from '../typesAction'
 
 const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
@@ -31,15 +38,15 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
     [GET_ALL_OBJECTS]: (state, {payload}) => ({...state, objects: payload}),
     [GET_ONE_OBJECT]: (state, {payload}) => ({
         ...state,
-        objects: payload
+        object: payload
     }),
     [GET_AREND_OBJECT]: (state, {payload}) => ({
         ...state,
-        objects: state.objects.filter(object => object.status === payload)
+        objects: payload
     }),
     [GET_OBJECT_1_FILIAL]: (state, {payload}) => ({
         ...state,
-        objects: state.objects.filter(object => object.office_id === payload)
+        objects: payload
     }),
     [CREATE_OBJECT]: (state, {payload}) => ({
         ...state,
@@ -47,7 +54,7 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
     }),
     [UPDATE_OBJECT]: (state, {payload}) => ({
         ...state,
-        objects: state.objects.map(object => object.id === payload.id ? payload : object)
+        object: payload
     }),
     [DELETE_OBJECT]: (state, {payload}) => ({
         ...state,
@@ -55,22 +62,33 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
     }),
 
     // Users
-    [GET_ALL_USERS]: (state, {payload}) => ({...state, users: payload}),
+    [GET_ALL_Users]: (state, {payload}) => ({
+        ...state,
+        users: payload
+    }),
+    [GET_ONE_USER]: (state, {payload}) => ({...state, user: payload}),
     [CREATE_USER]: (state, {payload}) => ({
         ...state,
         users: [...state.users, payload]
     }),
     [UPDATE_USER]: (state, {payload}) => ({
         ...state,
-        users: state.users.map(user => user.id === payload.id ? payload : user)
+        user: payload
     }),
     [DELETE_USER]: (state, {payload}) => ({
         ...state,
-        users: state.users.filter(user => user.id !== payload)
+        users: payload
     }),
 
     // Roles
-    [GET_ALL_ROLES]: (state, {payload}) => ({...state, roles: payload}),
+    [GET_ALL_ROLES]: (state, {payload}) => ({
+        ...state,
+        roles: payload
+    }),
+    [GET_ONE_ROLE]: (state, {payload}) => ({
+        ...state,
+        role: payload
+    }),
     [CREATE_ROLE]: (state, {payload}) => ({
         ...state,
         roles: [...state.roles, payload]
@@ -84,13 +102,60 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
         roles: state.roles.filter(role => role.role_Id !== payload.id)
     }),
 
-    // [GET_REQUEST]: state => ({...state}),
+
+    // Offices
+    [GET_ALL_OFFICES]: (state, {payload}) => ({
+        ...state,
+        offices: payload
+    }),
+    [CREATE_OFFICE]: (state, {payload}) => ({
+        ...state,
+        offices: [...state.offices, payload]
+    }),
+
+
+    // Requests
+    [GET_REQUEST]: (state, {payload}) => ({
+        ...state,
+        requests: payload
+    }),
+    [GET_ENDED_REQUEST]: state => ({...state}),
+    [CREATE_REQUEST]: (state, {payload}) => ({
+        ...state,
+        requests: [...state.requests, payload]
+    }),
+    [UPDATE_REQUEST]: (state, {payload}) => ({
+        ...state,
+        requests: payload
+    }),
+    [DELETE_REQUEST]: (state, {payload}) => ({
+        ...state,
+        requests: payload
+    }),
+
+    // Booking
+    [GET_ALL_BOOKINGS]: (state, {payload}) => ({
+        ...state,
+        bookings: payload
+    }),
+    [CREATE_BOOKING]: (state, {payload}) => ({
+        ...state,
+        bookings: [...state.bookings, payload]
+    }),
+    [UPDATE_BOOKING]: (state, {payload}) => ({
+        ...state,
+        bookings: payload
+    }),
+    [DELETE_BOOKING]: (state, {payload}) => ({
+        ...state,
+        bookings: payload
+    }),
+
+
     // [GET_ACTIVE_REQUEST]: state => ({...state}),
-    // [GET_ENDED_REQUEST]: state => ({...state}),
     // [GET_ADDITIONAL_MATERIAL]: state => ({...state}),
     // [CREATE_FILIAL]: state => ({...state}),
     // [CREATE_ADDITIONAL_MATERIAL]: state => ({...state}),
-    // [CREATE_REQUEST]: state => ({...state}),
     // [UPDATE_ADDITIONAL_MATERIAL]: state => ({...state}),
     // [DELETE_PHOTO]: state => ({...state}),
     // [DELETE_ADDITIONAL_MATERIAL]: state => ({...state}),

@@ -15,6 +15,11 @@ export function RoleNote({ role }: RoleProps){
                 <div className="mb-0 col text-start" style={{display: "inline-block"}}>{role.name}</div>
                 <div className="mb-0 col text-center" style={{display: "inline-block"}}>{role.salary}</div>
                 <div className="mb-0 col text-end">
+                    <button className="btn" onClick={(e) => {
+                        e.stopPropagation()
+                    }}>
+                        <i className="bi bi-pencil"></i>
+                    </button>
                     <button className="btn-close" onClick={(e) => {
                         e.stopPropagation()
                         edemContext.deleteRole(role.role_Id)

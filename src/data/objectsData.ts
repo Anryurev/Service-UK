@@ -3,7 +3,7 @@ import {IObject} from "../models";
 export const objectsData: IObject[] = [
     {
         id: 1,
-        office_id: 1,
+        office_Id: 1,
         street: 'Ломоносова',
         house: '10',
         apartment: '42',
@@ -15,7 +15,7 @@ export const objectsData: IObject[] = [
     },
     {
         id: 2,
-        office_id: 2,
+        office_Id: 2,
         street: 'Маерчака',
         house: '5',
         apartment: '124',
@@ -27,7 +27,7 @@ export const objectsData: IObject[] = [
     },
     {
         id: 3,
-        office_id: 1,
+        office_Id: 1,
         street: 'Ленина',
         house: '56',
         apartment: '15',

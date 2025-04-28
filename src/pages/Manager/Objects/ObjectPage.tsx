@@ -1,15 +1,70 @@
-import React, {useContext} from "react";
-import {Navbar} from "../../components/Navbar";
+import React, {useContext, useEffect, useState} from "react";
+import {Navbar} from "../../../components/Navbar";
 import {useNavigate, useParams} from "react-router-dom";
-import {IObject} from "../../models";
-import {EdembackContext} from "../../context/edemback/EdembackContext";
+import {IObject} from "../../../models";
+import {EdembackContext} from "../../../context/edemback/EdembackContext";
+import api from "../../../api";
 
 export function ObjectPage() {
     const { objectId } = useParams<{ objectId: string }>()
     const edemContext = useContext(EdembackContext)
-    const object: IObject | undefined = edemContext.state.objects.find(object => object.id === Number(objectId));
     const navigate = useNavigate()
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [object, setObject] = useState<IObject>({
+        id: -1,
+        office_Id: 0,
+        street: "",
+        house: "",
+        apartment: "",
+        rooms: 0,
+        status: 'Свободно',
+        area: 0,
+        kitchen: false,
+        balcony: false
+    })
 
+    const fetchObject = async (id: number) => {
+        try {
+            setLoading(true)
+            setError(null)
+
+            // Очищаем форму перед загрузкой новых данных
+            setObject({
+                id: -1,
+                office_Id: 0,
+                street: "",
+                house: "",
+                apartment: "",
+                rooms: 0,
+                status: 'Свободно',
+                area: 0,
+                kitchen: false,
+                balcony: false
+            })
+
+            // Загружаем данные
+            const response = await api.get(`/Object/${id}`)
+
+            setObject(response.data)
+
+        } catch (err) {
+            setError('Не удалось загрузить данные')
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+
+    useEffect(() => {
+        if (objectId) {
+            const id = Number(objectId)
+            if (!isNaN(id)) {
+                fetchObject(id)
+            }
+        }
+    }, [objectId])
 
     if(!object){
         return (
@@ -23,6 +78,9 @@ export function ObjectPage() {
         navigate(`/objects`)
         edemContext.deleteObject(objectID)
     }
+
+    if (loading) return <div>Загрузка...</div>
+    if (error) return <div>{error}</div>
 
     return(
         <>
@@ -64,9 +122,14 @@ export function ObjectPage() {
                                             </div>
                                             <div
                                                 className="card-footer bg-light d-flex justify-content-between align-items-center">
-                                                <button className="btn btn-sm btn-outline-primary">Редактировать</button>
-                                                <button className="btn btn-sm btn-outline-danger"
-                                                        onClick={() => removeClick(object.id)}>Удалить
+                                                <button
+                                                    className="btn btn-sm btn-outline-primary"
+                                                    onClick={() => navigate(`/object/${object.id}`)}
+                                                >Редактировать</button>
+                                                <button
+                                                    className="btn btn-sm btn-outline-danger"
+                                                    onClick={() => removeClick(object.id)}
+                                                >Удалить
                                                 </button>
                                             </div>
                                         </div>

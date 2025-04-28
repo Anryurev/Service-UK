@@ -1,14 +1,14 @@
 import React, { useContext, useEffect, useState} from "react";
-import {Navbar} from "../../components/Navbar";
-import {ObjectNote} from "../../components/Object/ObjectNote";
-import {objectsData} from "../../data/objectsData";
-import {ModalCreateObject} from "../../components/Object/ModalCreateObject";
-import {IObject} from "../../models";
+import {Navbar} from "../../../components/Navbar";
+import {ObjectNote} from "../../../components/Object/ObjectNote";
+import {objectsData} from "../../../data/objectsData";
+import {ModalCreateObject} from "../../../components/Object/ModalCreateObject";
+import {IObject} from "../../../models";
 import {useNavigate} from "react-router-dom";
-import {EdembackContext} from "../../context/edemback/EdembackContext";
-import {SidebarMenu} from "../../components/SidebarMenu";
+import {EdembackContext} from "../../../context/edemback/EdembackContext";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 import {Form} from "react-bootstrap";
-import {SidebarOptions} from "../../components/SidebarOptions";
+import {SidebarOptions} from "../../../components/SidebarOptions";
 
 export function ObjectsPage(){
     const [isOpenModal, setIsOpenModal] = useState(false)
@@ -41,7 +41,7 @@ export function ObjectsPage(){
             {isOpenModal && <ModalCreateObject onSubmit={handleCreateObject} onClose={() => setIsOpenModal(false)} />}
             <Navbar/>
             <SidebarMenu isOpen={true}/>
-            <SidebarOptions/>
+            <SidebarOptions handleClick={() => navigate('/objects/create')}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Список объектов</h1>
                 <Form.Group className="mb-4">
@@ -61,11 +61,6 @@ export function ObjectsPage(){
                                                                       key={object.id}
                     />
                 ) }
-            </div>
-            <div className="position-fixed bottom-0 end-0 p-3">
-                <button className="btn btn-primary rounded-circle px-1 py-0" onClick={() => setIsOpenModal(true)}>
-                    <i className="bi bi-plus fs-2"></i>
-                </button>
             </div>
         </>
     )

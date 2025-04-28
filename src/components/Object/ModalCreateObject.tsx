@@ -12,7 +12,7 @@ export function ModalCreateObject({ onSubmit, onClose }: ModalCreateObjectProps)
     const [isModalOpen, setIsModalOpen] = useState(true)
     const [formData, setFormData] = useState<IObject>({
         id: 0,
-        office_id: 0,
+        office_Id: 0,
         street: "",
         house: "",
         apartment: "",
@@ -91,7 +91,7 @@ export function ModalCreateObject({ onSubmit, onClose }: ModalCreateObjectProps)
                 </>
             }
         >
-            <ObjectForm formData={formData} onChange={handleChange}/>
+            {/*<ObjectForm formData={formData} onChange={handleChange}/>*/}
         </Modal>
     )
 }

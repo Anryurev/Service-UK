@@ -6,7 +6,7 @@ interface IExecutorState{
     children: React.ReactNode
 }
 
-export const UserState = ({children}: IExecutorState) => {
+export const Userstate = ({children}: IExecutorState) => {
 
     const [user, setUser] = useState<IUsers | null>(null)
 

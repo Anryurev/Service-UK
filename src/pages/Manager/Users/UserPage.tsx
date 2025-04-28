@@ -1,11 +1,10 @@
 import React, {useContext, useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {IUsers} from "../../models";
-import {Navbar} from "../../components/Navbar";
+import {IUsers} from "../../../models";
+import {Navbar} from "../../../components/Navbar";
 import axios from "axios";
-import {EdembackContext} from "../../context/edemback/EdembackContext";
-import {users} from "../../data/usersdata";
-import {roles} from "../../data/rolesdata";
+import {EdembackContext} from "../../../context/edemback/EdembackContext";
+import {roles} from "../../../data/rolesdata";
 
 export function UserPage(){
     const { userId } = useParams<{ userId: string }>()
@@ -25,15 +24,13 @@ export function UserPage(){
         password: ""
     })
 
-    async function fetchUsers(){
-        // const response = await axios.get<IUsers>(`https://fakestoreapi.com/users/${userId}`)
-
-        const user_current: IUsers | undefined = users.find(user => user.id === Number(userId));
+    async function findUser(){
+        const user_current: IUsers | undefined = edemContext.state.users.find(user => user.id === Number(userId));
         setUser(user_current)
     }
 
     useEffect(() => {
-        fetchUsers()
+        findUser()
     }, [])
 
     if(!user){
@@ -50,7 +47,7 @@ export function UserPage(){
 
     const handleRemoveUser = async (userID: number) => {
         edemContext.deleteUser(userID)
-        navigate(`/users`)
+        navigate(`/Users`)
     }
 
     const getRoleNameById = (roleId: number): string => {
