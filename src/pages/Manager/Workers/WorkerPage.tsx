@@ -1,17 +1,16 @@
 import React, {useContext, useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {IUsers} from "../../../models";
+import {IWorkers} from "../../../models";
 import {Navbar} from "../../../components/Navbar";
-import axios from "axios";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {roles} from "../../../data/rolesdata";
 
-export function UserPage(){
-    const { userId } = useParams<{ userId: string }>()
+export function WorkerPage(){
+    const { workerId } = useParams<{ workerId: string }>()
     const [isEditingMod, setIsEditingMod] = useState(false)
     const edemContext = useContext(EdembackContext)
     const navigate = useNavigate()
-    const [user, setUser] = useState<IUsers | undefined>({
+    const [worker, setWorker] = useState<IWorkers | undefined>({
         id: 0,
         name: "",
         surname: "",
@@ -24,16 +23,16 @@ export function UserPage(){
         password: ""
     })
 
-    async function findUser(){
-        const user_current: IUsers | undefined = edemContext.state.users.find(user => user.id === Number(userId));
-        setUser(user_current)
+    async function findWorker(){
+        const worker_current: IWorkers | undefined = edemContext.state.workers.find(worker => worker.id === Number(workerId));
+        setWorker(worker_current)
     }
 
     useEffect(() => {
-        findUser()
+        findWorker()
     }, [])
 
-    if(!user){
+    if(!worker){
         return (
             <div className="container" style={{paddingTop: "60px"}}>
                 <h1>Пользователь не найден</h1>
@@ -41,13 +40,13 @@ export function UserPage(){
         )
     }
 
-    const handleEditUser = () => {
+    const handleEditWorker = () => {
         setIsEditingMod(true)
     }
 
-    const handleRemoveUser = async (userID: number) => {
-        edemContext.deleteUser(userID)
-        navigate(`/Users`)
+    const handleRemoveWorker = async (workerID: number) => {
+        edemContext.deleteWorker(workerID)
+        navigate(`/workers`)
     }
 
     const getRoleNameById = (roleId: number): string => {
@@ -70,34 +69,34 @@ export function UserPage(){
                                 <div className="card-body">
                                     <div className="row">
                                         <div className="col-md-4 text-center d-flex align-items-center">
-                                            <h5 className="mb-1"><strong>Имя: </strong> {user.name}</h5>
+                                            <h5 className="mb-1"><strong>Имя: </strong> {worker.name}</h5>
                                         </div>
                                         <div className="col-md-4 text-center d-flex align-items-center">
-                                            <h5 className="mb-1"><strong>Фамилия: </strong> {user.surname}</h5>
+                                            <h5 className="mb-1"><strong>Фамилия: </strong> {worker.surname}</h5>
                                         </div>
                                         <div className="col-md-4 text-center d-flex align-items-center">
-                                            <h5 className="mb-1"><strong>Отчество: </strong> {user.fathername}</h5>
+                                            <h5 className="mb-1"><strong>Отчество: </strong> {worker.fathername}</h5>
                                         </div>
 
                                         <div className="col-md-8">
                                             <ul className="list-group list-group-flush">
                                                 <li className="list-group-item">
-                                                    <strong>Номер телефона: </strong>{user.phoneNumber}
+                                                    <strong>Номер телефона: </strong>{worker.phoneNumber}
                                                 </li>
                                                 <li className="list-group-item">
-                                                    <strong>Электронная почта: </strong>{user.email}
+                                                    <strong>Электронная почта: </strong>{worker.email}
                                                 </li>
                                                 <li className="list-group-item">
-                                                    <strong>Должность: </strong>{getRoleNameById(user.id_Role)}
+                                                    <strong>Должность: </strong>{getRoleNameById(worker.id_Role)}
                                                 </li>
                                                 <li className="list-group-item">
-                                                    <strong>Дата рождения: </strong>{user.birthday}
+                                                    <strong>Дата рождения: </strong>{worker.birthday}
                                                 </li>
                                             </ul>
                                         </div>
                                         <div className="card-footer bg-light d-flex justify-content-between align-items-center">
-                                            <button className="btn btn-sm btn-outline-primary" onClick={handleEditUser}>Редактировать</button>
-                                            <button className="btn btn-sm btn-outline-danger" onClick={() => handleRemoveUser(user.id)}>Удалить</button>
+                                            <button className="btn btn-sm btn-outline-primary" onClick={handleEditWorker}>Редактировать</button>
+                                            <button className="btn btn-sm btn-outline-danger" onClick={() => handleRemoveWorker(worker.id)}>Удалить</button>
                                         </div>
                                     </div>
                                 </div>

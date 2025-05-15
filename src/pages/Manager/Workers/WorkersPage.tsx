@@ -7,35 +7,44 @@ import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {Form} from "react-bootstrap";
 import {SidebarMenu} from "../../../components/SidebarMenu";
 import {SidebarOptions} from "../../../components/SidebarOptions";
+import api from "../../../api";
+import {IWorkers} from "../../../models";
 
-export function UsersPage(){
+export function WorkersPage(){
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
+    const [workers, setWorkers] = useState<IWorkers[]>([])
     const navigate = useNavigate()
     const edemContext = useContext(EdembackContext)
 
-    useEffect(() => {
-        edemContext.getAllUsers()
-        // eslint-disable-next-line
-    }, [])
-
-    const handleClickUser = (userId: number) => {
-        navigate(`/Users/${userId}`)
+    const LoadingData = async () => {
+        const response = await api.get(`/Workers`)
+        setWorkers(response.data)
     }
 
-    const filteredUsers = edemContext.state.users.filter((user) =>
-        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.surname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase())
-        // user.role.toLowerCase().includes(searchQuery.toLowerCase())
+    useEffect(() => {
+        LoadingData()
+        edemContext.getAllWorkers()
+        // eslint-disable-next-line
+    }, [workers])
+
+    const handleClickWorker = (workerId: number) => {
+        navigate(`/workers/${workerId}`)
+    }
+
+    const filteredWorkers = workers.filter((worker) =>
+        worker.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        worker.surname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        worker.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        worker.phoneNumber.toLowerCase().includes(searchQuery.toLowerCase())
+        // worker.role.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
     return(
         <>
-            { isModalOpen && <ModalCreateWorker onSubmit={(newUser) => edemContext.createUser(newUser)} onClose={() => setIsModalOpen(false)}/>}
             <Navbar/>
             <SidebarMenu isOpen={true}/>
-            <SidebarOptions handleClick={() => navigate('/Users/create')}/>
+            <SidebarOptions handleClick={() => navigate('/Workers/create')}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Список сотрудников</h1>
                 <Form.Group className="mb-4">
@@ -50,12 +59,12 @@ export function UsersPage(){
                     >
                     </Form.Control>
                 </Form.Group>
-                { filteredUsers.map(user =>
+                { filteredWorkers.map(worker =>
                     <WorkerNote
-                        user={user}
-                        onRemove={() => edemContext.deleteUser(user.id)}
-                        onClick={handleClickUser}
-                        key={user.id}
+                        worker={worker}
+                        onRemove={() => edemContext.deleteWorker(worker.id)}
+                        onClick={handleClickWorker}
+                        key={worker.id}
                     />)
                 }
             </div>

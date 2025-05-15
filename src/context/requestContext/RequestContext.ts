@@ -7,11 +7,16 @@ interface IRequestContext{
 }
 
 export const RequestContext = createContext<IRequestContext>({
-    request: {request_Id: 0,
-        role_Id: 0,
+    request: {
+        request_Id: -1,
+        type_Work: "",
+        description: "",
+        roles_Id: null,
         worker_Id: 0,
         object_Id: 0,
-        status: "",
-        urgency: false},
+        status: "1",
+        urgency: false,
+        photos: null,
+    },
     setRequest: () => {},
 })

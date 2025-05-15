@@ -12,42 +12,35 @@ export function RequestDescriptionPage(){
     const navigate = useNavigate()
 
     const handleClickCreate = () => {
+        console.log('request descPage', requestContext.request)
+
         edemContext.createRequest(requestContext.request)
         navigate('/calendar')
     }
 
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
-        const { name, value } = e.target
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value, type } = e.target
+        const checked = (e.target as HTMLInputElement).checked
 
-        if (name === "urgency") {
-            const newRequest = {
-                ...requestContext.request,
-                urgency: !requestContext.request.urgency,
-            }
-            requestContext.setRequest(newRequest)
-        }
-
-        console.log('urgency', requestContext.request)
+        requestContext.setRequest({
+            ...requestContext.request,
+            [name]: type === 'checkbox' ? checked : value
+        })
     }
     return(
         <>
             <Navbar/>
-            <div className="container-sm" style={{paddingTop: "60px"}}>
-                <div className="row">
+            <div className="d-flex flex-column min-vh-100 container-sm" style={{paddingTop: '60px'}}>
+                <main className="flex-grow-1">
                     <div className="col-sm-6 border-black border-3">
                         <div className="mb-1">
-                            <label htmlFor="task" className="form-label mb-0">Задание</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="task"
-                            />
-                        </div>
-                        <div className="mb-1">
-                            <label htmlFor="task_desc" className="form-label mb-1">Описание</label>
+                            <label htmlFor="description" className="form-label mb-1">Описание</label>
                             <textarea
+                                rows={10}
                                 className="form-control"
-                                name="task_desc"
+                                name="description"
+                                value={requestContext.request.description || ''}
+                                onChange={handleChange}
                             />
                         </div>
                         <div className="mb-2">
@@ -56,18 +49,18 @@ export function RequestDescriptionPage(){
                                 className="form-check-input me-1"
                                 id='urgency'
                                 name='urgency'
-                                checked={requestContext.request.urgency}
+                                checked={requestContext.request.urgency || false}
                                 onChange={handleChange}
                             />
-                            <label htmlFor='kitchen'>Это срочное задание</label>
-                        </div>
-                        <div className="row h-100">
-                            <div className="col-sm-1 d-flex flex-column">
-                                <button type="button" className="btn-sm button_calendar" onClick={handleClickCreate}>Создать заявку</button>
-                            </div>
+                            <label htmlFor='urgency'>Это срочное задание</label>
                         </div>
                     </div>
-                </div>
+                </main>
+                <footer className="p-3 bg-light">
+                    <div className="col-sm-1 d-flex flex-column">
+                        <button type="button" className="btn-sm button_calendar" onClick={handleClickCreate}>Создать заявку</button>
+                    </div>
+                </footer>
             </div>
         </>
     )

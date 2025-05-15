@@ -2,54 +2,36 @@ import React, {useEffect, useState} from "react";
 import {Navbar} from "../../components/Navbar";
 import { Button, Card, Form, ListGroup, Badge } from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
-import {IRequest} from "../../models";
+import {IObject, IRequest, IStatus, IWork, IWorkers} from "../../models";
 import api from "../../api";
+import RequestExecutCard from "../../components/Request/RequestExecutCard";
+import {compile} from "nth-check";
 
 interface ITask {
     id: number;
     title: string;
     description: string;
-    status: "pending" | "in_progress" | "completed";
+    status: "1" | "2" | "3" | "4";
 }
-
-const initialTasks: ITask[] = [
-    {
-        id: 1,
-        title: "Уборка помещения",
-        description: "Провести уборку в квартире №5.",
-        status: "pending",
-    },
-    {
-        id: 2,
-        title: "Ремонт освещения",
-        description: "Починить свет в квартире №10.",
-        status: "in_progress",
-    },
-    {
-        id: 3,
-        title: "Ремонт крана",
-        description: "Починить кран в квартире №2.",
-        status: "completed",
-    },
-]
 
 export function MainExecutorPage(){
     const [requests, setRequests] = useState<IRequest[]>([])
-    const [filterStatus, setFilterStatus] = useState<"all" | ITask["status"]>("all")
+    const [filterStatus, setFilterStatus] = useState<"0" | ITask["status"]>("0")
     const navigate = useNavigate()
 
     const LoadingData = async () => {
-        const response = await api.get(`/Requests`)
-        setRequests(response.data)
+        const responseRequest = await api.get(`/Requests`)
+        setRequests(responseRequest.data)
     }
 
     useEffect(() => {
+        console.log(1)
         LoadingData()
     }, [])
 
     // Фильтрация заданий по статусу
     const filteredTasks = requests.filter(request =>
-        filterStatus === "all" ? true : request.status === filterStatus
+        filterStatus === "0" ? true : request.status === filterStatus
     )
 
     // Изменение статуса задания
@@ -75,69 +57,25 @@ export function MainExecutorPage(){
                             as="select"
                             value={filterStatus}
                             onChange={(e) =>
-                                setFilterStatus(e.target.value as "all" | ITask["status"])
+                                setFilterStatus(e.target.value as "0" | ITask["status"])
                             }
                         >
-                            <option value="all">Все</option>
-                            <option value="pending">Ожидает выполнения</option>
-                            <option value="in_progress">В процессе</option>
-                            <option value="completed">Завершено</option>
+                            <option value="0">Все</option>
+                            <option value="1">Создано</option>
+                            <option value="2">Назначено</option>
+                            <option value="3">В процессе</option>
+                            <option value="4">Завершено</option>
                         </Form.Control>
                     </Form.Group>
 
                     {/* Список заданий */}
                     <ListGroup>
                         {filteredTasks.map((request) => (
-                            <ListGroup.Item key={request.request_Id} className="mb-3">
-                                <Card>
-                                    <Card.Body>
-                                        {/*Тут выводится тип задания*/}
-                                        <Card.Title>{request.request_Id}</Card.Title>
-                                        {/*Тут выводится описание задания*/}
-                                        <Card.Text>{request.worker_Id}</Card.Text>
-                                        {/*Создано Назначено В процессе Завершено*/}
-                                        <Badge
-                                            bg={
-                                                request.status === "pending"
-                                                    ? "warning"
-                                                    : request.status === "in_progress"
-                                                        ? "primary"
-                                                        : "success"
-                                            }
-                                            className="mb-2"
-                                        >
-                                            {request.status === "pending"
-                                                ? "Ожидает выполнения"
-                                                : request.status === "in_progress"
-                                                    ? "В процессе"
-                                                    : "Завершено"}
-                                        </Badge>
-                                        <div className="d-flex gap-2">
-                                            <Button
-                                                variant="outline-primary"
-                                                size="sm"
-                                                onClick={() =>
-                                                    updateRequestStatus(request.request_Id, "in_progress")
-                                                }
-                                                disabled={request.status !== "pending"}
-                                            >
-                                                Начать выполнение
-                                            </Button>
-                                            <Button
-                                                variant="outline-success"
-                                                size="sm"
-                                                onClick={() => {
-                                                    updateRequestStatus(request.request_Id, "completed")
-                                                    navigate('/execut/report')
-                                                }}
-                                                disabled={request.status !== "in_progress"}
-                                            >
-                                                Перейти к отчету
-                                            </Button>
-                                        </div>
-                                    </Card.Body>
-                                </Card>
-                            </ListGroup.Item>
+                            <RequestExecutCard
+                                onClick={() => navigate(`/request/${request.request_Id}`)}
+                                request={request}
+                                key={request.request_Id}
+                            />
                         ))}
                     </ListGroup>
                 </div>

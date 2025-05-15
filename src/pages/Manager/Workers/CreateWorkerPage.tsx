@@ -1,14 +1,16 @@
 import React, {useContext, useEffect, useState} from "react";
 import {WorkerForm} from "../../../components/Worker/WorkerForm";
-import {IRole, IUsers} from "../../../models";
+import {IRole, IWorkers} from "../../../models";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {Navbar} from "../../../components/Navbar";
 import {Form} from "react-bootstrap"
 import type { FormControlProps } from 'react-bootstrap';
+import {useNavigate} from "react-router-dom";
 
-export function CreateUserPage() {
+export function CreateWorkerPage() {
     const edemContext = useContext(EdembackContext)
-    const [formData, setFormData] = useState<IUsers>({
+    const navigate = useNavigate()
+    const [formData, setFormData] = useState<IWorkers>({
         id: -1,
         name: "",
         surname: "",
@@ -46,15 +48,15 @@ export function CreateUserPage() {
         }
     }
 
-    function onSubmit(formData: IUsers) {
-        console.log(formData)
-        edemContext.createUser(formData)
+    function onSubmit(formData: IWorkers) {
+        edemContext.createWorker(formData)
+        navigate('/workers')
     }
 
     const handleSubmit = async () => {
         let isValid = true;
-        (Object.keys(formData) as Array<keyof IUsers>).forEach(key => {
-            const value = formData[key as keyof IUsers] // Явное приведение типа ключа
+        (Object.keys(formData) as Array<keyof IWorkers>).forEach(key => {
+            const value = formData[key as keyof IWorkers] // Явное приведение типа ключа
             if (String(value).trim().length === 0) {
                 isValid = false
             }

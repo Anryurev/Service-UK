@@ -1,19 +1,26 @@
-import React, {useContext, useEffect} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {Navbar} from "../../../components/Navbar";
 import {RoleNote} from "../../../components/Role/RoleNote";
 import {SidebarMenu} from "../../../components/SidebarMenu";
 import {SidebarOptions} from "../../../components/SidebarOptions";
+import api from "../../../api";
+import {IRole} from "../../../models";
 
 export function RolesPage(){
     const navigate = useNavigate()
+    const [roles, setRoles] = useState<IRole[]>([])
     const edemContext = useContext(EdembackContext)
 
+    const LoadingRoles = async () => {
+        const response = await api.get(`/Roles`)
+        console.log('Get all roles', response.data)
+        setRoles(response.data)
+    }
+
     useEffect(() => {
-        edemContext.getAllRoles()
-        console.log(edemContext.state.roles)
-        // eslint-disable-next-line
+        LoadingRoles()
     }, [])
 
 
@@ -30,7 +37,7 @@ export function RolesPage(){
                     <div className="mb-0 col"></div>
 
                 </div>
-                {edemContext.state.roles.map(role => <RoleNote role={role} key={role.role_Id}/>)}
+                {roles.map(role => <RoleNote role={role} key={role.role_Id}/>)}
             </div>
         </>
     )

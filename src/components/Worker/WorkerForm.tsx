@@ -1,15 +1,15 @@
 import React, {ChangeEvent} from "react";
-import {IOffice, IRole, IUsers} from "../../models";
+import {IOffice, IRole, IWorkers} from "../../models";
 
-interface UserFormProps{
-    formData: IUsers,
+interface WorkerFormProps{
+    formData: IWorkers,
     offices: IOffice[],
     roles: IRole[],
     onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
     onSubmit: () => void
 }
 
-export const WorkerForm: React.FC<UserFormProps> = ({ formData, offices, roles, onChange, onSubmit }) => {
+export const WorkerForm: React.FC<WorkerFormProps> = ({ formData, offices, roles, onChange, onSubmit }) => {
     return (
         <form>
             <div className="mb-2">

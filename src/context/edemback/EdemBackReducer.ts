@@ -4,30 +4,30 @@ import {
     GET_ONE_OBJECT,
     GET_AREND_OBJECT,
     GET_OBJECT_1_FILIAL,
-    GET_ALL_Users,
+    GET_ALL_WORKERS,
     GET_REQUEST,
     GET_ACTIVE_REQUEST,
     GET_ENDED_REQUEST,
     GET_ADDITIONAL_MATERIAL,
     CREATE_OBJECT,
-    CREATE_USER,
+    CREATE_WORKER,
     CREATE_FILIAL,
     CREATE_ADDITIONAL_MATERIAL,
     CREATE_ROLE,
     CREATE_REQUEST,
     UPDATE_OBJECT,
-    UPDATE_USER,
+    UPDATE_WORKER,
     UPDATE_ADDITIONAL_MATERIAL,
     UPDATE_ROLE,
     DELETE_OBJECT,
-    DELETE_USER,
+    DELETE_WORKER,
     DELETE_ROLE,
     DELETE_PHOTO,
     DELETE_ADDITIONAL_MATERIAL,
     GET_ALL_ROLES,
     GET_ALL_OFFICES,
     CREATE_OFFICE,
-    GET_ONE_USER,
+    GET_ONE_WORKER,
     GET_ONE_ROLE,
     DELETE_REQUEST,
     UPDATE_REQUEST, GET_ALL_BOOKINGS, CREATE_BOOKING, UPDATE_BOOKING, DELETE_BOOKING
@@ -61,23 +61,23 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
         objects: state.objects.filter(object => object.id !== payload)
     }),
 
-    // Users
-    [GET_ALL_Users]: (state, {payload}) => ({
+    // Workers
+    [GET_ALL_WORKERS]: (state, {payload}) => ({
         ...state,
-        users: payload
+        workers: payload
     }),
-    [GET_ONE_USER]: (state, {payload}) => ({...state, user: payload}),
-    [CREATE_USER]: (state, {payload}) => ({
+    [GET_ONE_WORKER]: (state, {payload}) => ({...state, worker: payload}),
+    [CREATE_WORKER]: (state, {payload}) => ({
         ...state,
-        users: [...state.users, payload]
+        workers: [...state.workers, payload]
     }),
-    [UPDATE_USER]: (state, {payload}) => ({
+    [UPDATE_WORKER]: (state, {payload}) => ({
         ...state,
-        user: payload
+        worker: payload
     }),
-    [DELETE_USER]: (state, {payload}) => ({
+    [DELETE_WORKER]: (state, {payload}) => ({
         ...state,
-        users: payload
+        workers: payload
     }),
 
     // Roles

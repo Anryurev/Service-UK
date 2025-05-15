@@ -32,7 +32,7 @@ export const SidebarMenu: React.FC<SidebarProps> = ({ isOpen}) => {
                         </Link>
                     </li>
                     <li className="nav-item">
-                        <Link to="/Users" className="nav-link" style={{color: "#274c77"}}>
+                        <Link to="/workers" className="nav-link" style={{color: "#274c77"}}>
                             <i className="bi bi-people me-2"></i>
                             Сотрудники
                         </Link>
@@ -47,6 +47,12 @@ export const SidebarMenu: React.FC<SidebarProps> = ({ isOpen}) => {
                         <Link to="/offices" className="nav-link" style={{color: "#274c77"}}>
                             <i className="bi bi-buildings me-2"></i>
                             Офисы
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/works" className="nav-link" style={{color: "#274c77"}} >
+                            <i className="bi bi-list-task me-2"></i>
+                            Задания
                         </Link>
                     </li>
                 </ul>

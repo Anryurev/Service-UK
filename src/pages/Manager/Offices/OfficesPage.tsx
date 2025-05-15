@@ -6,17 +6,25 @@ import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {OfficeNote} from "../../../components/Office/OfficeNote";
 import {Form} from "react-bootstrap";
 import {useNavigate, useParams} from "react-router-dom";
+import api from "../../../api";
+import {IOffice} from "../../../models";
 
 export function OfficesPage() {
     const edemContext = useContext(EdembackContext)
     const [searchQuery, setSearchQuery] = useState('')
     const navigate = useNavigate()
+    const [offices, setOffices] = useState<IOffice[]>([])
+
+    const LoadingOffices = async () => {
+        const response = await api.get(`/Offices`)
+        setOffices(response.data)
+    }
 
     useEffect(() => {
-        edemContext.getAllOffices()
-    }, [])
+        LoadingOffices()
+    }, [offices])
 
-    const filteredOffices = edemContext.state.offices.filter((office) =>
+    const filteredOffices = offices.filter((office) =>
             office.house.toLowerCase().includes(searchQuery.toLowerCase()) ||
             office.street.toLowerCase().includes(searchQuery.toLowerCase())
     )

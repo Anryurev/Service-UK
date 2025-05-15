@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {IObject, IRequest, IRole, IStatus, IUsers} from "../../models";
+import {IObject, IRequest, IRole, IStatus, IWork, IWorkers} from "../../models";
 import api from "../../api";
 
 interface RequestCardProps {
@@ -10,19 +10,22 @@ interface RequestCardProps {
 
 const RequestCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) => {
 
-    const [role, setRole] = useState<IRole>()
+    const [typeWork, setTypeWork] = useState<IWork>()
     const [object, setObject] = useState<IObject>()
-    const [worker, setWorker] = useState<IUsers>()
+    const [worker, setWorker] = useState<IWorkers>()
     const [status, setStatus] = useState<IStatus>()
 
     const LoadingData = async () => {
-        const responseRole = await api.get(`/Role/${request.role_Id}`)
+        console.log('request in request card', request)
+        const responseTypeWork = await api.get(`/TypeWork/${request.type_Work}`)
         const responseObject = await api.get(`/Object/${request.object_Id}`)
-        const responseWorker = await api.get(`/Worker/${request.worker_Id}`)
-        const responseStatuses = await api.get(`/Status/${request.status}`)
-        setRole(responseRole.data)
+        if(request.worker_Id){
+            const responseWorker = await api.get(`/Worker/${request.worker_Id}`)
+            setWorker(responseWorker.data)
+        }
+        const responseStatuses = await api.get(`/Status_Request/${request.status}`)
+        setTypeWork(responseTypeWork.data)
         setObject(responseObject.data)
-        setWorker(responseWorker.data)
         setStatus(responseStatuses.data)
     }
 
@@ -33,18 +36,18 @@ const RequestCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) 
     // Стили для статуса
     const getStatusClass = () => {
         switch (status?.name) {
-            case 'Свободна':
-                return 'bg-success text-white';
-            case 'Бронь':
-                return 'bg-warning text-dark';
-            case 'Сдана':
-                return 'bg-danger text-white';
-            case 'Ремонт/Уборка':
-                return 'bg-primary text-white';
+            case 'Создано':
+                return 'bg-success text-white'
+            case 'Назначено':
+                return 'bg-warning text-dark'
+            case 'В процессе':
+                return 'bg-danger text-white'
+            case 'Выполнено':
+                return 'bg-primary text-white'
             default:
-                return 'bg-secondary text-white';
+                return 'bg-secondary text-white'
         }
-    };
+    }
 
     return (
         <div
@@ -54,7 +57,7 @@ const RequestCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) 
             <div className="card-body">
                 {/* Заголовок карточки */}
                 <div className="d-flex justify-content-between align-items-start mb-2">
-                    <h5 className="card-title mb-0">Задание #{request.request_Id}</h5>
+                    <h5 className="card-title mb-0">Задание: {typeWork?.name}</h5>
                     {request.urgency && (
                         <span className="badge bg-danger">Срочно</span>
                     )}
@@ -66,7 +69,7 @@ const RequestCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) 
                         <small className="text-muted">Объект:</small> ул. {object?.street}  д. {object?.house}  кв. {object?.apartment}
                     </p>
                     <p className="card-text mb-1">
-                        <small className="text-muted">Должность:</small> {role?.name}
+                        <small className="text-muted">Должность:</small> {typeWork?.name}
                     </p>
                     {request.worker_Id && (
                         <p className="card-text">

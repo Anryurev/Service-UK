@@ -1,21 +1,20 @@
 import React, {useContext, useState} from "react";
-import { IRole} from "../../models";
+import {IWork} from "../../models";
 import {EdembackContext} from "../../context/edemback/EdembackContext";
 import {Modal} from "../Modal";
+import api from "../../api";
 
-interface RoleProps {
-    role: IRole
+interface WorkNoteProps{
+    work: IWork
 }
 
-export function RoleNote({ role }: RoleProps){
-    const edemContext = useContext(EdembackContext)
+export function WorkNote ({work}: WorkNoteProps) {
     const [isModalOpen, setIsModalOpen] = useState(false)
 
     return(
         <>
             <div className="border px-2 py-2 rounded mb-2 d-flex justify-content-between">
-                <div className="mb-0 col text-start" style={{display: "inline-block"}}>{role.name}</div>
-                <div className="mb-0 col text-center" style={{display: "inline-block"}}>{role.salary}</div>
+                <div className="mb-0 col text-start" style={{display: "inline-block"}}>{work.name}</div>
                 <div className="mb-0 col text-end">
                     <button className="btn" onClick={(e) => {
                         e.stopPropagation()
@@ -43,8 +42,8 @@ export function RoleNote({ role }: RoleProps){
                     <button
                         type="button"
                         className="btn btn-danger"
-                        onClick={() => {
-                            edemContext.deleteRole(role.role_Id)
+                        onClick={async () => {
+                            // await api.delete(``)
                             setIsModalOpen(false)
                         }}
                     >
@@ -52,7 +51,7 @@ export function RoleNote({ role }: RoleProps){
                     </button>
                 </>
             )}>
-                <div>Удалить данную должность?</div>
+                <div>Удалить данный тип работы?</div>
             </Modal>
         </>
     )

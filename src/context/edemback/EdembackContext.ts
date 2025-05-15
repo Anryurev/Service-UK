@@ -1,5 +1,5 @@
 import {createContext} from 'react'
-import {IBooking, IObject, IOffice, IRequest, IRole, IState, IUsers} from "../../models";
+import {IBooking, IObject, IOffice, IRequest, IRole, IState, IWorkers} from "../../models";
 
 interface IEdembackContext {
     state: IState
@@ -7,20 +7,20 @@ interface IEdembackContext {
     getOneObject: (objectID: number) => Promise<void>
     getArendObject: (status: string) => Promise<void>
     getObject1Filial: (officeID: number) => Promise<void>
-    getAllUsers: () => Promise<void>
+    getAllWorkers: () => Promise<void>
     createObject: (object: IObject) => Promise<void>
-    createUser: (user: IUsers) => Promise<void>
+    createWorker: (worker: IWorkers) => Promise<void>
     updateObject: (object: IObject) => Promise<void>
-    updateUser: (user: IUsers) => Promise<void>
+    updateWorker: (worker: IWorkers) => Promise<void>
     deleteObject: (objectID: number) => Promise<void>
-    deleteUser: (userID: number) => Promise<void>
+    deleteWorker: (workerId: number) => Promise<void>
     getAllRoles: () => Promise<void>
     deleteRole: (roleID: number) => Promise<void>
     getAllOffices: () => Promise<void>
     deleteOffice: (officeId: number) => Promise<void>
     createOffice: (office: IOffice) => Promise<void>
     createRole: (role: IRole) => Promise<void>
-    getOneUser: (userId: number) => Promise<void>
+    getOneWorker: (workerId: number) => Promise<void>
     getAllBookings: () => Promise<void>
     createBooking: (booking: IBooking) => Promise<void>
     updateBooking: (booking: IBooking) => Promise<void>
@@ -32,8 +32,8 @@ interface IEdembackContext {
 }
 
 export const EdembackContext = createContext<IEdembackContext>({
-    state: { users: [], objects: [], roles: [], offices: [], bookings: [], requests: [],
-        user: {id: 0, id_Role: 0, id_Office: 0, birthday: "", password: "", email: "", name: "", phoneNumber: "", surname: "", fathername: ""},
+    state: { workers: [], objects: [], roles: [], offices: [], bookings: [], requests: [],
+        worker: {id: 0, id_Role: 0, id_Office: 0, birthday: "", password: "", email: "", name: "", phoneNumber: "", surname: "", fathername: ""},
         role: {role_Id: 0, name: "", salary: 0},
         object: {id: 0, kitchen: false, balcony: false, area: 0, rooms: 0, house: "", street: "", status: "", apartment: "", office_Id: 0},
         office: {office_Id: 0, house: "", street: ""}},
@@ -41,20 +41,20 @@ export const EdembackContext = createContext<IEdembackContext>({
     getOneObject: async () => {},
     getArendObject: async () => {},
     getObject1Filial: async () => {},
-    getAllUsers: async () => {},
+    getAllWorkers: async () => {},
     createObject: async () => {},
-    createUser: async () => {},
+    createWorker: async () => {},
     updateObject: async () => {},
-    updateUser: async () => {},
+    updateWorker: async () => {},
     deleteObject: async () => {},
-    deleteUser: async () => {},
+    deleteWorker: async () => {},
     getAllRoles: async () => {},
     deleteRole: async () => {},
     getAllOffices: async () => {},
     deleteOffice: async () => {},
     createOffice: async () => {},
     createRole: async () => {},
-    getOneUser: async () => {},
+    getOneWorker: async () => {},
     getAllBookings: async () => {},
     createBooking: async () => {},
     updateBooking: async () => {},

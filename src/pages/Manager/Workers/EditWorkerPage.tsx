@@ -2,18 +2,18 @@ import React, {useContext, useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {Navbar} from "../../../components/Navbar";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
-import {IUsers} from "../../../models";
+import {IWorkers} from "../../../models";
 import {WorkerForm} from "../../../components/Worker/WorkerForm";
 import api from "../../../api";
 
-export function EditUserPage() {
-    const { userId } = useParams<{ userId: string }>()
+export function EditWorkerPage() {
+    const { workerId } = useParams<{ workerId: string }>()
     const edemContext = useContext(EdembackContext)
     const navigate = useNavigate()
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [formData, setFormData] = useState<IUsers>({
+    const [formData, setFormData] = useState<IWorkers>({
         id: -1,
         name: "",
         surname: "",
@@ -26,7 +26,7 @@ export function EditUserPage() {
         password: "",
     })
 
-    const fetchUser = async (id: number) => {
+    const fetchWorker = async (id: number) => {
         try {
             setLoading(true)
             setError(null)
@@ -47,7 +47,7 @@ export function EditUserPage() {
 
             // Загружаем данные
             const response = await api.get(`/Worker/${id}`)
-            console.log('response user', response.data[0])
+            console.log('response worker', response.data[0])
             setFormData(response.data)
 
         } catch (err) {
@@ -59,13 +59,13 @@ export function EditUserPage() {
     }
 
     useEffect(() => {
-        if (userId) {
-            const id = Number(userId)
+        if (workerId) {
+            const id = Number(workerId)
             if (!isNaN(id)) {
-                fetchUser(id)
+                fetchWorker(id)
             }
         }
-    }, [userId])
+    }, [workerId])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target
@@ -86,8 +86,8 @@ export function EditUserPage() {
 
     const handleSubmit = async () => {
         let isValid = true;
-        (Object.keys(formData) as Array<keyof IUsers>).forEach(key => {
-            const value = formData[key as keyof IUsers]
+        (Object.keys(formData) as Array<keyof IWorkers>).forEach(key => {
+            const value = formData[key as keyof IWorkers]
             if (String(value).trim().length === 0) {
                 isValid = false
             }
@@ -95,14 +95,14 @@ export function EditUserPage() {
 
         if (isValid) {
             console.log('submit', formData)
-            edemContext.updateUser(formData)
-            navigate('/Users')
+            edemContext.updateWorker(formData)
+            navigate('/Workers')
         }
     }
 
     if (loading) return <div>Загрузка...</div>
     if (error) return <div>{error}</div>
-    if (!formData || formData.id !== Number(userId)) return <div>Данные не загружены</div>
+    if (!formData || formData.id !== Number(workerId)) return <div>Данные не загружены</div>
 
     return(
         <>

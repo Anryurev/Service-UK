@@ -13,7 +13,7 @@ export interface IObject{
     [key: string]: string | number | boolean
 }
 
-export interface IUsers{
+export interface IWorkers {
     id: number,
     name: string,
     surname: string,
@@ -30,15 +30,23 @@ export interface IRole{
     role_Id: number,
     name: string,
     salary: number // оклад
+    add_Parametrs?:Array<{
+        id_Parametr: number,
+        role_Id: number,
+        parametr: string
+    }>
 }
 
 export interface IRequest {
     request_Id: number,
-    role_Id: number,
+    type_Work: string,
+    description?: string,
+    roles_Id: number[] | null
     worker_Id?: number,
     object_Id: number,
     status: string,
-    urgency: boolean // срочность
+    urgency: boolean, // срочность
+    photos: number[] | null
 }
 
 export interface IOffice {
@@ -55,27 +63,29 @@ export interface IBooking {
     status: string
 }
 
+export interface IWork{
+    id_Work: number,
+    name: string,
+    roles: IRole[],
+    roles_Id: number[]
+}
+
 export interface IStatus{
     id_status: number,
     name: string
 }
 
 export interface IState {
-    users: IUsers[],
+    workers: IWorkers[],
     objects: IObject[],
     roles: IRole[],
     offices: IOffice[],
     requests: IRequest[],
     bookings: IBooking[],
-    user: IUsers,
+    worker: IWorkers,
     object: IObject,
     role: IRole,
     office: IOffice,
-}
-
-export interface IDayCard {
-    date: Date;
-    objects: IObject[];
 }
 
 export type Action = {type: string, payload?: any}

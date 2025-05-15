@@ -3,26 +3,36 @@ import {Navbar} from "../../components/Navbar";
 import {EdembackContext} from "../../context/edemback/EdembackContext";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import api from "../../api";
-import {IObject, IOffice, IRequest, IRole, IUsers} from "../../models";
+import {IObject, IOffice, IRequest, IRole, IWorkers} from "../../models";
 import {Form} from "react-bootstrap";
 import {RequestContext} from "../../context/requestContext/RequestContext";
 import RequestCard from "../../components/Request/RequestCard";
 
+interface TaskCount {
+    created: number
+    assigned: number
+    inProgress: number
+    completed: number
+    other: number
+}
+
 export function RequestObjectPage(){
     const [selectedObject, setSelectedObject] = useState(0)
     const [objectsOffice, setObjectsOffice] = useState<IObject[]>([])
+    const [requestsObject, setRequestsObject] = useState<IRequest[]>([])
     const [requests, setRequests] = useState<IRequest[]>([])
     const [searchQuery, setSearchQuery] = useState('')
-    const [objectsCard, setObjectsCard] = useState<Record<number, IObject>>({});
-    const edemContext = useContext(EdembackContext)
+    // const [objectsCard, setObjectsCard] = useState<Record<number, IObject>>({});
+    // const edemContext = useContext(EdembackContext)
     const requestContext = useContext(RequestContext)
     const navigate = useNavigate()
 
     const LoadingData = async () => {
-        const response = await api.get(`/Objects`)
-        await edemContext.getAllRequests()
-        console.log('requests', edemContext.state.requests)
-        setObjectsOffice(response.data)
+        const responseObject = await api.get(`/Objects`)
+        const responseRequests = await api.get(`/Requests`)
+        console.log('requests', requests)
+        setRequests(responseRequests.data)
+        setObjectsOffice(responseObject.data)
     }
 
     useEffect(() => {
@@ -34,13 +44,12 @@ export function RequestObjectPage(){
             const updatedRequest = { ...requestContext.request, object_Id: selectedObject }
             requestContext.setRequest(updatedRequest)
         }
-        console.log('type of requests', typeof edemContext?.state?.requests)
 
-        if (Array.isArray(edemContext?.state?.requests)) {
-            const filteredRequests = edemContext.state.requests.filter(r => r.object_Id === selectedObject);
-            setRequests(filteredRequests);
+        if (Array.isArray(requests)) {
+            const filteredRequests = requests.filter(r => r.object_Id === selectedObject);
+            setRequestsObject(filteredRequests);
         } else {
-            setRequests([]);
+            setRequestsObject([]);
         }
 
         console.log('requestContext ', requestContext?.request)
@@ -54,11 +63,66 @@ export function RequestObjectPage(){
         object.status.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
+    const countTasksByStatus = (requests: IRequest[], objectId: number): TaskCount => {
+        const counts: TaskCount = {
+            created: 0,
+            assigned: 0,
+            inProgress: 0,
+            completed: 0,
+            other: 0
+        }
+
+        requests
+            .filter(request => request.object_Id === objectId)
+            .forEach(request => {
+                switch(request.status) {
+                    case '1': counts.created++; break;
+                    case '2': counts.assigned++; break;
+                    case '3': counts.inProgress++; break;
+                    case '4': counts.completed++; break;
+                    default: counts.other++; break;
+                }
+            })
+
+        return counts
+    }
+
     const styleItem = (object: IObject) => object.id === objectsOffice.find(obj => obj.id === selectedObject)?.id? "list-group-item border-1 border-success" : "list-group-item border-1"
 
     const handleClick = () => {
+        console.log('request objectPage', requestContext.request)
         navigate(`/request/execut`)
     }
+
+    const StatusBadges = ({ counts }: { counts: TaskCount }) => (
+        <div className="d-flex gap-1 ms-2">
+            {counts.created > 0 && (
+                <span className={`badge rounded-pill bg-success text-white`}>
+        {counts.created}
+      </span>
+            )}
+            {counts.assigned > 0 && (
+                <span className={`badge rounded-pill bg-warning text-dark`}>
+        {counts.assigned}
+      </span>
+            )}
+            {counts.inProgress > 0 && (
+                <span className={`badge rounded-pill bg-danger text-white`}>
+        {counts.inProgress}
+      </span>
+            )}
+            {counts.completed > 0 && (
+                <span className={`badge rounded-pill bg-primary text-white`}>
+        {counts.completed}
+      </span>
+            )}
+            {counts.other > 0 && (
+                <span className={`badge rounded-pill bg-secondary text-white`}>
+        {counts.other}
+      </span>
+            )}
+        </div>
+    );
 
     return(
         <>
@@ -120,25 +184,30 @@ export function RequestObjectPage(){
 
                         <label>Выберите объект</label>
                         <ul className="list-group">
-                            {filteredObjects.map(object => (
-                                <li
-                                    className={styleItem(object)}
-                                    aria-current="true"
-                                    key={object.id}
-                                    onClick={() => {
-                                        // TODO Реализовать изменение цвета li работника при нажатии
-                                        setSelectedObject(object.id)
-                                    }}
-                                >
-                                    {'ул. ' + object.street + ' д. ' + object.house + ' кв. ' + object.apartment}
-                                </li>
-                            ))}
+                            {filteredObjects.map(object => {
+                                const taskCounts = countTasksByStatus(requests, object.id);
+                                const totalTasks = Object.values(taskCounts).reduce((a, b) => a + b, 0);
+
+                                return(
+                                    <li
+                                        className={`${styleItem(object)} d-flex justify-content-between align-items-center`}
+                                        aria-current="true"
+                                        key={object.id}
+                                        onClick={() => setSelectedObject(object.id)}
+                                    >
+                                        <span>
+                                            {'ул. ' + object.street + ' д. ' + object.house + ' кв. ' + object.apartment}
+                                        </span>
+                                        {totalTasks > 0 && <StatusBadges counts={taskCounts} />}
+                                    </li>
+                                )
+                            })}
                         </ul>
                     </div>
                     <div>
-                        {requests.length === 0 && <p>Заданий нет</p>}
-                        {requests && <div className="container mt-3">
-                            {requests.map(request => (
+                        {requestsObject.length === 0 && <p>Заданий нет</p>}
+                        {requestsObject && <div className="container mt-3">
+                            {requestsObject.map(request => (
                                 <RequestCard
                                     onClick={() => navigate(`/request/${request.request_Id}`)}
                                     request={request}
@@ -148,7 +217,7 @@ export function RequestObjectPage(){
                         </div>}
                     </div>
                 </main>
-                <footer className="p-3 bg-light fixed-bottom">
+                <footer className="p-3 bg-light">
                     <button
                         className="btn btn-primary w-100"
                         onClick={handleClick}
@@ -160,3 +229,4 @@ export function RequestObjectPage(){
         </>
     )
 }
+

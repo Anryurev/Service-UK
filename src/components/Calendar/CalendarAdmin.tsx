@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {IBooking, IObject} from '../../models';
 import '../../CalendarAdmin.css';
 import {useNavigate} from "react-router-dom";
 import api from "../../api";
+import {RequestContext} from "../../context/requestContext/RequestContext";
 
 interface CalendarDay {
     date: Date
@@ -13,7 +14,7 @@ interface CalendarDay {
 const CalendarAdmin: React.FC = () => {
     const [currentMonth, setCurrentMonth] = useState(new Date())
     const [selectedBooking, setSelectedBooking] = useState<IBooking | null>(null)
-    const [selectedObject, setSelectedObject] = useState<IObject | null>(null)
+    const [selectedObject, setSelectedObject] = useState(0)
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(0)
     const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([])
     const navigate = useNavigate()
@@ -22,6 +23,7 @@ const CalendarAdmin: React.FC = () => {
     const [loading, setLoading] = useState(true)
     const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null)
     const [error, setError] = useState<string | null>(null)
+    const requestContext = useContext(RequestContext)
 
     const LoadingData = async () => {
         try{
@@ -133,6 +135,21 @@ const CalendarAdmin: React.FC = () => {
         navigate(`/booking/create?date=${dateString}`)
     }
 
+    const handleClickBooking = (booking: IBooking) => {
+        const object = objectsAll?.find(obj => obj.id === booking.object_id)
+        console.log('object click', object)
+        if (object){
+            const selectedObjectId = object?.id
+            if (requestContext?.request) {
+                console.log('selectesObject', selectedObject)
+                const updatedRequest = { ...requestContext.request, object_Id: selectedObjectId }
+                requestContext.setRequest(updatedRequest)
+            }
+        }
+        console.log('request click', requestContext.request)
+        navigate(`/request/execut`)
+    }
+
     if (error) return <div>{error}</div>
 
     return (
@@ -180,11 +197,7 @@ const CalendarAdmin: React.FC = () => {
                     day={selectedDay}
                     objectsAll={objectsAll}
                     onClose={() => setSelectedDay(null)}
-                    onBookingClick={(booking) => {
-                        const object = objectsAll?.find(obj => obj.id === booking.object_id);
-                        setSelectedBooking(booking);
-                        setSelectedObject(object || null);
-                    }}
+                    onBookingClick={(booking) => handleClickBooking(booking)}
                     onAddClick={() => handleAddBooking(selectedDay.date)}
                 />
             )}

@@ -1,6 +1,7 @@
-import React, {useContext} from "react";
+import React, {useContext, useState} from "react";
 import {IOffice, IRole} from "../../models";
 import {EdembackContext} from "../../context/edemback/EdembackContext";
+import {Modal} from "../Modal";
 
 interface OfficeProps {
     office: IOffice
@@ -8,6 +9,7 @@ interface OfficeProps {
 }
 
 export function OfficeNote({ office, onClick }: OfficeProps){
+    const [isModalOpen, setIsModalOpen] = useState(false)
     const edemContext = useContext(EdembackContext)
 
     return(
@@ -17,12 +19,37 @@ export function OfficeNote({ office, onClick }: OfficeProps){
                 <div className="mb-0 col text-end">
                     <button className="btn-close" onClick={(e) => {
                         e.stopPropagation()
-                        edemContext.deleteOffice(office.office_Id)
+                        setIsModalOpen(true)
                     }}>
                     </button>
                 </div>
 
             </div>
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={"Подтвердить удаление"} footer={(
+                <>
+                    <button
+                        type="button"
+                        className="btn text-white"
+                        style={{ background: "#8b8c89" }}
+                        onClick={() => setIsModalOpen(false)}
+                    >
+                        Закрыть
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={() => {
+                            edemContext.deleteOffice(office.office_Id)
+                            setIsModalOpen(false)
+                        }}
+                    >
+                        Удалить
+                    </button>
+                </>
+            )}>
+                <div>Удалить данный объект?</div>
+            </Modal>
         </>
     )
 }

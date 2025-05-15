@@ -11,11 +11,14 @@ export function CalendarAdminPage() {
 
     const request: IRequest = {
         request_Id: -1,
-        role_Id: 0,
+        type_Work: "",
+        description: "",
+        roles_Id: null,
         worker_Id: 0,
         object_Id: 0,
-        status: "",
-        urgency: false
+        status: "1",
+        urgency: false,
+        photos: null,
     }
 
     const handleClickAssign = () => {

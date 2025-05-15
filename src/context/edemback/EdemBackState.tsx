@@ -1,7 +1,7 @@
 import React, {useReducer} from "react"
 import {EdembackContext} from "./EdembackContext";
 import {edemBackReducer} from "./EdemBackReducer";
-import {IBooking, IObject, IOffice, IRequest, IRole, IState, IUsers} from "../../models";
+import {IBooking, IObject, IOffice, IRequest, IRole, IState, IWorkers} from "../../models";
 import axios from "axios";
 import {objectsData} from "../../data/objectsData";
 import {
@@ -9,20 +9,20 @@ import {
     GET_AREND_OBJECT,
     GET_OBJECT_1_FILIAL,
     GET_ONE_OBJECT,
-    GET_ALL_Users,
+    GET_ALL_WORKERS,
     CREATE_OBJECT,
-    CREATE_USER,
+    CREATE_WORKER,
     UPDATE_OBJECT,
-    UPDATE_USER,
+    UPDATE_WORKER,
     DELETE_OBJECT,
-    DELETE_USER,
+    DELETE_WORKER,
     GET_ALL_ROLES,
     DELETE_ROLE,
     GET_ALL_OFFICES,
     DELETE_OFFICE,
     CREATE_OFFICE,
     CREATE_ROLE,
-    GET_ONE_USER,
+    GET_ONE_WORKER,
     DELETE_BOOKING,
     UPDATE_BOOKING,
     CREATE_BOOKING,
@@ -39,13 +39,13 @@ interface IEdemBackState{
 }
 
 const initialState: IState = {
-    users: [],
+    workers: [],
     objects: [],
     roles: [],
     offices: [],
     bookings: [],
     requests: [],
-    user: {id: 0, id_Role: 0, id_Office: 0, birthday: "", password: "", email: "", name: "", phoneNumber: "", surname: "", fathername: ""},
+    worker: {id: 0, id_Role: 0, id_Office: 0, birthday: "", password: "", email: "", name: "", phoneNumber: "", surname: "", fathername: ""},
     role: {role_Id: 0, name: "", salary: 0},
     object: {id: 0, kitchen: false, balcony: false, area: 0, rooms: 0, house: "", street: "", status: "", apartment: "", office_Id: 0},
     office: {office_Id: 0, house: "", street: ""}
@@ -95,7 +95,6 @@ export const EdemBackState = ({children}: IEdemBackState) => {
     }
     const createObject = async (object: IObject) => {
         const response = await api.post(`/Object`, object)
-        console.log('response', response.data)
 
         dispatch({
             type: CREATE_OBJECT,
@@ -104,7 +103,6 @@ export const EdemBackState = ({children}: IEdemBackState) => {
     }
     const deleteObject = async (objectID: number) => {
         const response = await api.delete(`/Object/${objectID}`)
-        console.log('Delete object: ', response.data)
 
         dispatch({
             type: DELETE_OBJECT,
@@ -123,47 +121,45 @@ export const EdemBackState = ({children}: IEdemBackState) => {
 
 
 
-    // Users
-    const getAllUsers = async () => {
+    // Workers
+    const getAllWorkers = async () => {
         const response = await api.get(`/Workers`)
-        console.log('Get all Users: ', response.data)
+        console.log('Get all Workers: ', response.data)
         dispatch({
-            type: GET_ALL_Users,
+            type: GET_ALL_WORKERS,
             payload: response.data
         })
     }
-    const getOneUser = async (userId: number) => {
-        const response = await api.get(`/Worker/${userId}`)
-        console.log('Get one user', response.data)
+    const getOneWorker = async (workerId: number) => {
+        const response = await api.get(`/Worker/${workerId}`)
 
         dispatch({
-            type: GET_ONE_USER,
+            type: GET_ONE_WORKER,
             payload: response.data
         })
     }
-    const createUser = async (user: IUsers) => {
-        const response = await api.post(`/Worker`, user)
-        console.log(response.data)
+    const createWorker = async (worker: IWorkers) => {
+        const response = await api.post(`/Worker`, worker)
 
         dispatch({
-            type: CREATE_USER,
+            type: CREATE_WORKER,
             payload: response.data
         })
     }
-    const updateUser = async (user: IUsers) => {
-        const response = await api.put(`/UpdateWorker`, user)
+    const updateWorker = async (worker: IWorkers) => {
+        const response = await api.put(`/UpdateWorker`, worker)
 
         dispatch({
-            type: UPDATE_USER,
-            payload: user
+            type: UPDATE_WORKER,
+            payload: worker
         })
     }
-    const deleteUser = async (userID: number) => {
-        const response = await api.delete(`/Worker/${userID}`)
+    const deleteWorker = async (workerID: number) => {
+        const response = await api.delete(`/Worker/${workerID}`)
 
         dispatch({
-            type: DELETE_USER,
-            payload: userID
+            type: DELETE_WORKER,
+            payload: workerID
         })
     }
 
@@ -217,11 +213,11 @@ export const EdemBackState = ({children}: IEdemBackState) => {
         })
     }
     // const updateOffice = async (office: IOffice) => {
-    //     const response = await api.put(`/UpdateWorker`, user)
+    //     const response = await api.put(`/UpdateWorker`, office)
     //
     //     dispatch({
-    //         type: UPDATE_USER,
-    //         payload: user
+    //         type: UPDATE_OFFICE,
+    //         payload: office
     //     })
     // }
     const deleteOffice = async (officeId: number) => {
@@ -245,12 +241,12 @@ export const EdemBackState = ({children}: IEdemBackState) => {
             payload: response.data
         })
     }
-    // const getOneBooking = async (userId: number) => {
-    //     const response = await api.get(`/Worker/${userId}`)
-    //     console.log('Get one user', response.data)
+    // const getOneBooking = async (bookingId: number) => {
+    //     const response = await api.get(`/Worker/${bookingId}`)
+    //     console.log('Get one booking', response.data)
     //
     //     dispatch({
-    //         type: GET_ONE_USER,
+    //         type: GET_ONE_BOOKING,
     //         payload: response.data
     //     })
     // }
@@ -325,20 +321,20 @@ export const EdemBackState = ({children}: IEdemBackState) => {
             getOneObject,
             getArendObject,
             getObject1Filial,
-            getAllUsers,
+            getAllWorkers,
             createObject,
-            createUser,
+            createWorker,
             updateObject,
-            updateUser,
+            updateWorker,
             deleteObject,
-            deleteUser,
+            deleteWorker,
             getAllRoles,
             deleteRole,
             getAllOffices,
             deleteOffice,
             createOffice,
             createRole,
-            getOneUser,
+            getOneWorker,
             getAllBookings,
             createBooking,
             updateBooking,

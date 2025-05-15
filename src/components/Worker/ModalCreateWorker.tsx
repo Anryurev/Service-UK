@@ -1,14 +1,14 @@
 import React, {useState} from "react";
-import {IUsers} from "../../models";
+import {IWorkers} from "../../models";
 import {WorkerForm} from "./WorkerForm";
 
 interface ModalCreateWorkerProps {
-    onSubmit: (newUser: IUsers) => void
+    onSubmit: (newWorker: IWorkers) => void
     onClose: () => void
 }
 
 export function ModalCreateWorker({ onSubmit, onClose }: ModalCreateWorkerProps){
-    const [formData, setFormData] = useState<IUsers>({
+    const [formData, setFormData] = useState<IWorkers>({
         id: 0,
         name: "",
         surname: "",
@@ -29,7 +29,7 @@ export function ModalCreateWorker({ onSubmit, onClose }: ModalCreateWorkerProps)
         const keys = name.split(".")
 
         setFormData((prev) => {
-            const newData = JSON.parse(JSON.stringify(prev)) as IUsers
+            const newData = JSON.parse(JSON.stringify(prev)) as IWorkers
 
             let current: any = newData
             for (let i = 0; i < keys.length - 1; i++) {
@@ -48,8 +48,8 @@ export function ModalCreateWorker({ onSubmit, onClose }: ModalCreateWorkerProps)
 
     const handleSubmit = async () => {
         let isValid = true;
-        (Object.keys(formData) as Array<keyof IUsers>).forEach(key => {
-            const value = formData[key as keyof IUsers] // Явное приведение типа ключа
+        (Object.keys(formData) as Array<keyof IWorkers>).forEach(key => {
+            const value = formData[key as keyof IWorkers] // Явное приведение типа ключа
             // console.log(`${key as keyof IUsers} `, String(value).trim().length === 0)
             if (String(value).trim().length === 0) {
                 isValid = false

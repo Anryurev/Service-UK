@@ -3,67 +3,101 @@ import {Navbar} from "../../components/Navbar";
 import {EdembackContext} from "../../context/edemback/EdembackContext";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import api from "../../api";
-import {IObject, IRequest, IRole, IUsers} from "../../models";
-import {UserContext} from "../../context/userContext/UserContext";
+import {IObject, IRequest, IRole, IWork, IWorkers} from "../../models";
+import {WorkerContext} from "../../context/workerContext/WorkerContext";
 import {RequestContext} from "../../context/requestContext/RequestContext";
 
 export function RequestExecutPage(){
-    const [UsersRole, setUsersRole] = useState<IUsers[]>([])
-    const [selectedRole, setSelectedRole] = useState({id: 0, name: "Выберите роль"})
+    const [workersRole, setWorkersRole] = useState<IWorkers[]>([])
+    const [selectedTypeWork, setSelectedTypeWork] = useState({id: 0, name: "Выберите тип работы"})
     const [selectedWorker, setSelectedWorker] = useState(0)
+    // const [typeWorkRoles, setTypeWorkRoles] = useState<IWork>()
     const [errorRole, setErrorRole] = useState(false)
-    const [roles, setRoles] = useState<IRole[]>([])
+    const [typesWork, setTypesWork] = useState<IWork[]>([])
     const [allWorker, setAllWorker] = useState(false)
     const requestContext = useContext(RequestContext)
     const [updatedRequest, setUpdatedRequest] = useState<IRequest>(requestContext.request)
     const navigate = useNavigate()
 
-    const LoadingRoles = async () => {
-        const response = await api.get(`/Roles/NoImportant`)
-        setRoles(response.data)
+    const LoadingTypesWork = async () => {
+        const response = await api.get(`/TypesWork`)
+        setTypesWork(response.data)
     }
 
-    const LoadingWorker = async (idRole: number) => {
-        let response = null
-        if (idRole === 0){
+
+    const LoadingWorkers = async (idTypeWork: number) => {
+        let response: IWorkers[]
+        if (idTypeWork === 0){
             response = []
         }else {
-            const res = await api.get(`/Workers?Role=${idRole}`)
-            response = res.data
+            const responseRoles = await api.get(`/TypeWork/${idTypeWork}`)
+            console.log('typeWorks', responseRoles.data)
+            const typeWorkRoles: IWork = responseRoles.data
+
+            let roles: IRole[] = []
+
+            if(typeWorkRoles){
+                roles = typeWorkRoles.roles
+                console.log('roles', roles)
+            }
+
+            const requests = roles.map(role =>
+                api.get<IWorkers[]>(`/Workers?Role=${role.role_Id}`)
+            )
+
+            // Выполняем все запросы параллельно
+            const responses = await Promise.all(requests)
+
+            // Объединяем результаты (flatMap уберет вложенность)
+            const allWorkers = responses.flatMap(response => response.data)
+
+            // Удаляем дубликаты (если возможно повторение работников)
+            response = Array.from(new Map(
+                allWorkers.map(worker => [worker.id, worker])
+            ).values())
         }
-        setUsersRole(response)
+        setWorkersRole(response)
+        console.log('workers role', workersRole)
     }
 
     useEffect(() => {
         setErrorRole(false)
-        LoadingWorker(selectedRole.id)
-    }, [selectedRole])
+        LoadingWorkers(selectedTypeWork.id)
+    }, [selectedTypeWork])
 
     useEffect(() => {
-        LoadingRoles()
+        LoadingTypesWork()
     }, [])
 
     useEffect(() => {
-        if (selectedRole.id !== 0) {
+        if (selectedTypeWork.id !== 0) {
             const newRequest = {
                 ...requestContext.request,
-                role_Id: selectedRole.id,
-                ...(selectedWorker !== 0 && { worker_Id: selectedWorker }) // Добавляем worker_Id только если selectedWorker !== 0
+                type_Work: String(selectedTypeWork.id),
+                ...(selectedWorker !== 0 && {
+                    worker_Id: selectedWorker,
+                    status: '2'
+                }) // Добавляем worker_Id только если selectedWorker !== 0
             }
             requestContext.setRequest(newRequest)
         } else {
             setErrorRole(true)
         }
-    }, [selectedWorker, selectedRole])
+    }, [selectedWorker, selectedTypeWork])
 
-    const styleItem = (worker: IUsers) => worker.id === UsersRole.find(us => us.id === selectedWorker)?.id? "list-group-item border-1 border-success" : "list-group-item border-1"
+    const styleItem = (worker: IWorkers) => worker.id === workersRole.find(us => us.id === selectedWorker)?.id? "list-group-item border-1 border-success" : "list-group-item border-1"
+
+    const handleClick = () => {
+        console.log('request executPage', requestContext.request)
+        navigate(`/request/description`)
+    }
 
     return(
         <>
             <Navbar/>
             <div className="d-flex flex-column min-vh-100 container-sm" style={{paddingTop: '60px'}}>
                 <main className="flex-grow-1">
-                    <div className="p-3 bg-light fixed-top" style={{marginTop: '56px'}}>
+                    <header className="p-3 bg-light sticky-top" style={{zIndex: 1020}}>
                         <div className="dropdown mb-2">
                             <button
                                 className="btn btn-outline-secondary dropdown-toggle w-100 text-start"
@@ -72,31 +106,31 @@ export function RequestExecutPage(){
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false"
                             >
-                                {selectedRole.name}
+                                {selectedTypeWork.name}
                             </button>
                             <ul className="dropdown-menu w-100" aria-labelledby="roleDropdown">
                                 <li>
                                     <button
                                         className="dropdown-item"
                                         type="button"
-                                        onClick={() => setSelectedRole({id: 0, name: "Выберите роль"})}
+                                        onClick={() => setSelectedTypeWork({id: 0, name: "Выберите тип работы"})}
                                     >
-                                        Выберите роль
+                                        Выберите тип работы
                                     </button>
                                 </li>
-                                {roles.map(role => (
-                                    <li key={role.role_Id}>
+                                {typesWork.map(work => (
+                                    <li key={work.id_Work}>
                                         <button
                                             className="dropdown-item"
                                             type="button"
-                                            onClick={() => setSelectedRole({id: role.role_Id, name: role.name})}
+                                            onClick={() => setSelectedTypeWork({id: work.id_Work, name: work.name})}
                                         >
-                                            {role.name}
+                                            {work.name}
                                         </button>
                                     </li>
                                 ))}
                             </ul>
-                            <input type="hidden" name="id_Role" value={selectedRole.id}/>
+                            <input type="hidden" name="id_Role" value={selectedTypeWork.id}/>
                             {errorRole && <small style={{color: "red"}}>Выберите роль!</small>}
                         </div>
 
@@ -104,21 +138,26 @@ export function RequestExecutPage(){
                             <input
                                 type="checkbox"
                                 className="form-check-input me-1"
-                                name='allUsersRole'
+                                name='allWorkersRole'
                                 checked={allWorker}
                                 onChange={() => {
+                                    const newRequest = {
+                                        ...requestContext.request,
+                                        type_Work: String(selectedTypeWork.id),
+                                        status: '1'
+                                    }
+                                    requestContext.setRequest(newRequest)
                                     setAllWorker(prev => (!prev))
-                                    console.log(allWorker)
                                 }}
                             />
                             <label htmlFor='kitchen'>Для всех работников должности</label>
                         </div>
-                    </div>
+                    </header>
 
                     {!allWorker && <div>
                         <label>Выберите работника</label>
                         <ul className="list-group">
-                            {UsersRole.map(worker => (
+                            {workersRole.map(worker => (
                                 <li
                                     className={styleItem(worker)}
                                     aria-current="true"
@@ -134,10 +173,10 @@ export function RequestExecutPage(){
                         </ul>
                     </div>}
                 </main>
-                <footer className="p-3 bg-light fixed-bottom">
+                <footer className="p-3 bg-light">
                     <button
                         className="btn btn-primary w-100"
-                        onClick={() => navigate(`/request/description`)}
+                        onClick={handleClick}
                         // TODO Изменить цвет кнопки
                     >
                         Далее

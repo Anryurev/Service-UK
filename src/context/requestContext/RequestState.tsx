@@ -8,12 +8,17 @@ interface IRequestState{
 
 export const RequestState = ({children}: IRequestState) => {
 
-    const [request, setRequest] = useState<IRequest>({request_Id: 0,
-        role_Id: 0,
-        object_Id: 0,
+    const [request, setRequest] = useState<IRequest>({
+        request_Id: -1,
+        type_Work: "",
+        description: "",
+        roles_Id: null,
         worker_Id: 0,
-        status: "",
-        urgency: false})
+        object_Id: 0,
+        status: "1",
+        urgency: false,
+        photos: null,
+    })
 
     return (
 

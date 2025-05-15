@@ -1,7 +1,7 @@
 import React, {useContext, useState} from "react";
 import {Navbar} from "../../../components/Navbar";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
-import {IOffice, IUsers} from "../../../models";
+import {IOffice, IWorkers} from "../../../models";
 import {useNavigate} from "react-router-dom";
 
 export function CreateOfficePage(){
