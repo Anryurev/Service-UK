@@ -9,6 +9,7 @@ export function BookingDatePage(){
     const [bookings, setBookings] = useState<IBooking[]>([])
     const { date } = useParams<{ date: string }>()
     const [objects, setObjects] = useState<IObject[]>([])
+    const [formattedDate, setFormattedDate] = useState(date)
     const navigate = useNavigate()
 
     const LoadingData = async (date: string) => {
@@ -19,9 +20,21 @@ export function BookingDatePage(){
         console.log('bookings op date', bookings)
     }
 
+    const FormatedData = (date: Date) => {
+        console.log('DATE', date)
+        const day = String(date.getDate()).padStart(2, '0')
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const year = date.getFullYear()
+
+        return `${day}.${month}.${year}`
+    }
+
     useEffect(() => {
         if(date){
             LoadingData(date)
+            const curDate = new Date(date)
+            setFormattedDate(FormatedData(curDate))
+            console.log(formattedDate)
         }
     }, [])
 
@@ -42,14 +55,14 @@ export function BookingDatePage(){
         <>
             <Navbar/>
             <div className="container-fluid w-50" style={{paddingTop: "60px"}}>
-                <h1>Информация о бронированиях на {date}</h1>
+                <h1>Информация о бронированиях на {formattedDate}</h1>
                 {bookings.map(booking => (
                     <ListGroup.Item key={booking.id_Booking} className="mb-3">
                         <Card>
                             <Card.Body>
                                 <Card.Title>ул. {getOneObjectByBooking(booking.object_id)?.street} д. {getOneObjectByBooking(booking.object_id)?.house} кв. {getOneObjectByBooking(booking.object_id)?.apartment}</Card.Title>
-                                <Card.Text>Дата заезда: {booking.date_Start.toLocaleString()}</Card.Text>
-                                <Card.Text>Дата выезда: {booking.date_End.toLocaleString()}</Card.Text>
+                                <Card.Text>Дата заезда: {FormatedData(new Date(booking.date_Start))}</Card.Text>
+                                <Card.Text>Дата выезда: {FormatedData(new Date(booking.date_End as Date))}</Card.Text>
                                 <Badge
                                     bg={
                                         booking.status === "Бронь"

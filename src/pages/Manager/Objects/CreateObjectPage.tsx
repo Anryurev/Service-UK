@@ -1,13 +1,15 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {Navbar} from "../../../components/Navbar";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
-import {IObject} from "../../../models";
+import {IObject, IOffice} from "../../../models";
 import {useNavigate} from "react-router-dom";
 import {ObjectForm} from "../../../components/Object/ObjectForm";
+import api from "../../../api";
 
 export function CreateObjectPage(){
     const edemContext = useContext(EdembackContext)
     const navigate = useNavigate()
+    const [offices, setOffices] = useState<IOffice[]>([])
     const [formData, setFormData] = useState<IObject>({
         id: -1,
         office_Id: 0,
@@ -20,6 +22,15 @@ export function CreateObjectPage(){
         kitchen: false,
         balcony: false
     })
+
+    const LoadingOffices = async () => {
+        const response = await api.get(`/Offices`)
+        setOffices(response.data)
+    }
+
+    useEffect(() => {
+        LoadingOffices()
+    }, [])
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
         const { name, value } = e.target
@@ -64,7 +75,7 @@ export function CreateObjectPage(){
             <Navbar/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Создание нового объекта</h1>
-                <ObjectForm formData={formData} offices={edemContext.state.offices} onChange={handleChange} onSubmit={handleSubmit}/>
+                <ObjectForm formData={formData} offices={offices} onChange={handleChange} onSubmit={handleSubmit}/>
             </div>
         </>
     )

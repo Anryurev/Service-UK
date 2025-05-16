@@ -3,6 +3,7 @@ import {IRole, IWork} from "../../../models";
 import api from "../../../api";
 import {Navbar} from "../../../components/Navbar";
 import {useNavigate} from "react-router-dom";
+import {log} from "util";
 
 export function CreateWorkPage(){
     const navigate = useNavigate()
@@ -61,12 +62,16 @@ export function CreateWorkPage(){
     };
 
     const handleSubmit = (): void => {
-        const isValid = (Object.keys(formData) as Array<keyof IWork>).every(key => {
-            const value = formData[key];
-            return key === 'roles_Id'
-                ? Array.isArray(value) && value.length > 0
-                : String(value).trim().length > 0;
-        });
+        console.log('formData handleSubmit', formData)
+        const isValid = ((): boolean => {
+            // Проверяем name
+            const isNameValid = String(formData.name).trim().length > 0;
+
+            // Проверяем roles_Id
+            const isRolesIdValid = Array.isArray(formData.roles_Id) && formData.roles_Id.length > 0;
+
+            return isNameValid && isRolesIdValid;
+        })()
 
         if (isValid) {
             onSubmit(formData);

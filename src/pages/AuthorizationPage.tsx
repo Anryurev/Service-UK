@@ -3,11 +3,16 @@ import {useNavigate} from "react-router-dom";
 import {WorkerContext} from "../context/workerContext/WorkerContext";
 import {EdembackContext} from "../context/edemback/EdembackContext";
 import api from "../api";
-import {IWorkers} from "../models";
+import {IRole, IWorkers} from "../models";
 
 interface IAuthorizationData{
     login: string,
     password: string
+}
+
+interface IResponseAuth{
+    Worker: IWorkers,
+    Roles: IRole[]
 }
 
 export function AuthorizationPage(){
@@ -21,24 +26,24 @@ export function AuthorizationPage(){
 
 
     const formatPhone = (value: string) => {
-        const numbers = value.replace(/\D/g, '').substring(1); // Удаляем все кроме цифр и +
-        let formatted = '+7';
+        const numbers = value.replace(/\D/g, '').substring(1)
+        let formatted = '+7'
 
         if (numbers.length > 0) {
-            formatted += ` (${numbers.substring(0, 3)}`;
+            formatted += ` (${numbers.substring(0, 3)}`
         }
         if (numbers.length > 3) {
-            formatted += `) ${numbers.substring(3, 6)}`;
+            formatted += `) ${numbers.substring(3, 6)}`
         }
         if (numbers.length > 6) {
-            formatted += `-${numbers.substring(6, 8)}`;
+            formatted += `-${numbers.substring(6, 8)}`
         }
         if (numbers.length > 8) {
-            formatted += `-${numbers.substring(8, 10)}`;
+            formatted += `-${numbers.substring(8, 10)}`
         }
 
-        return formatted;
-    };
+        return formatted
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const input = e.target.value;
@@ -62,7 +67,8 @@ export function AuthorizationPage(){
                     password: password
                 }
                 const response = await api.post(`/Auth`, workerAuth)
-                const foundWorker = response.data as IWorkers
+                const responseData: IResponseAuth = response.data
+                const foundWorker = responseData.Worker
                 console.log('found', foundWorker)
 
                 if (foundWorker) {
@@ -102,30 +108,75 @@ export function AuthorizationPage(){
 
     return (
         <>
-            <form onSubmit={submitHandler}>
-                <div className="container-fluid w-50 text-center pt-5" style={{color: "#6096ba"}}>
-                    <h1>Авторизация</h1>
-                    <input
-                        type="tel"
-                        value={phone}
-                        onChange={handleChange}
-                        placeholder="+7 (123) 456-78-90"
-                        maxLength={18}
-                        className="form-control"
-                    />
-                    <input
-                        type="password"
-                        className="form-control mt-3"
-                        placeholder="Введите пароль..."
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    {error && <span style={{color: "red"}}>Пользователь не найден!</span>}
-                    <div>
-                        <button type="submit" className="btn mt-5" id='btnAuth' style={{background: "#6096ba", color: "white"}}>Войти</button>
+            <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+                <form onSubmit={submitHandler} className="p-4 rounded-3 shadow bg-white" style={{width: "100%", maxWidth: "450px"}}>
+
+                    {/* Заголовок */}
+                    <div className="text-center mb-4">
+                        <h1 className="fw-bold text-primary">Авторизация</h1>
+                        <p className="text-muted">Введите ваши данные для входа</p>
                     </div>
-                </div>
-            </form>
+
+                    {/* Поле телефона с иконкой */}
+                    <div className="input-group mb-3">
+                        <span className="input-group-text bg-transparent border-end-0">
+                            <i className="bi bi-telephone text-primary"></i>
+                        </span>
+                        <input
+                            type="tel"
+                            value={phone}
+                            onChange={handleChange}
+                            placeholder="+7 (123) 456-78-90"
+                            className="form-control py-2 border-start-0"
+                        />
+                    </div>
+
+                    {/* Поле пароля с иконкой */}
+                    <div className="input-group mb-3">
+                        <span className="input-group-text bg-transparent border-end-0">
+                            <i className="bi bi-lock text-primary"></i>
+                        </span>
+                        <input
+                            type="password"
+                            placeholder="Пароль"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="form-control py-2 border-start-0"
+                        />
+                    </div>
+
+                    {/* Сообщение об ошибке */}
+                    {error && (
+                        <div className="alert alert-danger animate__animated animate__headShake mb-3">
+                            <i className="bi bi-exclamation-circle me-2"></i>
+                            Неверный телефон или пароль
+                        </div>
+                    )}
+
+                    {/* Запомнить меня и забыли пароль */}
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                        <div className="form-check">
+                            <input
+                                type="checkbox"
+                                id="remember"
+                                className="form-check-input"
+                            />
+                            <label htmlFor="remember" className="form-check-label text-muted">
+                                Запомнить меня
+                            </label>
+                        </div>
+                        <a href="#" className="text-decoration-none text-primary">Забыли пароль?</a>
+                    </div>
+
+                    {/* Кнопка входа */}
+                    <button
+                        type="submit"
+                        className="btn btn-primary w-100 py-2 mb-3 fw-bold"
+                    >
+                        Войти
+                    </button>
+                </form>
+            </div>
         </>
     )
 }

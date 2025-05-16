@@ -201,15 +201,15 @@ const Calendar: React.FC = () => {
     const getBookingCountClass = (status: string) => {
         switch (status) {
             case 'Свободна':
-                return "day-number text-success col"
+                return "day-number text-success"
             case 'Бронь':
-                return "day-number text-warning col"
+                return "day-number text-warning"
             case 'Сдана':
-                return "day-number text-danger col"
+                return "day-number text-danger"
             case 'Ремонт/Уборка':
-                return "day-number text-primary col"
+                return "day-number text-primary"
             default:
-                return "day-number text-secondary col"
+                return "day-number text-secondary"
         }
     }
 
@@ -256,15 +256,26 @@ const Calendar: React.FC = () => {
                                 className={`calendar-day ${day.bookings.length > 0 ? 'has-bookings' : ''} ${day.isCurrentMonth ? 'has-add-button' : ''}`}
                                 onClick={() => handleClickDate(day.bookings, day.date)}
                             >
-                                <div className="row">
-                                    {day.isCurrentMonth && <div className="day-number col">{day.date.getDate()}</div>}
-                                    <div className="col">
-                                        <div className="row text-start">
-                                            {Object.entries(countOfBookingsByStatus(day.bookings)).map(([status, count]) => (
-                                                <div className={getBookingCountClass(status)} key={status}>{count}</div>
-                                            ))}
-                                        </div>
-                                    </div>
+                                <div className="row align-items-center g-1">
+                                    {day.isCurrentMonth && (
+                                        <>
+                                            <div className="col-auto pe-0">
+                                                <div className="day-number col">{day.date.getDate()}</div>
+                                            </div>
+                                            <div className="col ps-1">
+                                                <div className="d-flex flex-wrap gap-1">
+                                                    {Object.entries(countOfBookingsByStatus(day.bookings)).map(([status, count]) => (
+                                                        <span
+                                                            className={getBookingCountClass(status)}
+                                                            key={status}
+                                                            style={{ fontSize: '0.7rem', padding: '0.1rem 0.3rem' }}
+                                                        >
+                                                            {count}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </>)}
                                 </div>
                                 <div className="day-bookings">
                                     {day.bookings.map(booking => {
