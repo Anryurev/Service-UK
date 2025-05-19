@@ -75,8 +75,8 @@ export function EditOfficePage() {
         })
 
         if (isValid) {
-            // edemContext.updateOffice(formData)
-            navigate('/objects')
+            edemContext.updateOffice(formData)
+            navigate('/offices')
         }
     };
 

@@ -30,7 +30,7 @@ import {
     GET_ONE_WORKER,
     GET_ONE_ROLE,
     DELETE_REQUEST,
-    UPDATE_REQUEST, GET_ALL_BOOKINGS, CREATE_BOOKING, UPDATE_BOOKING, DELETE_BOOKING
+    UPDATE_REQUEST, GET_ALL_BOOKINGS, CREATE_BOOKING, UPDATE_BOOKING, DELETE_BOOKING, UPDATE_OFFICE
 } from '../typesAction'
 
 const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
@@ -111,6 +111,10 @@ const handlers: { [key: string]: (state: IState, action: Action) => IState } = {
     [CREATE_OFFICE]: (state, {payload}) => ({
         ...state,
         offices: [...state.offices, payload]
+    }),
+    [UPDATE_OFFICE]: (state, {payload}) => ({
+        ...state,
+        offices: state.offices.map(office => office.office_Id === payload.id ? payload : office)
     }),
 
 

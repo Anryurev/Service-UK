@@ -1,15 +1,16 @@
 import React, {useContext, useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {IWorkers} from "../../../models";
+import {IRole, IWorkers} from "../../../models";
 import {Navbar} from "../../../components/Navbar";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
-import {roles} from "../../../data/rolesdata";
+import api from "../../../api";
 
 export function WorkerPage(){
     const { workerId } = useParams<{ workerId: string }>()
     const [isEditingMod, setIsEditingMod] = useState(false)
     const edemContext = useContext(EdembackContext)
     const navigate = useNavigate()
+    const [roles, setRoles] = useState<IRole[]>([])
     const [worker, setWorker] = useState<IWorkers | undefined>({
         id: 0,
         name: "",
@@ -28,7 +29,13 @@ export function WorkerPage(){
         setWorker(worker_current)
     }
 
+    const LoadingRoles = async () => {
+        const responseRole = await api.get(`/Roles`)
+        setRoles(responseRole.data)
+    }
+
     useEffect(() => {
+        LoadingRoles()
         findWorker()
     }, [])
 
@@ -41,7 +48,7 @@ export function WorkerPage(){
     }
 
     const handleEditWorker = () => {
-        setIsEditingMod(true)
+
     }
 
     const handleRemoveWorker = async (workerID: number) => {
@@ -95,7 +102,7 @@ export function WorkerPage(){
                                             </ul>
                                         </div>
                                         <div className="card-footer bg-light d-flex justify-content-between align-items-center">
-                                            <button className="btn btn-sm btn-outline-primary" onClick={handleEditWorker}>Редактировать</button>
+                                            <button className="btn btn-sm btn-outline-primary" onClick={() => navigate(`/worker/${worker?.id}`)}>Редактировать</button>
                                             <button className="btn btn-sm btn-outline-danger" onClick={() => handleRemoveWorker(worker.id)}>Удалить</button>
                                         </div>
                                     </div>

@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState} from "react";
 import {Navbar} from "../../../components/Navbar";
 import {ObjectNote} from "../../../components/Object/ObjectNote";
-import {objectsData} from "../../../data/objectsData";
 import {ModalCreateObject} from "../../../components/Object/ModalCreateObject";
 import {IObject} from "../../../models";
 import {useNavigate} from "react-router-dom";

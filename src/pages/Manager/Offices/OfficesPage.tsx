@@ -22,7 +22,7 @@ export function OfficesPage() {
 
     useEffect(() => {
         LoadingOffices()
-    }, [offices])
+    }, [])
 
     const filteredOffices = offices.filter((office) =>
             office.house.toLowerCase().includes(searchQuery.toLowerCase()) ||

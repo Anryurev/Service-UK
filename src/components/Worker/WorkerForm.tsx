@@ -5,11 +5,12 @@ interface WorkerFormProps{
     formData: IWorkers,
     offices: IOffice[],
     roles: IRole[],
+    isNotEditMode: boolean
     onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
     onSubmit: () => void
 }
 
-export const WorkerForm: React.FC<WorkerFormProps> = ({ formData, offices, roles, onChange, onSubmit }) => {
+export const WorkerForm: React.FC<WorkerFormProps> = ({ formData, offices, roles, isNotEditMode, onChange, onSubmit }) => {
     return (
         <form>
             <div className="mb-2">
@@ -70,7 +71,7 @@ export const WorkerForm: React.FC<WorkerFormProps> = ({ formData, offices, roles
                 />
             </div>
 
-            <div className="mb-3">
+            {isNotEditMode && <div className="mb-3">
                 <label htmlFor="password" className="form-label mb-0">Пароль</label>
                 <input
                     type="text"
@@ -80,9 +81,9 @@ export const WorkerForm: React.FC<WorkerFormProps> = ({ formData, offices, roles
                     value={formData.password}
                     onChange={onChange}
                 />
-            </div>
+            </div>}
 
-            <div className="mb-3">
+            {isNotEditMode && <div className="mb-3">
                 <label htmlFor="birthday" className="form-label mb-0">Дата рождения</label>
                 <input
                     type="date"
@@ -92,7 +93,7 @@ export const WorkerForm: React.FC<WorkerFormProps> = ({ formData, offices, roles
                     value={formData.birthday}
                     onChange={onChange}
                 />
-            </div>
+            </div>}
 
             <div className="mb-4">
                 <label>Выберите должность:</label>
@@ -130,7 +131,7 @@ export const WorkerForm: React.FC<WorkerFormProps> = ({ formData, offices, roles
                 </select>
             </div>
 
-            <button type="button" className="btn mb-4" style={{background: "#6096ba", color: "white"}} onClick={onSubmit}>Создать</button>
+            <button type="button" className="btn mb-4" style={{background: "#6096ba", color: "white"}} onClick={onSubmit}>{isNotEditMode? 'Создать': 'Изменить'}</button>
         </form>
     )
 }

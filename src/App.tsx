@@ -30,6 +30,10 @@ import {RequestState} from "./context/requestContext/RequestState";
 import {BookingDatePage} from "./pages/Operator/BookingDatePage";
 import {WorksPage} from "./pages/Manager/Works/WorksPage";
 import {CreateWorkPage} from "./pages/Manager/Works/CreateWorkPage";
+import {RolePage} from "./pages/Manager/Roles/RolePage";
+import {EditRolePage} from "./pages/Manager/Roles/EditRolePage";
+import {WorkPage} from "./pages/Manager/Works/WorkPage";
+import {EditWorkPage} from "./pages/Manager/Works/EditWorkPage";
 
 function App() {
 
@@ -56,10 +60,12 @@ function App() {
                             <Route path="/offices/create" element={<CreateOfficePage/>}/>
                             <Route path="/roles/create" element={<CreateRolePage/>}/>
                             <Route path="/roles" element={<RolesPage/>}/>
+                            <Route path="/roles/:roleId" element={<RolePage/>}/>
                             <Route path="/offices" element={<OfficesPage/>}/>
                             <Route path="/offices/:officeId" element={<OfficePage/>}/>
                             <Route path="/object/:objectId" element={<EditObjectPage/>}/>
                             <Route path="/worker/:workerId" element={<EditWorkerPage/>}/>
+                            <Route path="/role/:roleId" element={<EditRolePage/>}/>
                             <Route path="/calendar" element={<CalendarAdminPage/>}/>
                             <Route path="/request/object" element={<RequestObjectPage/>}/>
                             <Route path="/request/:requestId" element={<RequestPage/>}/>
@@ -68,6 +74,8 @@ function App() {
                             <Route path="/bookings/:date" element={<BookingDatePage/>}/>
                             <Route path="/works" element={<WorksPage/>}/>
                             <Route path="/works/create" element={<CreateWorkPage/>}/>
+                            <Route path="/works/:workId" element={<WorkPage/>}/>
+                            <Route path="/work/:workId" element={<EditWorkPage/>}/>
                         </Routes>
                     </RequestState>
                 </WorkerState>

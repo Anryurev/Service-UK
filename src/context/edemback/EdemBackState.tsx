@@ -2,8 +2,6 @@ import React, {useReducer} from "react"
 import {EdembackContext} from "./EdembackContext";
 import {edemBackReducer} from "./EdemBackReducer";
 import {IBooking, IObject, IOffice, IRequest, IRole, IState, IWorkers} from "../../models";
-import axios from "axios";
-import {objectsData} from "../../data/objectsData";
 import {
     GET_ALL_OBJECTS,
     GET_AREND_OBJECT,
@@ -30,7 +28,7 @@ import {
     GET_REQUEST,
     CREATE_REQUEST,
     UPDATE_REQUEST,
-    DELETE_REQUEST
+    DELETE_REQUEST, UPDATE_ROLE, UPDATE_OFFICE
 } from "../typesAction";
 import api from "../../api";
 
@@ -190,6 +188,14 @@ export const EdemBackState = ({children}: IEdemBackState) => {
             payload: role
         })
     }
+    const updateRole = async (role: IRole) => {
+        const response = await api.put(`/UpdateRole`, role)
+
+        dispatch({
+            type: UPDATE_ROLE,
+            payload: role
+        })
+    }
 
 
 
@@ -212,14 +218,14 @@ export const EdemBackState = ({children}: IEdemBackState) => {
             payload: office
         })
     }
-    // const updateOffice = async (office: IOffice) => {
-    //     const response = await api.put(`/UpdateWorker`, office)
-    //
-    //     dispatch({
-    //         type: UPDATE_OFFICE,
-    //         payload: office
-    //     })
-    // }
+    const updateOffice = async (office: IOffice) => {
+        const response = await api.put(`/UpdateWorker`, office)
+
+        dispatch({
+            type: UPDATE_OFFICE,
+            payload: office
+        })
+    }
     const deleteOffice = async (officeId: number) => {
         const response = await api.delete(`/Office/${officeId}`)
 
@@ -330,9 +336,11 @@ export const EdemBackState = ({children}: IEdemBackState) => {
             deleteWorker,
             getAllRoles,
             deleteRole,
+            updateRole,
             getAllOffices,
             deleteOffice,
             createOffice,
+            updateOffice,
             createRole,
             getOneWorker,
             getAllBookings,

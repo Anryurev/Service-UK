@@ -74,6 +74,7 @@ export function CreateWorkerPage() {
                         formData={formData}
                         offices={edemContext.state.offices}
                         roles={edemContext.state.roles}
+                        isNotEditMode={true}
                         onChange={handleChange}
                         onSubmit={handleSubmit}
                     />

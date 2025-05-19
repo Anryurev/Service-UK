@@ -26,7 +26,7 @@ export function WorkersPage(){
         LoadingData()
         edemContext.getAllWorkers()
         // eslint-disable-next-line
-    }, [workers])
+    }, [])
 
     const handleClickWorker = (workerId: number) => {
         navigate(`/workers/${workerId}`)

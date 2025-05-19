@@ -1,28 +1,39 @@
 import React, {useContext, useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
-import {IOffice, IWorkers} from "../../../models";
+import {IObject, IOffice, IWorkers} from "../../../models";
 import {Navbar} from "../../../components/Navbar";
 import {WorkerNote} from "../../../components/Worker/WorkerNote";
 import {ObjectNote} from "../../../components/Object/ObjectNote";
+import api from "../../../api";
 
 export function OfficePage(){
     const { officeId } = useParams<{ officeId: string }>()
     const edemContext = useContext(EdembackContext)
     const navigate = useNavigate()
+    // let workers: IWorkers[] = []
+    // let objects: IObject[] = []
+    const [workers, setWorkers] = useState<IWorkers[]>([])
+    const [objects, setObjects] = useState<IObject[]>([])
     const [office, setOffice] = useState<IOffice | undefined>({
         office_Id: -1,
         street: "",
         house: "",
     })
 
-    async function findOffice(){
-        const office_current: IOffice | undefined = edemContext.state.offices.find(office => office.office_Id === Number(officeId));
-        setOffice(office_current)
+    const LoadingData = async () => {
+        const response = await api.get(`/Office/${officeId}`)
+        const responseObjects = await api.get(`/Objects?Office=${officeId}`)
+        const responseWorkers = await api.get(`/Workers?Office=${officeId}`)
+        setWorkers(responseWorkers.data)
+        setObjects(responseObjects.data)
+        setOffice(response.data)
+        console.log('workers', workers)
+        console.log('objects', objects)
     }
 
     useEffect(() => {
-        findOffice()
+        LoadingData()
     }, [])
 
     if(!office){
@@ -37,11 +48,6 @@ export function OfficePage(){
         edemContext.deleteOffice(officeId)
         navigate(`/offices`)
     }
-
-    const workers = edemContext.state.workers.filter(worker => worker.id_Office === Number(officeId))
-    const objects = edemContext.state.objects.filter(object => object.office_Id === Number(officeId))
-    console.log('objects', edemContext.state.objects)
-
 
     return (
         <>
@@ -60,12 +66,14 @@ export function OfficePage(){
                         </div>
                         <div className="row justify-content-center">
                             <h4>Сотрудники</h4>
+                            {!workers && <span>В данном офисе нет пользователей</span>}
                             {workers.map(worker => (
                                 <WorkerNote worker={worker} onRemove={() => edemContext.deleteWorker} onClick={() => {}} key={worker.id}/>
                             ))}
                         </div>
                         <div className="row justify-content-center">
                             <h4>Объекты</h4>
+                            {!objects && <span>В данном офисе нет объектов</span>}
                             {objects.map(object => (
                                 <ObjectNote object={object} onClick={() => {}} key={object.id}/>
                             ))}

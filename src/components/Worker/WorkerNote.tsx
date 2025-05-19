@@ -1,6 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
 import {IWorkers} from "../../models";
-import {roles} from "../../data/rolesdata";
 import {EdembackContext} from "../../context/edemback/EdembackContext";
 import {useNavigate} from "react-router-dom";
 import {Modal} from "../Modal";

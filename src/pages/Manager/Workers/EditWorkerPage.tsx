@@ -26,6 +26,15 @@ export function EditWorkerPage() {
         password: "",
     })
 
+    const LoadingData = async () => {
+        await edemContext.getAllRoles()
+        await edemContext.getAllOffices()
+    }
+
+    useEffect(() => {
+        LoadingData()
+    }, [])
+
     const fetchWorker = async (id: number) => {
         try {
             setLoading(true)
@@ -47,8 +56,11 @@ export function EditWorkerPage() {
 
             // Загружаем данные
             const response = await api.get(`/Worker/${id}`)
-            console.log('response worker', response.data[0])
-            setFormData(response.data)
+            console.log('response worker', response.data)
+            setFormData({
+                ...response.data,
+                password: ""
+            })
 
         } catch (err) {
             setError('Не удалось загрузить данные')
@@ -87,6 +99,7 @@ export function EditWorkerPage() {
     const handleSubmit = async () => {
         let isValid = true;
         (Object.keys(formData) as Array<keyof IWorkers>).forEach(key => {
+            if (key === 'password') return
             const value = formData[key as keyof IWorkers]
             if (String(value).trim().length === 0) {
                 isValid = false
@@ -97,6 +110,8 @@ export function EditWorkerPage() {
             console.log('submit', formData)
             edemContext.updateWorker(formData)
             navigate('/Workers')
+        } else {
+            console.log('Не прошло валидацию')
         }
     }
 
@@ -113,6 +128,7 @@ export function EditWorkerPage() {
                     formData={formData}
                     roles={edemContext.state.roles}
                     offices={edemContext.state.offices}
+                    isNotEditMode={false}
                     onChange={handleChange}
                     onSubmit={handleSubmit}
                 />}

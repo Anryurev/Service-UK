@@ -1,5 +1,4 @@
 import React, {useContext, useEffect, useState} from "react";
-import {objectsData} from "../../data/objectsData";
 import {Navbar} from "../../components/Navbar";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {EdembackContext} from "../../context/edemback/EdembackContext";

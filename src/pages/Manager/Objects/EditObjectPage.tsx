@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from "react";
 import {ObjectForm} from "../../../components/Object/ObjectForm";
 import {useNavigate, useParams} from "react-router-dom";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
-import {IObject} from "../../../models";
+import {IObject, IOffice} from "../../../models";
 import {Navbar} from "../../../components/Navbar";
 import api from "../../../api";
 
@@ -10,6 +10,7 @@ export function EditObjectPage(){
     const { objectId } = useParams<{ objectId: string }>()
     const edemContext = useContext(EdembackContext)
     const navigate = useNavigate()
+    const [offices, setOffices] = useState<IOffice[]>([])
 
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -58,6 +59,11 @@ export function EditObjectPage(){
         }
     }
 
+    const LoadingOffices = async () => {
+        const response = await api.get(`/Offices`)
+        setOffices(response.data)
+    }
+
 
     useEffect(() => {
         if (objectId) {
@@ -68,9 +74,9 @@ export function EditObjectPage(){
         }
     }, [objectId])
 
-    // useEffect(() => {
-    //     console.log('useEffect для formData ', formData)
-    // }, [formData])
+    useEffect(() => {
+        LoadingOffices()
+    }, [])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target
@@ -81,13 +87,13 @@ export function EditObjectPage(){
                 return {
                     ...prev,
                     [name]: checked,
-                };
+                }
             }
             if (name === 'office_Id' || name === 'rooms' || name === 'area') {
                 return {
                     ...prev,
                     [name]: Number(value),
-                };
+                }
             }
             return {
                 ...prev,
@@ -96,16 +102,33 @@ export function EditObjectPage(){
         })
     }
 
+    function isKeyOfIObject(key: string | number): key is keyof IObject {
+        return key in {
+            id: -1,
+            office_Id: 0,
+            street: "",
+            house: "",
+            apartment: "",
+            rooms: 0,
+            status: '',
+            area: 0,
+            kitchen: false,
+            balcony: false
+        }
+    }
+
     const handleSubmit = async () => {
         let isValid = true;
         (Object.keys(formData) as Array<keyof IObject>).forEach(key => {
             const value = formData[key as keyof IObject]
-            if (String(value).trim().length === 0) {
+            if (String(value).trim().length === 0 && isKeyOfIObject(key)) {
                 isValid = false
             }
         })
 
+
         if (isValid) {
+            console.log('formData n', formData)
             edemContext.updateObject(formData)
             navigate('/objects')
         }
@@ -123,7 +146,7 @@ export function EditObjectPage(){
                 <h1>Редактирование объекта</h1>
                 {<ObjectForm
                     formData={formData}
-                    offices={edemContext.state.offices}
+                    offices={offices}
                     onChange={handleChange}
                     onSubmit={handleSubmit}
                 />}
