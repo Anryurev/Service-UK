@@ -1,23 +1,24 @@
 import React, {useState} from 'react';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
+import {useAuth} from "../storage/useAuth";
 
 interface SidebarProps {
     isOpen: boolean;
 }
 
 export const SidebarMenu: React.FC<SidebarProps> = ({ isOpen}) => {
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const { logout } = useAuth()
+    const navigate= useNavigate()
+
+    const logoutClick = () => {
+        logout()
+        navigate('/')
+    }
 
     return (
         <div className="position-fixed start-0 top-0 h-100 bg-light"
              style={{ width: '250px', zIndex: 1000, overflowY: 'auto', paddingTop: "60px" }}>
             <div className="d-flex flex-column h-100 p-3 border-start">
-                {/* Заголовок сайдбара */}
-                {/*<div className="sidebar-header mb-4">*/}
-                {/*    <h5 className="text-center">Навигация</h5>*/}
-                {/*</div>*/}
-
-                {/* Основные ссылки */}
                 <ul className="nav nav-pills flex-column mb-auto">
                     <li className="nav-item">
                         <Link to="/home" className="nav-link" style={{color: "#274c77"}} aria-current="page">
@@ -60,22 +61,11 @@ export const SidebarMenu: React.FC<SidebarProps> = ({ isOpen}) => {
                 {/* Выпадающий список */}
                 <div className="dropdown mb-3">
                     <button
-                        className="btn btn-secondary dropdown-toggle w-100"
-                        type="button"
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        aria-expanded={isDropdownOpen}
+                        className="btn btn-danger w-100"
+                        type="button" onClick={logoutClick}
                     >
-                        <i className="bi bi-gear me-2"></i>
-                        Настройки
+                        Выйти
                     </button>
-                    <ul className={`dropdown-menu w-100 ${isDropdownOpen ? 'show' : ''}`}>
-                        <li><hr className="dropdown-divider" /></li>
-                        <li>
-                            <Link to="/" className="dropdown-item text-danger">
-                                Выйти
-                            </Link>
-                        </li>
-                    </ul>
                 </div>
             </div>
         </div>

@@ -134,11 +134,12 @@ export function RequestExecutPage(){
                             {errorRole && <small style={{color: "red"}}>Выберите роль!</small>}
                         </div>
 
-                        <div className="mb-2">
+                        <div className="form-check form-switch mb-2">
                             <input
                                 type="checkbox"
                                 className="form-check-input me-1"
                                 name='allWorkersRole'
+                                role="switch"
                                 checked={allWorker}
                                 onChange={() => {
                                     const newRequest = {
@@ -150,7 +151,7 @@ export function RequestExecutPage(){
                                     setAllWorker(prev => (!prev))
                                 }}
                             />
-                            <label htmlFor='kitchen'>Для всех работников должности</label>
+                            <label htmlFor='allWorkersRole'>{allWorker? "Выполнение задания выбирает сам работник": "Выбор конкретного работника"}</label>
                         </div>
                     </header>
 
@@ -158,17 +159,23 @@ export function RequestExecutPage(){
                         <label>Выберите работника</label>
                         <ul className="list-group">
                             {workersRole.map(worker => (
-                                <li
-                                    className={styleItem(worker)}
-                                    aria-current="true"
-                                    key={worker.id}
-                                    onClick={() => {
-                                        // TODO Реализовать изменение цвета li работника при нажатии
-                                        setSelectedWorker(worker.id)
-                                    }}
-                                >
-                                    {worker.surname + ' ' + worker.name + ' ' + worker.fathername}
-                                </li>
+                                <div className="input-group">
+                                    <div className="input-group-text">
+                                        <input className="form-check-input mt-0" type="checkbox" value=""
+                                               aria-label="Checkbox for following text input"/>
+                                    </div>
+                                    <li
+                                        className="form-control"
+                                        aria-current="true"
+                                        key={worker.id}
+                                        onClick={() => {
+                                            // TODO Реализовать изменение цвета li работника при нажатии
+                                            setSelectedWorker(worker.id)
+                                        }}
+                                    >
+                                        {worker.surname + ' ' + worker.name + ' ' + worker.fathername}
+                                    </li>
+                                </div>
                             ))}
                         </ul>
                     </div>}

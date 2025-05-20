@@ -3,16 +3,12 @@ import {useNavigate} from "react-router-dom";
 import {WorkerContext} from "../context/workerContext/WorkerContext";
 import {EdembackContext} from "../context/edemback/EdembackContext";
 import api from "../api";
-import {IRole, IWorkers} from "../models";
+import {IResponseAuth, IRole, IWorkers} from "../models";
+import {getAuthDataFromLocalStorage, saveAuthDataToLocalStorage} from "../storage/loacalStorage";
 
 interface IAuthorizationData{
     login: string,
     password: string
-}
-
-interface IResponseAuth{
-    Worker: IWorkers,
-    Roles: IRole[]
 }
 
 export function AuthorizationPage(){
@@ -23,7 +19,6 @@ export function AuthorizationPage(){
     const workerContext = useContext(WorkerContext)
     const [phone, setPhone] = useState('+7')
     const [password, setPassword] = useState('')
-
 
     const formatPhone = (value: string) => {
         const numbers = value.replace(/\D/g, '').substring(1)
@@ -66,15 +61,15 @@ export function AuthorizationPage(){
                     login: cleanPhoneNumber(phone),
                     password: password
                 }
-                const response = await api.post(`/Auth`, workerAuth)
-                const responseData: IResponseAuth = response.data
-                const foundWorker = responseData.Worker
-                console.log('found', foundWorker)
+                const response = await api.post<IResponseAuth>(`/Auth`, workerAuth)
+                saveAuthDataToLocalStorage(response.data)
+                const {worker, roles} = getAuthDataFromLocalStorage()
+                console.log('found', worker)
 
-                if (foundWorker) {
-                    console.log('role', foundWorker.id_Role)
-                    workerContext?.setWorker(foundWorker)
-                    switch (foundWorker.id_Role) {
+                if (worker) {
+                    console.log('role', worker.id_Role)
+                    workerContext?.setWorker(worker)
+                    switch (worker.id_Role) {
                         case 1:
                             navigate('/home')
                             break

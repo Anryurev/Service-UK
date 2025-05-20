@@ -5,6 +5,7 @@ import {EdembackContext} from "../../context/edemback/EdembackContext";
 import {useNavigate} from "react-router-dom";
 import api from "../../api";
 import {BookingDatePage} from "../../pages/Operator/BookingDatePage";
+import {getAuthDataFromLocalStorage} from "../../storage/loacalStorage";
 
 interface CalendarDay {
     date: Date
@@ -29,10 +30,12 @@ const Calendar: React.FC = () => {
 
     const LoadingData = async () => {
         try{
+            const {worker, roles} = getAuthDataFromLocalStorage()
+            const officeId = worker?.id_Office
             setLoading(true)
             setError(null)
             const responseObj = await api.get(`/Objects`)
-            const responseBookings = await api.get(`/Bookings`)
+            const responseBookings = await api.get(`/Bookings/${officeId}`)
             const responseStatuses = await api.get(`/Status`)
 
             setObjectsAll(responseObj.data)
@@ -48,7 +51,7 @@ const Calendar: React.FC = () => {
 
     useEffect(() => {
 
-    }, [bookingsAll])
+    }, [])
 
     useEffect(() => {
         LoadingData()
@@ -74,9 +77,11 @@ const Calendar: React.FC = () => {
             const date = new Date(year, month, day)
             const isCurrentMonth = true
 
-            const bookings = filteredBookings.filter(booking =>
-                date >= new Date(booking.date_Start) && date <= new Date(booking.date_End)
-            )
+            const bookings = filteredBookings?.length
+                ? filteredBookings.filter(booking =>
+                    date >= new Date(booking.date_Start) && date <= new Date(booking.date_End)
+                )
+                : []
 
             return { date, bookings, isCurrentMonth }
         })
@@ -145,11 +150,16 @@ const Calendar: React.FC = () => {
         ))
     }
 
-    const countOfBookingsByStatus = (bookings: IBooking[]) => {
+    const countOfBookingsByStatus = (bookings: IBooking[] | undefined | null): Record<string, number> => {
+        if (!bookings?.length) return {}
+
         return bookings.reduce((acc, booking) => {
-            const status = booking.status
-            acc[status] = (acc[status] || 0) + 1 // Если статус встречается впервые, инициализируем 0
-            return acc
+            const status = booking?.status?.trim() || 'unknown'
+
+            return {
+                ...acc,
+                [status]: (acc[status] ?? 0) + 1
+            }
         }, {} as Record<string, number>)
     }
 
@@ -218,7 +228,10 @@ const Calendar: React.FC = () => {
     }
 
     const handleClickDate = (bookings: IBooking[], date: Date) => {
-        navigate(`/bookings/${date.toDateString()}`)  //YYYY-MM-DD
+        if(bookings.length > 0){
+            navigate(`/bookings/${date.toDateString()}`)  //YYYY-MM-DD
+        }
+        else return
     }
 
     if (error) return <div>{error}</div>

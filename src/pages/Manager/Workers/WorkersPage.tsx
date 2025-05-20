@@ -9,6 +9,7 @@ import {SidebarMenu} from "../../../components/SidebarMenu";
 import {SidebarOptions} from "../../../components/SidebarOptions";
 import api from "../../../api";
 import {IWorkers} from "../../../models";
+import {getAuthDataFromLocalStorage} from "../../../storage/loacalStorage";
 
 export function WorkersPage(){
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -18,13 +19,15 @@ export function WorkersPage(){
     const edemContext = useContext(EdembackContext)
 
     const LoadingData = async () => {
-        const response = await api.get(`/Workers`)
+        const {worker, roles} = getAuthDataFromLocalStorage()
+        const officeId = worker?.id_Office
+        const response = await api.get(`/Workers?Office=${officeId}`)
         setWorkers(response.data)
     }
 
     useEffect(() => {
         LoadingData()
-        edemContext.getAllWorkers()
+        // edemContext.getAllWorkers()
         // eslint-disable-next-line
     }, [])
 

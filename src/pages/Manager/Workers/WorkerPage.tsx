@@ -25,8 +25,8 @@ export function WorkerPage(){
     })
 
     async function findWorker(){
-        const worker_current: IWorkers | undefined = edemContext.state.workers.find(worker => worker.id === Number(workerId));
-        setWorker(worker_current)
+        const response = await api.get(`/Worker/${workerId}`)
+        setWorker(response.data)
     }
 
     const LoadingRoles = async () => {
@@ -76,10 +76,10 @@ export function WorkerPage(){
                                 <div className="card-body">
                                     <div className="row">
                                         <div className="col-md-4 text-center d-flex align-items-center">
-                                            <h5 className="mb-1"><strong>Имя: </strong> {worker.name}</h5>
+                                            <h5 className="mb-1"><strong>Фамилия: </strong> {worker.surname}</h5>
                                         </div>
                                         <div className="col-md-4 text-center d-flex align-items-center">
-                                            <h5 className="mb-1"><strong>Фамилия: </strong> {worker.surname}</h5>
+                                            <h5 className="mb-1"><strong>Имя: </strong> {worker.name}</h5>
                                         </div>
                                         <div className="col-md-4 text-center d-flex align-items-center">
                                             <h5 className="mb-1"><strong>Отчество: </strong> {worker.fathername}</h5>

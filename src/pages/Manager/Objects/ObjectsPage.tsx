@@ -8,15 +8,27 @@ import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {SidebarMenu} from "../../../components/SidebarMenu";
 import {Form} from "react-bootstrap";
 import {SidebarOptions} from "../../../components/SidebarOptions";
+import {getAuthDataFromLocalStorage} from "../../../storage/loacalStorage";
+import api from "../../../api";
 
 export function ObjectsPage(){
     const [isOpenModal, setIsOpenModal] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
+    const [objects, setObjects] = useState<IObject[]>([])
     const navigate = useNavigate()
     const edemContext = useContext(EdembackContext)
 
+    const LoadingData = async () => {
+        const {worker, roles} = getAuthDataFromLocalStorage()
+        const officeId = worker?.id_Office
+        const response = await api.get(`/Objects?Office=${officeId}`)
+        setObjects(response.data)
+    }
+
     useEffect(() => {
-        edemContext.getAllObjects()
+        const {worker, roles} = getAuthDataFromLocalStorage()
+        const officeId = worker?.id_Office
+        LoadingData()
         console.log('useEffect')
     }, [])
 
@@ -28,7 +40,7 @@ export function ObjectsPage(){
         navigate(`/objects/${objectId}`)
     }
 
-    const filteredObjects = edemContext.state.objects.filter((object) =>
+    const filteredObjects = objects.filter((object) =>
             object.street.toLowerCase().includes(searchQuery.toLowerCase()) ||
             object.house.toLowerCase().includes(searchQuery.toLowerCase()) ||
             object.apartment.toLowerCase().includes(searchQuery.toLowerCase()) ||

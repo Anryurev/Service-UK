@@ -66,17 +66,15 @@ export function OfficePage(){
                         </div>
                         <div className="row justify-content-center">
                             <h4>Сотрудники</h4>
-                            {!workers && <span>В данном офисе нет пользователей</span>}
-                            {workers.map(worker => (
+                            {workers.length > 0? workers.map(worker => (
                                 <WorkerNote worker={worker} onRemove={() => edemContext.deleteWorker} onClick={() => {}} key={worker.id}/>
-                            ))}
+                            )): <span>В данном офисе нет сотрудников</span>}
                         </div>
                         <div className="row justify-content-center">
                             <h4>Объекты</h4>
-                            {!objects && <span>В данном офисе нет объектов</span>}
-                            {objects.map(object => (
+                            {objects.length > 0? objects.map(object => (
                                 <ObjectNote object={object} onClick={() => {}} key={object.id}/>
-                            ))}
+                            )):  <span>В данном офисе нет объектов</span>}
                         </div>
                     </div>
                 </div>

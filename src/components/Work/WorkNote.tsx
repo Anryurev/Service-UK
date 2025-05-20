@@ -16,22 +16,53 @@ export function WorkNote ({work, onClick}: WorkNoteProps) {
 
     return(
         <>
-            <div className="border px-2 py-2 rounded mb-2 d-flex justify-content-between" onClick={() => onClick(work.id_Work)}>
-                <div className="mb-0 col text-start" style={{display: "inline-block"}}>{work.name}</div>
-                <div className="mb-0 col text-end">
-                    <button className="btn" onClick={(e) => {
-                        e.stopPropagation()
-                        navigate(`/work/${work.id_Work}`)
-                    }}>
-                        <i className="bi bi-pencil"></i>
-                    </button>
-                    <button className="btn-close" onClick={(e) => {
-                        e.stopPropagation()
-                        setIsModalOpen(true)
-                    }}>
-                    </button>
-                </div>
+            <div
+                className="card shadow-sm mb-3 hover-shadow transition-all"
+                onClick={() => onClick(work.id_Work)}
+                style={{
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    borderLeft: `4px solid`
+                }}
+            >
+                <div className="card-body py-2 px-3 d-flex flex-wrap align-items-center">
+                    {/* Адресс */}
+                    <div className="col-lg-8 col-md-6 col-12 mb-md-0 mb-2">
+                        <h6 className="card-title mb-0 text-truncate">
+                            {work.name}
+                        </h6>
+                    </div>
 
+
+                    {/* Кнопки действий */}
+                    <div className="col-lg-4 col-md-2 col-6 text-end">
+                        <div className="d-flex justify-content-end">
+                            <button
+                                className="btn btn-outline-primary btn-sm me-2"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/work/${work.id_Work}`)
+                                }}
+                                title="Редактировать"
+                            >
+                                <i className="bi bi-pencil"></i>
+                                <span className="d-none d-md-inline ms-1">Редактировать</span>
+                            </button>
+
+                            <button
+                                className="btn btn-outline-danger btn-sm"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsModalOpen(true)
+                                }}
+                                title="Удалить"
+                            >
+                                <i className="bi bi-trash"></i>
+                                <span className="d-none d-md-inline ms-1">Удалить</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={"Подтвердить удаление"} footer={(

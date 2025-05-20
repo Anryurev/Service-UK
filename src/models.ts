@@ -88,4 +88,9 @@ export interface IState {
     office: IOffice,
 }
 
+export interface IResponseAuth{
+    Worker: IWorkers,
+    Roles?: IRole[]
+}
+
 export type Action = {type: string, payload?: any}

@@ -34,6 +34,7 @@ import {RolePage} from "./pages/Manager/Roles/RolePage";
 import {EditRolePage} from "./pages/Manager/Roles/EditRolePage";
 import {WorkPage} from "./pages/Manager/Works/WorkPage";
 import {EditWorkPage} from "./pages/Manager/Works/EditWorkPage";
+import {EditBookingPage} from "./pages/Operator/EditBookingPage";
 
 function App() {
 
@@ -53,6 +54,7 @@ function App() {
                             <Route path="/workers/:workerId" element={<WorkerPage/>}/>
                             <Route path="/objects/:objectId" element={<ObjectPage/>}/>
                             <Route path="/booking/create" element={<CreateBookingPage/>}/>
+                            <Route path="/booking/:bookingId" element={<EditBookingPage/>}/>
                             <Route path="/execut" element={<MainExecutorPage/>}/>
                             <Route path="/execut/report" element={<ReportPage/>}/>
                             <Route path="/workers/create" element={<CreateWorkerPage/>}/>
