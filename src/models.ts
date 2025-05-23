@@ -42,7 +42,7 @@ export interface IRequest {
     type_Work: string,
     description?: string,
     roles_Id: number[] | null
-    worker_Id?: number,
+    worker_Id?: number[],
     object_Id: number,
     status: string,
     urgency: boolean, // срочность

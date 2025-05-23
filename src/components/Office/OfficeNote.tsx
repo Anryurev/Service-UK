@@ -17,7 +17,7 @@ export function OfficeNote({ office, onClick }: OfficeProps){
     return(
         <>
             <div
-                className="card shadow-sm mb-3 hover-shadow transition-all"
+                className="card shadow-sm mb-1 hover-shadow transition-all"
                 onClick={() => onClick(office.office_Id)}
                 style={{
                     cursor: 'pointer',

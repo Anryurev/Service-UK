@@ -19,6 +19,7 @@ export function EditBookingPage(){
     const LoadingData = async (bookingId: string) => {
         const response = await api.get(`/Booking/${bookingId}`)
         setBooking(response.data)
+        console.log('booking for edit', response.data)
     }
 
     useEffect(() => {
@@ -36,7 +37,7 @@ export function EditBookingPage(){
         <>
             <Navbar/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
-               <BookingForm isEditMode={true}/>
+               <BookingForm isEditMode={true} bookingId={Number(bookingId)} />
             </div>
         </>
     )

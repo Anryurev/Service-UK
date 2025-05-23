@@ -257,7 +257,7 @@ export const EdemBackState = ({children}: IEdemBackState) => {
     //     })
     // }
     const createBooking = async (booking: IBooking) => {
-        console.log('booking in state', booking)
+        console.log('booking in state create', booking)
         const response = await api.post(`/Booking`, booking)
         console.log('CreateBooking', response.data)
 
@@ -267,6 +267,7 @@ export const EdemBackState = ({children}: IEdemBackState) => {
         })
     }
     const updateBooking = async (booking: IBooking) => {
+        console.log('booking in state update', booking)
         const response = await api.put(`/UpdateBooking`, booking)
 
         dispatch({

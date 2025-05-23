@@ -1,9 +1,10 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {IBooking, IObject} from '../../models';
+import {IBooking, IObject, IStatus} from '../../models';
 import '../../CalendarAdmin.css';
 import {useNavigate} from "react-router-dom";
 import api from "../../api";
 import {RequestContext} from "../../context/requestContext/RequestContext";
+import {getAuthDataFromLocalStorage} from "../../storage/loacalStorage";
 
 interface CalendarDay {
     date: Date
@@ -23,14 +24,17 @@ const CalendarAdmin: React.FC = () => {
     const [loading, setLoading] = useState(true)
     const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null)
     const [error, setError] = useState<string | null>(null)
+    const [statuses, setStatuses] = useState<IStatus[]>([])
     const requestContext = useContext(RequestContext)
 
     const LoadingData = async () => {
         try{
+            const {worker, roles} = getAuthDataFromLocalStorage()
+            const officeId = worker?.id_Office
             setLoading(true)
             setError(null)
             const responseObj = await api.get(`/Objects`)
-            const responseBookings = await api.get(`/Bookings`)
+            const responseBookings = await api.get(`/Bookings?Office_id=${officeId}`)
 
             setObjectsAll(responseObj.data)
             setBookingsAll(responseBookings.data)
@@ -150,6 +154,21 @@ const CalendarAdmin: React.FC = () => {
         navigate(`/request/execut`)
     }
 
+    const styleDot = (booking: IBooking) => {
+        switch (booking.status) {
+            case 'Свободна':
+                return "bg-success"
+            case 'Бронь':
+                return "bg-warning"
+            case 'Сдана':
+                return "bg-danger"
+            case 'Ремонт/Уборка':
+                return "bg-primary"
+            default:
+                return "bg-secondary"
+        }
+    }
+
     if (error) return <div>{error}</div>
 
     return (
@@ -183,9 +202,14 @@ const CalendarAdmin: React.FC = () => {
                                 onClick={() => day.isCurrentMonth && setSelectedDay(day)}
                             >
                                 <div className="day-number">{day.isCurrentMonth ? day.date.getDate() : ''}</div>
-                                {day.isCurrentMonth && day.bookings.length > 0 && (
-                                    <div className="booking-dot"></div>
-                                )}
+
+                                <div className="dots-container">
+                                    {day.isCurrentMonth && day.bookings.length > 0 && day.bookings.map(booking => {
+                                        return (
+                                            <div className={`booking-dot ${styleDot(booking)}`} key={booking.id_Booking}></div>
+                                        )
+                                    })}
+                                </div>
                             </div>
                         ))}
                     </div>

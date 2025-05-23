@@ -67,7 +67,15 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background-color: #6096ba;
+    display: inline-block;
+    margin-right: 4px;
+}
+
+.dots-container {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    white-space: nowrap;
 }
 
 .mobile-days-header {

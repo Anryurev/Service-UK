@@ -20,81 +20,124 @@ const RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request, onAssi
     const [worker, setWorker] = useState<IWorkers>()
     const [status, setStatus] = useState<IStatus>()
 
-    const LoadingData = async () => {
-        const responseRequest = await api.get(`/Requests`)
-        const responseTypeWork = await api.get(`/TypeWork/${request.type_Work}`)
-        const responseObject = await api.get(`/Object/${request.object_Id}`)
-        if(request.worker_Id){
-            const responseWorker = await api.get(`/Worker/${request.worker_Id}`)
-            setWorker(responseWorker.data)
-        }
-        const responseStatuses = await api.get(`/Status_Request/${request.status}`)
-        setTypeWork(responseTypeWork.data)
-        setObject(responseObject.data)
-        setStatus(responseStatuses.data)
-    }
-
     useEffect(() => {
-        LoadingData()
-    }, [])
+        const loadData = async () => {
+            try {
+                const [typeWorkRes, objectRes, statusRes] = await Promise.all([
+                    api.get(`/TypeWork/${currentRequest.type_Work}`),
+                    api.get(`/Object/${currentRequest.object_Id}`),
+                    api.get(`/Status_Request/${currentRequest.status}`),
+                ]);
 
-    const updateRequestStatus = async (requestId: number, newStatus: IRequest["status"]) => {
-        setCurrentRequest({...currentRequest, status: newStatus})
+                setTypeWork(typeWorkRes.data)
+                setObject(objectRes.data)
+                setStatus(statusRes.data)
 
-        console.log('currentRequest', currentRequest)
+                console.log('object', objectRes.data)
 
-        // const updateResponse = await api.put(`/UpdateRequest`, currentRequest)
+                if (currentRequest.worker_Id) {
+                    const workerRes = await api.get(`/Worker/${currentRequest.worker_Id}`)
+                    setWorker(workerRes.data)
+                }
+            } catch (error) {
+                console.error('Error loading data:', error)
+            }
+        };
+
+        loadData()
+    }, [currentRequest])
+
+    const updateRequestStatus = async (newStatus: IRequest["status"]) => {
+        try {
+            await api.patch(`/ChangeStatusRequest/${currentRequest.request_Id}?status=${newStatus}`)
+            setCurrentRequest(prev => ({
+                ...prev,
+                status: newStatus
+            }))
+        } catch (error) {
+            console.error('Ошибка при обновлении статуса:', error)
+        }
     }
+
+    const getStatusBadge = () => {
+        switch(currentRequest.status) {
+            case "1": return { variant: "primary", text: "Новая" }
+            case "2": return { variant: "info", text: "Назначена" }
+            case "3": return { variant: "warning", text: "В работе" }
+            case "4": return { variant: "success", text: "Завершена" }
+            default: return { variant: "secondary", text: "Неизвестно" }
+        }
+    };
+
+    const statusBadge = getStatusBadge()
 
     return(
-        <ListGroup.Item key={request.request_Id} className="mb-3">
-            <Card>
-                <Card.Body>
-                    {/*Тут выводится тип задания*/}
-                    <Card.Title>{typeWork?.name}</Card.Title>
-                    {/*Тут выводится описание задания*/}
-                    <Card.Text>{request.description}</Card.Text>
-                    {/*Создано Назначено В процессе Завершено*/}
-                    <Badge
-                        bg={
-                            request.status === "1" || "2"
-                                ? "primary"
-                                : request.status === "3"
-                                    ? "warning"
-                                    : "success"
-                        }
-                        className="mb-2"
-                    >
-                        {request.status === "1" || "2"
-                            ? "Ожидает выполнения"
-                            : request.status === "3"
-                                ? "В процессе"
-                                : "Завершено"}
+        <Card className="mb-3 shadow-sm hover-shadow" onClick={onClick} style={{ cursor: 'pointer' }}>
+            <Card.Body>
+                <div className="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <Card.Title className="mb-1">
+                            {typeWork?.name || "Тип работы не указан"}
+                            {currentRequest.urgency && (
+                                <Badge bg="danger" className="ms-2">
+                                    Срочно!
+                                </Badge>
+                            )}
+                        </Card.Title>
+                        <Card.Subtitle className="text-muted mb-2">
+                            Объект: {"ул. " + object?.street + " д. " + object?.house + " кв. " + object?.apartment || "Не указан"}
+                        </Card.Subtitle>
+                    </div>
+                    <Badge pill bg={statusBadge.variant} className="align-self-center">
+                        {statusBadge.text}
                     </Badge>
-                    <div className="d-flex gap-2">
+                </div>
+
+                {currentRequest.description && (
+                    <Card.Text className="mb-3">
+                        <strong>Описание:</strong> {currentRequest.description}
+                    </Card.Text>
+                )}
+
+                {worker && (
+                    <div className="mb-3">
+                        <span className="text-muted">Исполнитель: </span>
+                        <strong>
+                            {worker.surname} {worker.name} {worker.fathername}
+                        </strong>
+                    </div>
+                )}
+
+                <div className="d-flex justify-content-between align-items-center">
+                    <div className="btn-group">
                         <Button
                             variant="outline-primary"
                             size="sm"
-                            onClick={() => updateRequestStatus(request.request_Id, "3")}
-                            disabled={request.status !== "1" && request.status !== "2"}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                updateRequestStatus("3");
+                            }}
+                            disabled={!["1", "2"].includes(currentRequest.status)}
                         >
-                            Начать выполнение
+                            <i className="bi bi-play-fill me-1"></i> Начать
                         </Button>
+
                         <Button
                             variant="outline-success"
                             size="sm"
-                            onClick={() => {
-                                updateRequestStatus(request.request_Id, "4")
-                                navigate('/execut/report')
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                updateRequestStatus("4");
+                                navigate('/execut/report');
                             }}
-                            disabled={request.status !== "3"}
+                            disabled={currentRequest.status !== "3"}
                         >
-                            Перейти к отчету
+                            <i className="bi bi-check-circle-fill me-1"></i> Завершить
                         </Button>
                     </div>
-                </Card.Body>
-            </Card>
-        </ListGroup.Item>
+                </div>
+            </Card.Body>
+        </Card>
     )
 }
 

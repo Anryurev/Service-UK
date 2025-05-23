@@ -1,15 +1,20 @@
-import React, {ChangeEvent, useState} from "react";
+import React, {ChangeEvent, useRef, useState} from "react";
 import {Navbar} from "../../components/Navbar";
-import {Alert, Button, Form, FormGroup, Image} from 'react-bootstrap'
+import {Alert, Button, Form, FormGroup, Image, Modal} from 'react-bootstrap'
 
 export function ReportPage () {
     const [photos, setPhotos] = useState<File[]>([])
     const [previews, setPreviews] = useState<string[]>([])
     const [error, setError] = useState<string | null>(null)
+    const [showCamera, setShowCamera] = useState(false)
+    const videoRef = useRef<HTMLVideoElement>(null)
+    const streamRef = useRef<MediaStream | null>(null)
 
     const handleChangeInputFile = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
-
+        processFiles(files)
+    }
+    const processFiles = (files: FileList | null) => {
         if (files){
             const validImageTypes = ["image/jpeg", "image/png", "image/gif"]
             const newPhotos: File[] = []
@@ -42,6 +47,57 @@ export function ReportPage () {
         }
     }
 
+    const startCamera = async () => {
+        try{
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment' },
+                audio: false
+            })
+
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream
+                streamRef.current = stream
+            }
+            setShowCamera(true)
+        } catch (err){
+            setError("Не удалось получить доступ к камере")
+            console.error(err)
+        }
+    }
+
+    const stopCamera = () => {
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop())
+        }
+        setShowCamera(false)
+    }
+
+    const takePhoto = () => {
+        if (videoRef.current) {
+            const canvas = document.createElement('canvas')
+            canvas.width = videoRef.current.videoWidth
+            canvas.height = videoRef.current.videoHeight
+            const ctx = canvas.getContext('2d')
+
+            if(ctx){
+                ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height)
+                canvas.toBlob(blob => {
+                    if(blob){
+                        const file = new File([blob], `photo-${Date.now()}.jpg`, {
+                            type: 'image/jpeg'
+                        })
+
+                        // Создаем FileList для совместимости с processFiles
+                        const dataTransfer = new DataTransfer()
+                        dataTransfer.items.add(file)
+                        processFiles(dataTransfer.files)
+                    }
+                }, 'image/jpeg', 0.9)
+            }
+        }
+        stopCamera()
+    }
+
     return (
         <>
             <Navbar/>
@@ -50,12 +106,20 @@ export function ReportPage () {
                     <Form>
                         <Form.Group controlId="formFile" className="mb-3">
                             <Form.Label>Загрузите фотографии</Form.Label>
-                            <Form.Control
-                                type="file"
-                                onChange={handleChangeInputFile}
-                                multiple
-                                accept="image/jpeg, image/png, image/gif"
-                            />
+                            <div className={"d-flex gap-2 mb-2"}>
+                                <Form.Control
+                                    type="file"
+                                    onChange={handleChangeInputFile}
+                                    multiple
+                                    accept="image/jpeg, image/png, image/gif"
+                                />
+                                <Button
+                                    variant="primary"
+                                    onClick={startCamera}
+                                >
+                                    Сделать фото
+                                </Button>
+                            </div>
                             {error && <Alert variant="danger" className="mt-2">{error}</Alert>}
                         </Form.Group>
 
@@ -101,6 +165,26 @@ export function ReportPage () {
                     </Form>
                 </div>
             </div>
+
+            {/* Модальное окно для камеры */}
+            <Modal show={showCamera} onHide={stopCamera} fullscreen>
+                <Modal.Header closeButton>
+                    <Modal.Title>Сделайте фото</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="d-flex flex-column align-items-center">
+                    <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        style={{ width: '100%', maxHeight: '70vh' }}
+                    />
+                </Modal.Body>
+                <Modal.Footer className="justify-content-center">
+                    <Button variant="primary" onClick={takePhoto}>
+                        Сделать снимок
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     )
 }

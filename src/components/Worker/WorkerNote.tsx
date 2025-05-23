@@ -42,7 +42,7 @@ export function WorkerNote({worker, onRemove, onClick}: WorkerProps){
     return(
         <>
             <div
-                className="card shadow-sm mb-3 hover-shadow transition-all"
+                className="card shadow-sm mb-1 hover-shadow transition-all"
                 onClick={() => onClick(worker.id)}
                 style={{
                     cursor: 'pointer',

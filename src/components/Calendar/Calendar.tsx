@@ -35,7 +35,7 @@ const Calendar: React.FC = () => {
             setLoading(true)
             setError(null)
             const responseObj = await api.get(`/Objects`)
-            const responseBookings = await api.get(`/Bookings/${officeId}`)
+            const responseBookings = await api.get(`/Bookings?Office_id=${officeId}`)
             const responseStatuses = await api.get(`/Status`)
 
             setObjectsAll(responseObj.data)
@@ -339,6 +339,7 @@ const Calendar: React.FC = () => {
 
 const BookingDetails: React.FC<{ booking: IBooking, object: IObject, onClose: () => void }> = ({ booking, object,  onClose }) => {
     const edemContext = useContext(EdembackContext)
+    const navigate = useNavigate()
     return (
         <div className="modal-overlay">
             <div className="modal-content">
@@ -354,8 +355,14 @@ const BookingDetails: React.FC<{ booking: IBooking, object: IObject, onClose: ()
                     )} дней</p>
                 </div>
                 <div className="modal-footer justify-content-between">
-                    <button className="btn btn-sm btn-outline-primary">Редактировать</button>
-                    <button className="btn btn-sm btn-outline-danger"
+                    <button
+                        className="btn btn-sm btn-outline-primary"
+                        onClick={() => navigate(`/booking/${booking.id_Booking}`)}
+                    >
+                        Редактировать
+                    </button>
+                    <button
+                        className="btn btn-sm btn-outline-danger"
                             onClick={() => {
                                 edemContext.deleteBooking(booking.id_Booking)
                                 onClose()

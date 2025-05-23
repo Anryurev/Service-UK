@@ -28,7 +28,7 @@ export function ObjectNote({ object, onClick }: ObjectProps){
     return(
         <>
             <div
-                className="card shadow-sm mb-3 hover-shadow transition-all"
+                className="card shadow-sm mb-1 hover-shadow transition-all"
                 onClick={() => onClick(object.id)}
                 style={{
                     cursor: 'pointer',

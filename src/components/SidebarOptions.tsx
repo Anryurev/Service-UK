@@ -7,7 +7,7 @@ interface SidebarOptionsProps{
 export function SidebarOptions ({handleClick}: SidebarOptionsProps) {
 
     return (
-        <div className="position-fixed end-0 top-0 h-100"
+        <div className="position-fixed end-0 top-0 h-100 col-sm-0"
              style={{ width: '250px', zIndex: 1000, overflowY: 'auto', paddingTop: "60px", backgroundColor: 'transparent' }}>
             <div className="d-flex flex-column h-100 p-3 border-start">
                 {/* Заголовок сайдбара */}

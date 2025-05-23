@@ -7,13 +7,15 @@ import api from "../../api";
 
 interface BookingFormProps{
     isEditMode: boolean
+    bookingId?: number
 }
 
-export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode }) => {
+export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode, bookingId }) => {
     const [selectedObject, setSelectedObject] = useState<number | null>(null)
     const [isSelectedObject, setIsSelectedObject] = useState(false)
     const [startDate, setStartDate] = useState("")
     const [endDate, setEndDate] = useState("")
+    const [status, setStatus] = useState("Бронь")
     const [searchParams] = useSearchParams()
     const edemContext = useContext(EdembackContext)
     const [dateError, setDateError] = useState("")
@@ -29,12 +31,22 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode }) => {
     };
 
     // Форматирует Date в строку DD.MM.YYYY
-    const formatDateToString = (date: Date): string => {
+    const formatDateToString = (dateInput: string | Date): string => {
+        // Преобразуем в Date, если это строка
+        const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput
+
+        // Проверка на валидность даты
+        if (isNaN(date.getTime())) {
+            console.error('Invalid date:', dateInput)
+            return 'Некорректная дата'
+        }
+
         const day = String(date.getDate()).padStart(2, '0')
         const month = String(date.getMonth() + 1).padStart(2, '0')
         const year = date.getFullYear()
+
         return `${day}.${month}.${year}`
-    }
+    };
 
     // Преобразует строку YYYY-MM-DD (из input type="date") в DD.MM.YYYY
     const formatDateInputToDisplay = (dateInput: string): string => {
@@ -53,6 +65,25 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode }) => {
         setObjects(response.data)
         console.log('response.data', response.data)
     }
+
+    const LoadingData = async (bookingId: number) => {
+        const response = await api.get(`/Booking/${bookingId}`)
+        console.log('booking for edit', response.data)
+        if(bookingId) {
+            console.log('booking?', response.data)
+            const booking = response.data
+            setStartDate(formatDateToString(booking.date_Start))
+            setEndDate(formatDateToString(booking.date_End))
+            setSelectedObject(booking.object_id)
+            setStatus(booking.status)
+        }
+    }
+
+    useEffect(() => {
+        if(bookingId){
+            LoadingData(bookingId)
+        }
+    },[])
 
     useEffect(() => {
         const dateFromUrl = searchParams.get("date")
@@ -124,15 +155,19 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode }) => {
             ))
 
             const booking: IBooking = {
-                id_Booking: -1,
+                id_Booking: bookingId? bookingId : -1,
                 object_id: selectedObject,
                 date_Start: startDateUTC,
                 date_End: endDateUTC,
-                status: 'Бронь'
+                status: status
             };
 
             console.log('Create booking', booking)
-            edemContext.createBooking(booking)
+            if(isEditMode){
+                edemContext.updateBooking(booking)
+            }else{
+                edemContext.createBooking(booking)
+            }
             navigate('/home')
         } catch (error) {
             console.error("Ошибка при создании бронирования:", error)
@@ -147,6 +182,17 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode }) => {
                 <label className="form-label"><h4>Дата заезда: {startDate}</h4></label>
             </div>
             <form>
+                {isEditMode && <div className="mb-2">
+                    <label className="form-label" htmlFor="dateOfLeaving">Дата заезда</label>
+                    <input
+                        type="date"
+                        id="dateOfLeaving"
+                        className="form-control mb-2"
+                        value={formatDisplayToDateInput(startDate)}
+                        onChange={handleEndDateChange}
+                    />
+                    {dateError && <small style={{color: 'red'}}>{dateError}</small>}
+                </div>}
                 <div className="mb-2">
                     <label className="form-label" htmlFor="dateOfLeaving">Дата выезда</label>
                     <input
@@ -183,7 +229,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode }) => {
                         style={{backgroundColor: '#6096ba', color: 'white'}}
                         onClick={handleSubmit}
                     >
-                        Создать
+                        {isEditMode? "Изменить" : "Создать"}
                     </button>
                 </div>
             </form>

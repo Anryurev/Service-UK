@@ -84,6 +84,13 @@ export function BookingDatePage(){
                                         Отменить бронь
                                     </Button>
                                     <Button
+                                        variant="outline-primary"
+                                        size="sm"
+                                        onClick={() => navigate(`/booking/${booking.id_Booking}`)}
+                                    >
+                                        Редактировать
+                                    </Button>
+                                    <Button
                                         variant="outline-success"
                                         size="sm"
                                         onClick={() => handleClickInformation(booking.object_id)}

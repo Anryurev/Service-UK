@@ -6,6 +6,7 @@ import {IObject, IRequest, IStatus, IWork, IWorkers} from "../../models";
 import api from "../../api";
 import RequestExecutCard from "../../components/Request/RequestExecutCard";
 import {compile} from "nth-check";
+import {getAuthDataFromLocalStorage} from "../../storage/loacalStorage";
 
 interface ITask {
     id: number;
@@ -20,12 +21,13 @@ export function MainExecutorPage(){
     const navigate = useNavigate()
 
     const LoadingData = async () => {
-        const responseRequest = await api.get(`/Requests`)
+        const {worker} = getAuthDataFromLocalStorage()
+        const responseRequest = await api.get(`/Requests?Office=${worker?.id_Office}`)
+        console.log('requests', responseRequest.data)
         setRequests(responseRequest.data)
     }
 
     useEffect(() => {
-        console.log(1)
         LoadingData()
     }, [])
 
@@ -35,7 +37,8 @@ export function MainExecutorPage(){
     )
 
     // Изменение статуса задания
-    const updateRequestStatus = (requestId: number, newStatus: IRequest["status"]) => {
+    const updateRequestStatus = async (requestId: number, newStatus: IRequest["status"]) => {
+        const response = await api.patch(`/ChangeStatusRequest/${requestId}?status=${newStatus}`)
         setRequests((prevRequests) =>
             prevRequests.map((request) =>
                 request.request_Id === requestId ? { ...request, status: newStatus } : request

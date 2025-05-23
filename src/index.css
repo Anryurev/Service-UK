@@ -37,6 +37,12 @@ code {
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Тень справа */
 }
 
+@media (min-width: 992px) {
+  .sidebar {
+    transform: translateX(0) !important;
+  }
+}
+
 .sidebar ul {
   list-style-type: none; /* Убираем маркеры списка */
   padding: 0;

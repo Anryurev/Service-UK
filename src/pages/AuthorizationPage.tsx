@@ -19,6 +19,7 @@ export function AuthorizationPage(){
     const workerContext = useContext(WorkerContext)
     const [phone, setPhone] = useState('+7')
     const [password, setPassword] = useState('')
+    const [eye, setEye] = useState(false)
 
     const formatPhone = (value: string) => {
         const numbers = value.replace(/\D/g, '').substring(1)
@@ -132,12 +133,17 @@ export function AuthorizationPage(){
                             <i className="bi bi-lock text-primary"></i>
                         </span>
                         <input
-                            type="password"
+                            type={eye? "text" : "password"}
                             placeholder="Пароль"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="form-control py-2 border-start-0"
                         />
+                        <div className="form-control-lg">
+                            { eye?
+                                <i className="bi bi-eye" onClick={() => setEye(false)}></i>
+                                : <i className="bi bi-eye-slash"  onClick={() => setEye(true)}></i>}
+                        </div>
                     </div>
 
                     {/* Сообщение об ошибке */}

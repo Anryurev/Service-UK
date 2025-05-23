@@ -17,7 +17,7 @@ export function WorkNote ({work, onClick}: WorkNoteProps) {
     return(
         <>
             <div
-                className="card shadow-sm mb-3 hover-shadow transition-all"
+                className="card shadow-sm mb-1 hover-shadow transition-all"
                 onClick={() => onClick(work.id_Work)}
                 style={{
                     cursor: 'pointer',

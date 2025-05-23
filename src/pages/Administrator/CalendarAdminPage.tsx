@@ -14,7 +14,7 @@ export function CalendarAdminPage() {
         type_Work: "",
         description: "",
         roles_Id: null,
-        worker_Id: 0,
+        worker_Id: [],
         object_Id: 0,
         status: "1",
         urgency: false,

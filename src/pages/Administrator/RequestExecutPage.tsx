@@ -10,7 +10,7 @@ import {RequestContext} from "../../context/requestContext/RequestContext";
 export function RequestExecutPage(){
     const [workersRole, setWorkersRole] = useState<IWorkers[]>([])
     const [selectedTypeWork, setSelectedTypeWork] = useState({id: 0, name: "Выберите тип работы"})
-    const [selectedWorker, setSelectedWorker] = useState(0)
+    const [selectedWorkers, setSelectedWorkers] = useState<number[]>([])
     // const [typeWorkRoles, setTypeWorkRoles] = useState<IWork>()
     const [errorRole, setErrorRole] = useState(false)
     const [typesWork, setTypesWork] = useState<IWork[]>([])
@@ -69,25 +69,24 @@ export function RequestExecutPage(){
         LoadingTypesWork()
     }, [])
 
-    useEffect(() => {
-        if (selectedTypeWork.id !== 0) {
-            const newRequest = {
-                ...requestContext.request,
-                type_Work: String(selectedTypeWork.id),
-                ...(selectedWorker !== 0 && {
-                    worker_Id: selectedWorker,
-                    status: '2'
-                }) // Добавляем worker_Id только если selectedWorker !== 0
+    const handleCheckboxChange = (workerId: number) => {
+        setSelectedWorkers(prevSelected => {
+            if (prevSelected.includes(workerId)) {
+                // Если ID уже есть в массиве - удаляем
+                return prevSelected.filter(id => id !== workerId)
+            } else {
+                // Если ID нет в массиве - добавляем
+                return [...prevSelected, workerId]
             }
-            requestContext.setRequest(newRequest)
-        } else {
-            setErrorRole(true)
-        }
-    }, [selectedWorker, selectedTypeWork])
-
-    const styleItem = (worker: IWorkers) => worker.id === workersRole.find(us => us.id === selectedWorker)?.id? "list-group-item border-1 border-success" : "list-group-item border-1"
+        })
+    }
 
     const handleClick = () => {
+        requestContext.setRequest({
+            ...requestContext.request,
+            worker_Id: selectedWorkers,
+            type_Work: selectedTypeWork.name,
+        })
         console.log('request executPage', requestContext.request)
         navigate(`/request/description`)
     }
@@ -159,23 +158,27 @@ export function RequestExecutPage(){
                         <label>Выберите работника</label>
                         <ul className="list-group">
                             {workersRole.map(worker => (
-                                <div className="input-group">
-                                    <div className="input-group-text">
-                                        <input className="form-check-input mt-0" type="checkbox" value=""
-                                               aria-label="Checkbox for following text input"/>
-                                    </div>
                                     <li
                                         className="form-control"
                                         aria-current="true"
                                         key={worker.id}
-                                        onClick={() => {
-                                            // TODO Реализовать изменение цвета li работника при нажатии
-                                            setSelectedWorker(worker.id)
-                                        }}
                                     >
-                                        {worker.surname + ' ' + worker.name + ' ' + worker.fathername}
+                                        <div className="input-group">
+                                            <div className="input-group-text me-2">
+                                                <input
+                                                    id={`checkWorker-${worker.id}`}
+                                                    className="form-check-input mt-0"
+                                                    type="checkbox"
+                                                    checked={selectedWorkers.includes(worker.id)}
+                                                    onChange={() => handleCheckboxChange(worker.id)}
+                                                />
+                                            </div>
+                                            <label htmlFor={`checkWorker-${worker.id}`}>
+                                                {worker.surname + ' ' + worker.name + ' ' + worker.fathername}
+                                            </label>
+                                        </div>
                                     </li>
-                                </div>
+
                             ))}
                         </ul>
                     </div>}
