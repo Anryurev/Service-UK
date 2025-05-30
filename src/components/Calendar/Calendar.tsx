@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {IBooking, IObject, IStatus} from '../../models';
-import '../../Calendar.css';
+import '../../styles/Calendar.css';
 import {EdembackContext} from "../../context/edemback/EdembackContext";
 import {useNavigate} from "react-router-dom";
 import api from "../../api";
@@ -30,12 +30,12 @@ const Calendar: React.FC = () => {
 
     const LoadingData = async () => {
         try{
-            const {worker, roles} = getAuthDataFromLocalStorage()
+            const {worker} = getAuthDataFromLocalStorage()
             const officeId = worker?.id_Office
             setLoading(true)
             setError(null)
-            const responseObj = await api.get(`/Objects`)
-            const responseBookings = await api.get(`/Bookings?Office_id=${officeId}`)
+            const responseObj = await api.get(`/Objects/Worker`)
+            const responseBookings = await api.get(`/Bookings/Worker`)
             const responseStatuses = await api.get(`/Status`)
 
             setObjectsAll(responseObj.data)

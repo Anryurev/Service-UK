@@ -37,7 +37,7 @@ export function OfficesPage() {
         <>
             <Navbar/>
             <SidebarMenu isOpen={false}/>
-            <SidebarOptions handleClick={() => navigate('/offices/create')}/>
+            <SidebarOptions title="офис" handleClick={() => navigate('/offices/create')}/>
             <div className="container-fluid w-50" style={{paddingTop: "60px"}}>
                 <h1>Список офисов</h1>
                 <Form.Group className="mb-4">

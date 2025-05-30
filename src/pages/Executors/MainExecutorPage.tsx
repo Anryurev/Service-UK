@@ -18,13 +18,19 @@ interface ITask {
 export function MainExecutorPage(){
     const [requests, setRequests] = useState<IRequest[]>([])
     const [filterStatus, setFilterStatus] = useState<"0" | ITask["status"]>("0")
+    const [error, setError] = useState("")
     const navigate = useNavigate()
 
     const LoadingData = async () => {
-        const {worker} = getAuthDataFromLocalStorage()
-        const responseRequest = await api.get(`/Requests?Office=${worker?.id_Office}`)
-        console.log('requests', responseRequest.data)
-        setRequests(responseRequest.data)
+        try {
+            const {worker} = getAuthDataFromLocalStorage()
+            const responseRequest = await api.get(`/Requests/Worker`)
+            console.log('requests', responseRequest.data)
+            setRequests(responseRequest.data)
+        } catch (err){
+            setError('Ошибка доступа')
+            console.error(err)
+        }
     }
 
     useEffect(() => {
@@ -32,9 +38,9 @@ export function MainExecutorPage(){
     }, [])
 
     // Фильтрация заданий по статусу
-    const filteredTasks = requests.filter(request =>
+    const filteredTasks = requests.length > 0? requests.filter(request =>
         filterStatus === "0" ? true : request.status === filterStatus
-    )
+    ): []
 
     // Изменение статуса задания
     const updateRequestStatus = async (requestId: number, newStatus: IRequest["status"]) => {
@@ -45,6 +51,8 @@ export function MainExecutorPage(){
             )
         )
     }
+
+    if (error) return <div className="alert alert-danger">{error}</div>
 
     return (
         <>
@@ -73,7 +81,7 @@ export function MainExecutorPage(){
 
                     {/* Список заданий */}
                     <ListGroup>
-                        {filteredTasks.map((request) => (
+                        {filteredTasks.length > 0 && filteredTasks.map((request) => (
                             <RequestExecutCard
                                 onClick={() => navigate(`/request/${request.request_Id}`)}
                                 request={request}

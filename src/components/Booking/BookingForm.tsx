@@ -13,8 +13,8 @@ interface BookingFormProps{
 export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode, bookingId }) => {
     const [selectedObject, setSelectedObject] = useState<number | null>(null)
     const [isSelectedObject, setIsSelectedObject] = useState(false)
-    const [startDate, setStartDate] = useState("")
-    const [endDate, setEndDate] = useState("")
+    const [startDate, setStartDate] = useState("26.09.2003")
+    const [endDate, setEndDate] = useState("27.09.2003")
     const [status, setStatus] = useState("Бронь")
     const [searchParams] = useSearchParams()
     const edemContext = useContext(EdembackContext)
@@ -61,7 +61,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode, bookingId 
     }
 
     const LoadingObjects = async () => {
-        const response = await api.get(`/Objects?Office=${officeId}`)
+        const response = await api.get(`/Objects/Worker`)
         setObjects(response.data)
         console.log('response.data', response.data)
     }
@@ -110,13 +110,26 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode, bookingId 
         LoadingObjects()
     }, [searchParams])
 
+    useEffect(() => {
+        const fetchObjects = async () => {
+            try{
+                const responseObj = await api.get(`/Objects/Worker/Dates?Start=${startDate}&End=${endDate}`)
+                setObjects(responseObj.data)
+            }catch (err){
+                console.error(err)
+            }
+        }
+
+        fetchObjects()
+    }, [startDate, endDate, objects])
+
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedId = parseInt(event.target.value, 10)
         setSelectedObject(selectedId)
         setIsSelectedObject(false)
-    };
+    }
 
-    const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleEndDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedEndDate = e.target.value
         try {
             const startDateObj = parseDateString(startDate)
@@ -129,6 +142,24 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode, bookingId 
 
             setDateError("");
             setEndDate(formatDateInputToDisplay(selectedEndDate))
+        } catch (error) {
+            console.error("Ошибка обработки даты:", error)
+        }
+    }
+
+    const handleStartDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedStartDate = e.target.value
+        try {
+            const endDateObj = parseDateString(endDate)
+            const startDateObj = new Date(selectedStartDate)
+
+            if (endDateObj < startDateObj) {
+                setDateError("Дата выезда не может быть раньше даты заезда")
+                return
+            }
+
+            setDateError("");
+            setStartDate(formatDateInputToDisplay(selectedStartDate))
         } catch (error) {
             console.error("Ошибка обработки даты:", error)
         }
@@ -178,9 +209,9 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode, bookingId 
     return (
         <>
             <h1>{isEditMode? "Изменение" :"Создание"} бронирования</h1>
-            <div className="mb-0">
+            {!isEditMode && <div className="mb-0">
                 <label className="form-label"><h4>Дата заезда: {startDate}</h4></label>
-            </div>
+            </div>}
             <form>
                 {isEditMode && <div className="mb-2">
                     <label className="form-label" htmlFor="dateOfLeaving">Дата заезда</label>
@@ -189,7 +220,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode, bookingId 
                         id="dateOfLeaving"
                         className="form-control mb-2"
                         value={formatDisplayToDateInput(startDate)}
-                        onChange={handleEndDateChange}
+                        onChange={handleStartDateChange}
                     />
                     {dateError && <small style={{color: 'red'}}>{dateError}</small>}
                 </div>}
@@ -214,7 +245,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode, bookingId 
                         <option value="" disabled>
                             Выберите объект
                         </option>
-                        {objects.map(obj => (
+                        {objects.length > 0 && objects.map(obj => (
                             <option key={obj.id} value={obj.id}>
                                 {`${obj.street}, ${obj.house}, кв. ${obj.apartment}`}
                             </option>

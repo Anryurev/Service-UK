@@ -13,7 +13,6 @@ export const WorkForm: React.FC<RoleFormProps> = ({ formData, onChange, handleRo
     const [roles, setRoles] = useState<IRole[]>([])
 
     const LoadingData = async () => {
-        console.log('fD in form 1', formData)
         const responseRoles = await api.get(`/Roles/NoImportant`)
         setRoles(responseRoles.data)
     }

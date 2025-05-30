@@ -44,7 +44,7 @@ const initialState: IState = {
     bookings: [],
     requests: [],
     worker: {id: 0, id_Role: 0, id_Office: 0, birthday: "", password: "", email: "", name: "", phoneNumber: "", surname: "", fathername: ""},
-    role: {role_Id: 0, name: "", salary: 0},
+    role: {role_Id: 0, name: "", salary: 0, levelImportant: 0},
     object: {id: 0, kitchen: false, balcony: false, area: 0, rooms: 0, house: "", street: "", status: "", apartment: "", office_Id: 0},
     office: {office_Id: 0, house: "", street: ""}
 }

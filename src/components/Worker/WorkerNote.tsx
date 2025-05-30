@@ -52,29 +52,21 @@ export function WorkerNote({worker, onRemove, onClick}: WorkerProps){
             >
                 <div className="card-body py-2 px-3 d-flex flex-wrap align-items-center">
                     {/* ФИО */}
-                    <div className="col-md-4 col-12 mb-md-0 mb-2">
+                    <div className="col-md-5 col-12 mb-md-0 mb-2">
                         <h6 className="card-title mb-0 text-truncate">
                             {worker.surname} {worker.name} {worker.fathername}
                         </h6>
                     </div>
 
                     {/* Должность */}
-                    <div className="col-md-2 col-6">
+                    <div className="col-md-3 col-6">
                         <span className="badge bg-primary bg-opacity-10 text-primary w-100 py-2">
                             {roleName}
                         </span>
                     </div>
 
-                    {/* Телефон */}
-                    <div className="col-md-3 col-6 text-md-center">
-                        <div className="d-flex align-items-center justify-content-md-center">
-                            <i className="bi bi-telephone me-2 text-muted"></i>
-                            <span className="text-nowrap">{worker.phoneNumber}</span>
-                        </div>
-                    </div>
-
                     {/* Кнопки действий */}
-                    <div className="col-md-3 col-12 text-md-end mt-md-0 mt-2">
+                    <div className="col-md-4 col-12 text-md-end mt-md-0 mt-2">
                         <div className="d-flex justify-content-end">
                             <button
                                 className="btn btn-outline-primary btn-sm me-2"

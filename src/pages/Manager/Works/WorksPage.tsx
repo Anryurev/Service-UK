@@ -32,7 +32,7 @@ export function WorksPage() {
         <>
             <Navbar/>
             <SidebarMenu isOpen={true}/>
-            <SidebarOptions handleClick={() => navigate('/works/create')}/>
+            <SidebarOptions title="тип работы" handleClick={() => navigate('/works/create')}/>
             <div className="container-fluid w-50" style={{paddingTop: "60px"}}>
                 <h1 className="mb-3">Типы работ</h1>
                 <Form.Group className="mb-4">

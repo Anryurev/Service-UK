@@ -37,13 +37,13 @@ const RequestCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) 
     const getStatusClass = () => {
         switch (status?.name) {
             case 'Создано':
-                return 'bg-success text-white'
-            case 'Назначено':
-                return 'bg-warning text-dark'
-            case 'В процессе':
                 return 'bg-danger text-white'
-            case 'Выполнено':
+            case 'Назначено':
                 return 'bg-primary text-white'
+            case 'В процессе':
+                return 'bg-warning text-white'
+            case 'Выполнено':
+                return 'bg-success text-white'
             default:
                 return 'bg-secondary text-white'
         }

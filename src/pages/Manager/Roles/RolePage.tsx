@@ -16,7 +16,8 @@ export function RolePage(){
         role_Id: 0,
         name: "",
         salary: 0, // оклад
-        add_Parametrs: []
+        add_Parametrs: [],
+        levelImportant: 0
     })
 
     const LoadingData = async () => {

@@ -20,7 +20,7 @@ export function BookingDatePage(){
         console.log('bookings op date', bookings)
     }
 
-    const FormatedData = (date: Date) => {
+    const FormatdData = (date: Date) => {
         console.log('DATE', date)
         const day = String(date.getDate()).padStart(2, '0')
         const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -33,7 +33,7 @@ export function BookingDatePage(){
         if(date){
             LoadingData(date)
             const curDate = new Date(date)
-            setFormattedDate(FormatedData(curDate))
+            setFormattedDate(FormatdData(curDate))
             console.log(formattedDate)
         }
     }, [])
@@ -61,8 +61,8 @@ export function BookingDatePage(){
                         <Card>
                             <Card.Body>
                                 <Card.Title>ул. {getOneObjectByBooking(booking.object_id)?.street} д. {getOneObjectByBooking(booking.object_id)?.house} кв. {getOneObjectByBooking(booking.object_id)?.apartment}</Card.Title>
-                                <Card.Text>Дата заезда: {FormatedData(new Date(booking.date_Start))}</Card.Text>
-                                <Card.Text>Дата выезда: {FormatedData(new Date(booking.date_End as Date))}</Card.Text>
+                                <Card.Text>Дата заезда: {FormatdData(new Date(booking.date_Start))}</Card.Text>
+                                <Card.Text>Дата выезда: {FormatdData(new Date(booking.date_End as Date))}</Card.Text>
                                 <Badge
                                     bg={
                                         booking.status === "Бронь"

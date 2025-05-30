@@ -12,7 +12,7 @@ interface RequestCardProps {
     onAssign?: (requestId: number) => void
 }
 
-const RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) => {
+const         RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) => {
     const navigate = useNavigate()
     const [currentRequest, setCurrentRequest] = useState<IRequest>(request)
     const [typeWork, setTypeWork] = useState<IWork>()
@@ -23,6 +23,7 @@ const RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request, onAssi
     useEffect(() => {
         const loadData = async () => {
             try {
+                console.log('currentRequest.status', currentRequest.status)
                 const [typeWorkRes, objectRes, statusRes] = await Promise.all([
                     api.get(`/TypeWork/${currentRequest.type_Work}`),
                     api.get(`/Object/${currentRequest.object_Id}`),
@@ -30,10 +31,11 @@ const RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request, onAssi
                 ]);
 
                 setTypeWork(typeWorkRes.data)
+                console.log('asdsd', objectRes.data)
                 setObject(objectRes.data)
                 setStatus(statusRes.data)
 
-                console.log('object', objectRes.data)
+                console.log('status', statusRes.data)
 
                 if (currentRequest.worker_Id) {
                     const workerRes = await api.get(`/Worker/${currentRequest.worker_Id}`)
@@ -47,12 +49,13 @@ const RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request, onAssi
         loadData()
     }, [currentRequest])
 
-    const updateRequestStatus = async (newStatus: IRequest["status"]) => {
+    const updateRequestStatus = async (newStatus: IStatus) => {
         try {
-            await api.patch(`/ChangeStatusRequest/${currentRequest.request_Id}?status=${newStatus}`)
+            console.log('newStatus', newStatus)
+            await api.patch(`/ChangeStatusRequest/${currentRequest.request_Id}?status=${newStatus.name}`)
             setCurrentRequest(prev => ({
                 ...prev,
-                status: newStatus
+                status: String(newStatus.id_status)
             }))
         } catch (error) {
             console.error('Ошибка при обновлении статуса:', error)
@@ -60,14 +63,14 @@ const RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request, onAssi
     }
 
     const getStatusBadge = () => {
-        switch(currentRequest.status) {
-            case "1": return { variant: "primary", text: "Новая" }
-            case "2": return { variant: "info", text: "Назначена" }
-            case "3": return { variant: "warning", text: "В работе" }
-            case "4": return { variant: "success", text: "Завершена" }
-            default: return { variant: "secondary", text: "Неизвестно" }
+        switch(status?.name) {
+            case "Создано": return "danger"
+            case "Назначено": return "primary"
+            case "В процессе": return  "warning"
+            case "Выполнено": return "success"
+            default: return "secondary"
         }
-    };
+    }
 
     const statusBadge = getStatusBadge()
 
@@ -85,11 +88,11 @@ const RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request, onAssi
                             )}
                         </Card.Title>
                         <Card.Subtitle className="text-muted mb-2">
-                            Объект: {"ул. " + object?.street + " д. " + object?.house + " кв. " + object?.apartment || "Не указан"}
+                            {object? `Объект: ${object?.street} ${object?.house} кв. ${object?.apartment}` : 'Объект не указан'}
                         </Card.Subtitle>
                     </div>
-                    <Badge pill bg={statusBadge.variant} className="align-self-center">
-                        {statusBadge.text}
+                    <Badge pill bg={statusBadge} className="align-self-center">
+                        {status?.name}
                     </Badge>
                 </div>
 
@@ -115,24 +118,12 @@ const RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request, onAssi
                             size="sm"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                updateRequestStatus("3");
+                                updateRequestStatus({id_status: 3, name: "В процессе"})
+                                navigate(`/execut/report/${request.request_Id}`)
                             }}
-                            disabled={!["1", "2"].includes(currentRequest.status)}
+                            disabled={!["1", "2", "3"].includes(currentRequest.status)}
                         >
-                            <i className="bi bi-play-fill me-1"></i> Начать
-                        </Button>
-
-                        <Button
-                            variant="outline-success"
-                            size="sm"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                updateRequestStatus("4");
-                                navigate('/execut/report');
-                            }}
-                            disabled={currentRequest.status !== "3"}
-                        >
-                            <i className="bi bi-check-circle-fill me-1"></i> Завершить
+                            <i className="bi bi-play-fill me-1"></i> {currentRequest.status === "3"? "Продолжить" : "Начать"}
                         </Button>
                     </div>
                 </div>

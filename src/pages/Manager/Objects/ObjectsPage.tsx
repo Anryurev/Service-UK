@@ -15,19 +15,16 @@ export function ObjectsPage(){
     const [isOpenModal, setIsOpenModal] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const [objects, setObjects] = useState<IObject[]>([])
+    const {worker} = getAuthDataFromLocalStorage()
     const navigate = useNavigate()
     const edemContext = useContext(EdembackContext)
 
     const LoadingData = async () => {
-        const {worker, roles} = getAuthDataFromLocalStorage()
-        const officeId = worker?.id_Office
-        const response = await api.get(`/Objects?Office=${officeId}`)
+        const response = await api.get(`/Objects/Worker`)
         setObjects(response.data)
     }
 
     useEffect(() => {
-        const {worker, roles} = getAuthDataFromLocalStorage()
-        const officeId = worker?.id_Office
         LoadingData()
         console.log('useEffect')
     }, [])
@@ -52,7 +49,7 @@ export function ObjectsPage(){
             {isOpenModal && <ModalCreateObject onSubmit={handleCreateObject} onClose={() => setIsOpenModal(false)} />}
             <Navbar/>
             <SidebarMenu isOpen={true}/>
-            <SidebarOptions handleClick={() => navigate('/objects/create')}/>
+            <SidebarOptions title="объект" handleClick={() => navigate('/objects/create')}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Список объектов</h1>
                 <Form.Group className="mb-4">

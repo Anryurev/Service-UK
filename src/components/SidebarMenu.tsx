@@ -1,6 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {useAuth} from "../storage/useAuth";
+import {getAuthDataFromLocalStorage} from "../storage/loacalStorage";
+import {IRole} from "../models";
+import api from "../api";
 
 interface SidebarProps {
     isOpen: boolean;
@@ -10,6 +13,35 @@ export const SidebarMenu: React.FC<SidebarProps> = ({ isOpen}) => {
     const { logout } = useAuth()
     const navigate= useNavigate()
     const [isMobileOpen, setIsMobileOpen] = useState(false)
+    const {worker} = getAuthDataFromLocalStorage()
+    const [loading, setLoading] = useState(true)
+    const [role, setRole] = useState<IRole>({
+        role_Id: 0,
+        name: "",
+        salary: 0,
+        add_Parametrs: [],
+        levelImportant: 0
+    })
+
+    const fetchRole = async () => {
+        try {
+            const response = await api.get(`/Role/${worker?.id_Role}`)
+            localStorage.setItem('role', JSON.stringify(response.data))
+            setRole(response.data)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        const savedRole = localStorage.getItem('userRole')
+        if (savedRole) {
+            setRole(JSON.parse(savedRole))
+        } else {
+            console.log('fetchRole')
+            fetchRole()
+        }
+    }, [worker?.id_Role])
 
     const logoutClick = () => {
         logout()
@@ -47,25 +79,28 @@ export const SidebarMenu: React.FC<SidebarProps> = ({ isOpen}) => {
                 <div className="d-flex flex-column h-100 p-3">
                     <ul className="nav nav-pills flex-column mb-auto">
                         {[
-                            { to: "/home", icon: "bi-calendar-check", text: "Календарь" },
-                            { to: "/objects", icon: "bi-building", text: "Объекты" },
-                            { to: "/workers", icon: "bi-people", text: "Сотрудники" },
-                            { to: "/roles", icon: "bi-person-workspace", text: "Должности" },
-                            { to: "/offices", icon: "bi-buildings", text: "Офисы" },
-                            { to: "/works", icon: "bi-list-task", text: "Задания" }
-                        ].map((item) => (
-                            <li className="nav-item mb-0" key={item.to}>
-                                <Link
-                                    to={item.to}
-                                    className={`nav-link ${window.location.pathname === item.to ? 'active' : ''}`}
-                                    style={{ color: window.location.pathname === item.to ? 'white' : '#274c77' }}
-                                    onClick={() => setIsMobileOpen(false)}
-                                >
-                                    <i className={`bi ${item.icon} me-3 fs-5`}></i>
-                                    <span className="fs-6">{item.text}</span>
-                                </Link>
-                            </li>
-                        ))}
+                            { to: "/home", icon: "bi-calendar-check", text: "Календарь", for: [1, 3] },
+                            { to: "/objects", icon: "bi-building", text: "Объекты", for: [1, 2, 3] },
+                            { to: "/workers", icon: "bi-people", text: "Сотрудники", for: [1, 2] },
+                            { to: "/roles", icon: "bi-person-workspace", text: "Должности", for: [1, 2] },
+                            { to: "/offices", icon: "bi-buildings", text: "Офисы", for: [1, 2] },
+                            { to: "/works", icon: "bi-list-task", text: "Задания", for: [1, 2] }
+                        ].filter(item => role ? item.for.includes(role.levelImportant) : false)
+                            .map((item) => {
+                                return (
+                                    <li className="nav-item mb-0" key={item.to}>
+                                        <Link
+                                            to={item.to}
+                                            className={`nav-link ${window.location.pathname === item.to ? 'active' : ''}`}
+                                            style={{color: window.location.pathname === item.to ? 'white' : '#274c77'}}
+                                        >
+                                            <i className={`bi ${item.icon} me-3 fs-5`}></i>
+                                            <span className="fs-6">{item.text}</span>
+                                        </Link>
+                                    </li>
+                                )
+                            }
+                                )}
                     </ul>
 
                     <div className="mt-auto">

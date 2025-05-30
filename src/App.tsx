@@ -35,6 +35,10 @@ import {EditRolePage} from "./pages/Manager/Roles/EditRolePage";
 import {WorkPage} from "./pages/Manager/Works/WorkPage";
 import {EditWorkPage} from "./pages/Manager/Works/EditWorkPage";
 import {EditBookingPage} from "./pages/Operator/EditBookingPage";
+import {RequestsPage} from "./pages/Administrator/RequestsPage";
+import {CreateRequestExecutPage} from "./pages/Executors/CreateRequestExecutPage";
+import {SendLinkPage} from "./pages/RecoverPassword/SendLinkPage";
+import {ResetPasswordPage} from "./pages/RecoverPassword/ResetPasswordPage";
 
 function App() {
 
@@ -56,7 +60,8 @@ function App() {
                             <Route path="/booking/create" element={<CreateBookingPage/>}/>
                             <Route path="/booking/:bookingId" element={<EditBookingPage/>}/>
                             <Route path="/execut" element={<MainExecutorPage/>}/>
-                            <Route path="/execut/report" element={<ReportPage/>}/>
+                            <Route path="/execut/report/:requestId" element={<ReportPage/>}/>
+                            <Route path="/execut/request" element={<CreateRequestExecutPage/>}/>
                             <Route path="/workers/create" element={<CreateWorkerPage/>}/>
                             <Route path="/objects/create" element={<CreateObjectPage/>}/>
                             <Route path="/offices/create" element={<CreateOfficePage/>}/>
@@ -69,6 +74,7 @@ function App() {
                             <Route path="/worker/:workerId" element={<EditWorkerPage/>}/>
                             <Route path="/role/:roleId" element={<EditRolePage/>}/>
                             <Route path="/calendar" element={<CalendarAdminPage/>}/>
+                            <Route path="/requests" element={<RequestsPage/>}/>
                             <Route path="/request/object" element={<RequestObjectPage/>}/>
                             <Route path="/request/:requestId" element={<RequestPage/>}/>
                             <Route path="/request/execut" element={<RequestExecutPage/>}/>
@@ -78,6 +84,8 @@ function App() {
                             <Route path="/works/create" element={<CreateWorkPage/>}/>
                             <Route path="/works/:workId" element={<WorkPage/>}/>
                             <Route path="/work/:workId" element={<EditWorkPage/>}/>
+                            <Route path="/recover-password" element={<SendLinkPage/>}/>
+                            <Route path="/reset-password" element={<ResetPasswordPage/>}/>
                         </Routes>
                     </RequestState>
                 </WorkerState>

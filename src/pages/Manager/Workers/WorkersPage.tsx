@@ -17,9 +17,9 @@ export function WorkersPage(){
     const [workers, setWorkers] = useState<IWorkers[]>([])
     const navigate = useNavigate()
     const edemContext = useContext(EdembackContext)
+    const {worker} = getAuthDataFromLocalStorage()
 
     const LoadingData = async () => {
-        const {worker, roles} = getAuthDataFromLocalStorage()
         const officeId = worker?.id_Office
         const response = await api.get(`/Workers?Office=${officeId}`)
         setWorkers(response.data)
@@ -47,7 +47,7 @@ export function WorkersPage(){
         <>
             <Navbar/>
             <SidebarMenu isOpen={true}/>
-            <SidebarOptions handleClick={() => navigate('/Workers/create')}/>
+            <SidebarOptions title="работника" handleClick={() => navigate('/Workers/create')}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Список сотрудников</h1>
                 <Form.Group className="mb-4">

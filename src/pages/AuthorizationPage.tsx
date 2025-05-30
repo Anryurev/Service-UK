@@ -5,10 +5,12 @@ import {EdembackContext} from "../context/edemback/EdembackContext";
 import api from "../api";
 import {IResponseAuth, IRole, IWorkers} from "../models";
 import {getAuthDataFromLocalStorage, saveAuthDataToLocalStorage} from "../storage/loacalStorage";
+import {log} from "util";
 
 interface IAuthorizationData{
     login: string,
-    password: string
+    password: string,
+    rememberMe: boolean
 }
 
 export function AuthorizationPage(){
@@ -20,6 +22,7 @@ export function AuthorizationPage(){
     const [phone, setPhone] = useState('+7')
     const [password, setPassword] = useState('')
     const [eye, setEye] = useState(false)
+    const [rememberMe, setRememberMe] = useState(false)
 
     const formatPhone = (value: string) => {
         const numbers = value.replace(/\D/g, '').substring(1)
@@ -60,11 +63,14 @@ export function AuthorizationPage(){
             try{
                 const workerAuth: IAuthorizationData = {
                     login: cleanPhoneNumber(phone),
-                    password: password
+                    password: password,
+                    rememberMe: rememberMe
                 }
-                const response = await api.post<IResponseAuth>(`/Auth`, workerAuth)
+                console.log('data auth', workerAuth)
+                const response = await api.post<IWorkers>(`/Auth`, workerAuth)
+                console.log(response.data)
                 saveAuthDataToLocalStorage(response.data)
-                const {worker, roles} = getAuthDataFromLocalStorage()
+                const {worker, role} = getAuthDataFromLocalStorage()
                 console.log('found', worker)
 
                 if (worker) {
@@ -72,24 +78,35 @@ export function AuthorizationPage(){
                     workerContext?.setWorker(worker)
                     switch (worker.id_Role) {
                         case 1:
+                            localStorage.setItem('main_page', "/home")
                             navigate('/home')
                             break
                         case 2:
-                            navigate('/home')
+                            localStorage.setItem('main_page', "/objects")
+                            navigate('/objects')
                             break
                         case 3:
+                            localStorage.setItem('main_page', "/execut")
                             navigate('/execut')
                             break
                         case 4:
+                            localStorage.setItem('main_page', "/home")
                             navigate('/home')
                             break
                         case 5:
+                            localStorage.setItem('main_page', "/calendar")
                             navigate('/calendar')
                             break
                         case 6:
+                            localStorage.setItem('main_page', "/execut")
                             navigate('/execut')
                             break
                         case 7:
+                            localStorage.setItem('main_page', "/execut")
+                            navigate('/execut')
+                            break
+                        case 8:
+                            localStorage.setItem('main_page', "/execut")
                             navigate('/execut')
                             break
                     }
@@ -104,7 +121,7 @@ export function AuthorizationPage(){
 
     return (
         <>
-            <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+            <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light auth-page">
                 <form onSubmit={submitHandler} className="p-4 rounded-3 shadow bg-white" style={{width: "100%", maxWidth: "450px"}}>
 
                     {/* Заголовок */}
@@ -161,12 +178,14 @@ export function AuthorizationPage(){
                                 type="checkbox"
                                 id="remember"
                                 className="form-check-input"
+                                checked={rememberMe}
+                                onChange={() => setRememberMe(prev => (!prev))}
                             />
                             <label htmlFor="remember" className="form-check-label text-muted">
                                 Запомнить меня
                             </label>
                         </div>
-                        <a href="#" className="text-decoration-none text-primary">Забыли пароль?</a>
+                        <a href="/recover-password" className="text-decoration-none text-primary">Забыли пароль?</a>
                     </div>
 
                     {/* Кнопка входа */}
@@ -181,3 +200,4 @@ export function AuthorizationPage(){
         </>
     )
 }
+

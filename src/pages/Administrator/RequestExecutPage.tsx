@@ -42,7 +42,7 @@ export function RequestExecutPage(){
             }
 
             const requests = roles.map(role =>
-                api.get<IWorkers[]>(`/Workers?Role=${role.role_Id}`)
+                api.get<IWorkers[]>(`/Workers/Worker?Role=${role.role_Id}`)
             )
 
             // Выполняем все запросы параллельно
@@ -187,7 +187,6 @@ export function RequestExecutPage(){
                     <button
                         className="btn btn-primary w-100"
                         onClick={handleClick}
-                        // TODO Изменить цвет кнопки
                     >
                         Далее
                     </button>

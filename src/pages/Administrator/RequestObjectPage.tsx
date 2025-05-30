@@ -28,7 +28,7 @@ export function RequestObjectPage(){
     const navigate = useNavigate()
 
     const LoadingData = async () => {
-        const responseObject = await api.get(`/Objects`)
+        const responseObject = await api.get(`/Objects/Worker`)
         const responseRequests = await api.get(`/Requests`)
         console.log('requests', requests)
         setRequests(responseRequests.data)
@@ -122,52 +122,13 @@ export function RequestObjectPage(){
       </span>
             )}
         </div>
-    );
+    )
 
     return(
         <>
             <Navbar/>
             <div className="d-flex flex-column min-vh-100 container-sm" style={{paddingTop: '60px'}}>
                 <main className="flex-grow-1">
-
-                    {/*Кастомное меню выора*/}
-                    {/*<div className="p-3 bg-light fixed-top" style={{marginTop: '56px'}}>*/}
-                    {/*    <div className="dropdown mb-2">*/}
-                    {/*        <button*/}
-                    {/*            className="btn btn-outline-secondary dropdown-toggle w-100 text-start"*/}
-                    {/*            type="button"*/}
-                    {/*            id="officeDropdown"*/}
-                    {/*            data-bs-toggle="dropdown"*/}
-                    {/*            aria-expanded="false"*/}
-                    {/*        >*/}
-                    {/*            {selectedOffice.name}*/}
-                    {/*        </button>*/}
-                    {/*        <ul className="dropdown-menu w-100" aria-labelledby="officeDropdown">*/}
-                    {/*            <li>*/}
-                    {/*                <button*/}
-                    {/*                    className="dropdown-item"*/}
-                    {/*                    type="button"*/}
-                    {/*                    onClick={() => setSelectedOffice({id: 0, name: "Выберите офис"})}*/}
-                    {/*                >*/}
-                    {/*                    Выберите офис*/}
-                    {/*                </button>*/}
-                    {/*            </li>*/}
-                    {/*            {offices.map(office => (*/}
-                    {/*                <li key={office.office_Id}>*/}
-                    {/*                    <button*/}
-                    {/*                        className="dropdown-item"*/}
-                    {/*                        type="button"*/}
-                    {/*                        onClick={() => setSelectedOffice({id: office.office_Id, name: 'ул.' + office.street + ' д. ' + office.house})}*/}
-                    {/*                    >*/}
-                    {/*                        { 'ул.' + office.street + ' д. ' + office.house }*/}
-                    {/*                    </button>*/}
-                    {/*                </li>*/}
-                    {/*            ))}*/}
-                    {/*        </ul>*/}
-                    {/*        <input type="hidden" name="id_Role" value={selectedOffice.id}/>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
-
                     <div>
                         <Form.Group className="mb-4">
                             <Form.Label>Поиск по объектам:</Form.Label>
@@ -185,8 +146,8 @@ export function RequestObjectPage(){
                         <label>Выберите объект</label>
                         <ul className="list-group">
                             {filteredObjects.map(object => {
-                                const taskCounts = countTasksByStatus(requests, object.id);
-                                const totalTasks = Object.values(taskCounts).reduce((a, b) => a + b, 0);
+                                const taskCounts = countTasksByStatus(requests, object.id)
+                                const totalTasks = Object.values(taskCounts).reduce((a, b) => a + b, 0)
 
                                 return(
                                     <li

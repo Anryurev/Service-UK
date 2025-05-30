@@ -24,17 +24,19 @@ export interface IWorkers {
     id_Role: number,
     id_Office: number,
     password: string,
+    telegram_id_user?: number
 }
 
 export interface IRole{
     role_Id: number,
     name: string,
-    salary: number // оклад
+    salary: number
     add_Parametrs?:Array<{
         id_Parametr: number,
         role_Id: number,
         parametr: string
-    }>
+    }>,
+    levelImportant: number
 }
 
 export interface IRequest {
@@ -73,6 +75,22 @@ export interface IWork{
 export interface IStatus{
     id_status: number,
     name: string
+}
+
+export interface IReport{
+    id_report: number,
+    request_id: number,
+    worker_id: number,
+    description: string,
+    dateTime: Date,
+    status: string,
+    photos: null,
+    add_Parametrs?:Array<{
+        id_report_parametr: number,
+        report_Id: number,
+        add_parametr_id: number,
+        value: boolean
+    }>,
 }
 
 export interface IState {

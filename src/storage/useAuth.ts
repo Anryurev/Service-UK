@@ -1,30 +1,33 @@
 import {useEffect, useState} from "react";
 import {IRole, IWorkers} from "../models";
 import {getAuthDataFromLocalStorage, saveAuthDataToLocalStorage} from "./loacalStorage";
+import api from "../api";
 
 export const useAuth = () => {
     const [worker, setWorker] = useState<IWorkers | null>(null)
-    const [roles, setRoles] = useState<IRole[] | null>(null)
+    const [role, setRole] = useState<IRole | null>(null)
 
     useEffect(() => {
-        const { worker, roles } = getAuthDataFromLocalStorage()
+        const { worker, role } = getAuthDataFromLocalStorage()
         setWorker(worker)
-        setRoles(roles)
+        setRole(role)
     }, [])
 
-    const updateAuthData = (data: { Worker: IWorkers; Roles?: IRole[]} ) => {
+    const updateAuthData = (data: IWorkers ) => {
         saveAuthDataToLocalStorage(data)
-        setWorker(data.Worker)
-        setRoles(data.Roles || null)
+        setWorker(data)
+    }
+
+    const logoutCookie = async () => {
+        await api.post(`/logout`)
     }
 
     const logout = () => {
-        localStorage.removeItem('worker')
-        localStorage.removeItem('roles')
-        localStorage.removeItem('auth_time')
+        logoutCookie()
+        localStorage.clear()
         setWorker(null)
-        setRoles(null)
+        setRole(null)
     }
 
-    return { worker, roles, updateAuthData, logout }
+    return { worker, role, updateAuthData, logout }
 }

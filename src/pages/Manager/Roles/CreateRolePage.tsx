@@ -16,7 +16,8 @@ export function CreateRolePage(){
             id_Parametr: -1,
             role_Id: -1,
             parametr: ""
-        }]
+        }],
+        levelImportant: 0
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
