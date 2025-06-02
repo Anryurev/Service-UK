@@ -5,6 +5,7 @@ import {IObject, IOffice} from "../../../models";
 import {useNavigate} from "react-router-dom";
 import {ObjectForm} from "../../../components/Object/ObjectForm";
 import api from "../../../api";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function CreateObjectPage(){
     const edemContext = useContext(EdembackContext)
@@ -17,7 +18,7 @@ export function CreateObjectPage(){
         house: "",
         apartment: "",
         rooms: 0,
-        status: 'Свободно',
+        status: 'Свободна',
         area: 0,
         kitchen: false,
         balcony: false
@@ -73,6 +74,7 @@ export function CreateObjectPage(){
     return (
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Создание нового объекта</h1>
                 <ObjectForm formData={formData} offices={offices} onChange={handleChange} onSubmit={handleSubmit}/>

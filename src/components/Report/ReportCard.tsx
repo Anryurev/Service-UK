@@ -1,14 +1,45 @@
-import React, {useEffect} from "react";
-import {IReport} from "../../models";
+import React, {useEffect, useState} from "react";
+import {IReport, IRequest, IWork, IWorkers} from "../../models";
+import api from "../../api";
+import {getAuthDataFromLocalStorage} from "../../storage/loacalStorage";
 
 interface ReportCardProps {
     report: IReport
+    onClick: (reportId: number) => void,
 }
 
-export const ReportCard = ({report} : ReportCardProps) => {
+export const ReportCard = ({report, onClick} : ReportCardProps) => {
+    const [workerReport, setWorkerReport] = useState<IWorkers | null>(null)
+    const [request, setRequest] = useState<IRequest>()
+    const [typeWork, setTypeWork] = useState<IWork>()
+    const {worker, role} = getAuthDataFromLocalStorage()
+
+    const LoadingData = async () => {
+        if(role?.levelImportant === 4){
+            setWorkerReport(worker)
+        }else{
+            const responseWorker = await api.get(`/Worker/${report.worker_Id}`)
+            setWorkerReport(responseWorker.data)
+        }
+
+        const responseRequest = await api.get(`/Request/${report.request_Id}`)
+        setRequest(responseRequest.data)
+    }
+
     useEffect(() => {
-        console.log('report in card', report)
-    })
+        LoadingData()
+    }, [])
+
+    useEffect(() => {
+        const fetchTypeWork = async () => {
+            if(request){
+                const response = await api.get(`/TypeWork/${request?.type_Work}`)
+                setTypeWork(response.data)
+            }
+        }
+
+        fetchTypeWork()
+    }, [request])
 
 
     function getStatusBadgeClass(status: string) {
@@ -24,7 +55,10 @@ export const ReportCard = ({report} : ReportCardProps) => {
 
     return (
         <>
-            <div className="card report-card mb-3" key={report.id_Report}>
+            <div className="card report-card mb-3" key={report.id_Report} onClick={(e) => {
+                e.stopPropagation()
+                onClick(report.id_Report)
+            }}>
                 <div className="card-header d-flex justify-content-between align-items-center">
                     <span className="badge bg-secondary">Отчет #{report.id_Report}</span>
                     <span className={`badge ${getStatusBadgeClass(report.status)}`}>
@@ -37,11 +71,11 @@ export const ReportCard = ({report} : ReportCardProps) => {
                         <div>
                             <h6 className="card-title mb-1">
                                 <i className="bi bi-person-circle me-2"></i>
-                                Исполнитель: #{report.worker_Id}
+                                Исполнитель: {worker?.surname} {worker?.name}
                             </h6>
                             <h6 className="card-subtitle text-muted">
                                 <i className="bi bi-journal-text me-2"></i>
-                                Задание: #{report.request_Id}
+                                Задание: {typeWork?.name}
                             </h6>
                         </div>
 

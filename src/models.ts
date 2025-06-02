@@ -17,7 +17,7 @@ export interface IWorkers {
     id: number,
     name: string,
     surname: string,
-    fathername: string,
+    fathername?: string,
     phoneNumber: string,
     email: string,
     birthday: string,
@@ -44,7 +44,7 @@ export interface IRequest {
     type_Work: string,
     description?: string,
     roles_Id: number[] | null
-    worker_Id?: number[],
+    workers_Id?: number[],
     object_Id: number,
     status: string,
     urgency: boolean,

@@ -34,11 +34,8 @@ const CalendarAdminMonth: React.FC = () => {
             const officeId = worker?.id_Office
             setLoading(true)
             setError(null)
-            console.log(3333)
             const responseObj = await api.get(`/Objects/Worker`)
-            console.log(2222)
             const responseBookings = await api.get(`/Bookings/Worker`)
-            console.log(1111)
             setObjectsAll(responseObj.data)
             setBookingsAll(responseBookings.data)
         } catch (err) {
@@ -379,7 +376,10 @@ const MobileDayModal: React.FC<MobileDayModalProps> = ({day, objectsAll, onClose
                                 </div>
 
                                 <div
-                                    onClick={() => onBookingClick(booking)}
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        onBookingClick(booking)
+                                    }}
                                 >
                                     <i className="bi bi-person-plus" style={{fontSize: "23px"}}></i>
                                 </div>

@@ -24,7 +24,7 @@ export const useRequest = () => {
         const request: IRequest = getRequestFromLocalStorage()
         request.type_Work = typeWork
         if(worker_Id){
-            request.worker_Id = worker_Id
+            request.workers_Id = worker_Id
         }
         localStorage.setItem('request', JSON.stringify(request))
     }

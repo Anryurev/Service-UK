@@ -19,8 +19,8 @@ const RequestCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) 
         console.log('request in request card', request)
         const responseTypeWork = await api.get(`/TypeWork/${request.type_Work}`)
         const responseObject = await api.get(`/Object/${request.object_Id}`)
-        if(request.worker_Id){
-            const responseWorker = await api.get(`/Worker/${request.worker_Id}`)
+        if(request.workers_Id){
+            const responseWorker = await api.get(`/Worker/${request.workers_Id}`)
             setWorker(responseWorker.data)
         }
         const responseStatuses = await api.get(`/Status_Request/${request.status}`)
@@ -69,9 +69,9 @@ const RequestCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) 
                         <small className="text-muted">Объект:</small> ул. {object?.street}  д. {object?.house}  кв. {object?.apartment}
                     </p>
                     <p className="card-text mb-1">
-                        <small className="text-muted">Должность:</small> {typeWork?.name}
+                        <small className="text-muted">Должность:</small> {typeWork?.roles.map(role => (<span key={role.role_Id}>{role.name} </span>))}
                     </p>
-                    {request.worker_Id && (
+                    {request.workers_Id && (
                         <p className="card-text">
                             <small className="text-muted">Исполнитель:</small> {worker?.surname} {worker?.name} {worker?.fathername}
                         </p>
@@ -84,7 +84,7 @@ const RequestCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) 
             {status?.name}
           </span>
 
-                    {!request.worker_Id && onAssign && (
+                    {!request.workers_Id && onAssign && (
                         <button
                             onClick={() => onAssign(request.request_Id)}
                             className="btn btn-sm btn-outline-primary"

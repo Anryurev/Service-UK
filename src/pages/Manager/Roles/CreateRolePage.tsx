@@ -4,6 +4,7 @@ import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {useNavigate} from "react-router-dom";
 import {IRole} from "../../../models";
 import {RoleForm} from "../../../components/Role/RoleForm";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function CreateRolePage(){
     const edemContext = useContext(EdembackContext)
@@ -68,6 +69,7 @@ export function CreateRolePage(){
     return (
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Создание новой должности</h1>
                 <RoleForm formData={formData} onChange={handleChange} onChangeParamList={handleChangeAddParametrList} onSubmit={handleSubmit}/>

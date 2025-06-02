@@ -37,8 +37,8 @@ const         RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request
 
                 console.log('status', statusRes.data)
 
-                if (currentRequest.worker_Id) {
-                    const workerRes = await api.get(`/Worker/${currentRequest.worker_Id}`)
+                if (currentRequest.workers_Id) {
+                    const workerRes = await api.get(`/Worker/${currentRequest.workers_Id}`)
                     setWorker(workerRes.data)
                 }
             } catch (error) {

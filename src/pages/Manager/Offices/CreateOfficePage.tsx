@@ -3,6 +3,7 @@ import {Navbar} from "../../../components/Navbar";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {IOffice, IWorkers} from "../../../models";
 import {useNavigate} from "react-router-dom";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function CreateOfficePage(){
     const edemContext = useContext(EdembackContext)
@@ -43,6 +44,7 @@ export function CreateOfficePage(){
     return (
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Создание нового офиса</h1>
                 <form>

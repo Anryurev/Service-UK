@@ -6,6 +6,7 @@ import {Navbar} from "../../../components/Navbar";
 import {Form} from "react-bootstrap"
 import type { FormControlProps } from 'react-bootstrap';
 import {useNavigate} from "react-router-dom";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function CreateWorkerPage() {
     const edemContext = useContext(EdembackContext)
@@ -68,6 +69,7 @@ export function CreateWorkerPage() {
     return (
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
                 <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                     <h1>Создание нового пользователя</h1>
                     <WorkerForm

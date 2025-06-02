@@ -37,7 +37,8 @@ import {RequestsPage} from "./pages/Administrator/Request/RequestsPage";
 import {CreateRequestExecutPage} from "./pages/Executors/CreateRequestExecutPage";
 import {SendLinkPage} from "./pages/RecoverPassword/SendLinkPage";
 import {ResetPasswordPage} from "./pages/RecoverPassword/ResetPasswordPage";
-import {ReportAdminPage} from "./pages/Administrator/ReportAdminPage";
+import {ReportsPage} from "./pages/Administrator/ReportsPage";
+import ReportPage from "./pages/Administrator/ReportPage";
 
 function App() {
     return (
@@ -75,7 +76,8 @@ function App() {
                             <Route path="/request/:requestId" element={<RequestPage/>}/>
                             <Route path="/request/execut" element={<RequestExecutPage/>}/>
                             <Route path="/request/description" element={<RequestDescriptionPage/>}/>
-                            <Route path="/reports" element={<ReportAdminPage/>}/>
+                            <Route path="/reports" element={<ReportsPage/>}/>
+                            <Route path="/reports/:reportId" element={<ReportPage/>}/>
                             <Route path="/bookings/:date" element={<BookingDatePage/>}/>
                             <Route path="/works" element={<WorksPage/>}/>
                             <Route path="/works/create" element={<CreateWorkPage/>}/>

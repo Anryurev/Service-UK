@@ -17,10 +17,8 @@ export function WorkerNote({worker, onRemove, onClick}: WorkerProps){
     const edemContext = useContext(EdembackContext)
     const navigate = useNavigate()
     const getRoleNameById = async (roleId: number) => {
-        console.log('id role', roleId)
         const response = await api.get(`/Role/${roleId}`)
         const role = response.data
-        console.log('role', role)
         setRoleName(role ? role.name : "Роль не найдена")
     }
 

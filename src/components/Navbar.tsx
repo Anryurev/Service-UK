@@ -51,7 +51,7 @@ export const Navbar = () => {
                     >
                         <div className="d-flex align-items-center">
                             <span className="dropdown-arrow me-2">
-                                <i className="bi bi-caret-down-fill"></i>
+                                <i className="bi bi-list"></i>
                             </span>
                             <div>
                                 <div>{role.name}</div>
@@ -63,10 +63,6 @@ export const Navbar = () => {
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu align="end">
-                        <Dropdown.Item onClick={logoutClick}>
-                            <i className="bi bi-box-arrow-right me-2"></i>
-                            Выйти
-                        </Dropdown.Item>
                         {role.name === "Администратор" &&
                         <>
                             <Dropdown.Item onClick={() => navigate(`/request/object`)}>
@@ -91,6 +87,10 @@ export const Navbar = () => {
                                 </Dropdown.Item>
                             </>
                         }
+                        <Dropdown.Item onClick={logoutClick}>
+                            <i className="bi bi-box-arrow-right me-2"></i>
+                            Выйти
+                        </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
                 <div className="offcanvas offcanvas-end" tabIndex={-1} id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
