@@ -8,7 +8,7 @@ import {CreateBookingPage} from "./pages/Operator/CreateBookingPage";
 import {ObjectPage} from "./pages/Manager/Objects/ObjectPage";
 import {EdemBackState} from "./context/edemback/EdemBackState";
 import {MainExecutorPage} from "./pages/Executors/MainExecutorPage";
-import {ReportPage} from "./pages/Executors/ReportPage";
+import {CreateReportPage} from "./pages/Executors/CreateReportPage";
 import  { RemoveScrollBar }  from  'react-remove-scroll-bar'
 import {WorkerState} from "./context/workerContext/WorkerState";
 import {CreateWorkerPage} from "./pages/Manager/Workers/CreateWorkerPage";
@@ -21,12 +21,10 @@ import {CreateRolePage} from "./pages/Manager/Roles/CreateRolePage";
 import {EditObjectPage} from "./pages/Manager/Objects/EditObjectPage";
 import {EditWorkerPage} from "./pages/Manager/Workers/EditWorkerPage";
 import {CalendarAdminPage} from "./pages/Administrator/CalendarAdminPage";
-import {RequestDescriptionPage} from "./pages/Administrator/RequestDescriptionPage";
-import {RequestExecutPage} from "./pages/Administrator/RequestExecutPage";
-import {RequestObjectPage} from "./pages/Administrator/RequestObjectPage";
-import {RequestPage} from "./pages/Administrator/RequestPage";
-import {RequestContext} from "./context/requestContext/RequestContext";
-import {RequestState} from "./context/requestContext/RequestState";
+import {RequestDescriptionPage} from "./pages/Administrator/Request/RequestDescriptionPage";
+import {RequestExecutPage} from "./pages/Administrator/Request/RequestExecutPage";
+import {RequestObjectPage} from "./pages/Administrator/Request/RequestObjectPage";
+import {RequestPage} from "./pages/Administrator/Request/RequestPage";
 import {BookingDatePage} from "./pages/Operator/BookingDatePage";
 import {WorksPage} from "./pages/Manager/Works/WorksPage";
 import {CreateWorkPage} from "./pages/Manager/Works/CreateWorkPage";
@@ -35,20 +33,18 @@ import {EditRolePage} from "./pages/Manager/Roles/EditRolePage";
 import {WorkPage} from "./pages/Manager/Works/WorkPage";
 import {EditWorkPage} from "./pages/Manager/Works/EditWorkPage";
 import {EditBookingPage} from "./pages/Operator/EditBookingPage";
-import {RequestsPage} from "./pages/Administrator/RequestsPage";
+import {RequestsPage} from "./pages/Administrator/Request/RequestsPage";
 import {CreateRequestExecutPage} from "./pages/Executors/CreateRequestExecutPage";
 import {SendLinkPage} from "./pages/RecoverPassword/SendLinkPage";
 import {ResetPasswordPage} from "./pages/RecoverPassword/ResetPasswordPage";
+import {ReportAdminPage} from "./pages/Administrator/ReportAdminPage";
 
 function App() {
-
-
     return (
         <>
             {/*< RemoveScrollBar  />*/}
             <EdemBackState>
                 <WorkerState>
-                    <RequestState>
                     <div className="fullscreen-background"></div>
                         <Routes>
                             <Route path="/" element={<AuthorizationPage/>} />
@@ -60,7 +56,7 @@ function App() {
                             <Route path="/booking/create" element={<CreateBookingPage/>}/>
                             <Route path="/booking/:bookingId" element={<EditBookingPage/>}/>
                             <Route path="/execut" element={<MainExecutorPage/>}/>
-                            <Route path="/execut/report/:requestId" element={<ReportPage/>}/>
+                            <Route path="/execut/report/:requestId" element={<CreateReportPage/>}/>
                             <Route path="/execut/request" element={<CreateRequestExecutPage/>}/>
                             <Route path="/workers/create" element={<CreateWorkerPage/>}/>
                             <Route path="/objects/create" element={<CreateObjectPage/>}/>
@@ -79,6 +75,7 @@ function App() {
                             <Route path="/request/:requestId" element={<RequestPage/>}/>
                             <Route path="/request/execut" element={<RequestExecutPage/>}/>
                             <Route path="/request/description" element={<RequestDescriptionPage/>}/>
+                            <Route path="/reports" element={<ReportAdminPage/>}/>
                             <Route path="/bookings/:date" element={<BookingDatePage/>}/>
                             <Route path="/works" element={<WorksPage/>}/>
                             <Route path="/works/create" element={<CreateWorkPage/>}/>
@@ -87,7 +84,6 @@ function App() {
                             <Route path="/recover-password" element={<SendLinkPage/>}/>
                             <Route path="/reset-password" element={<ResetPasswordPage/>}/>
                         </Routes>
-                    </RequestState>
                 </WorkerState>
             </EdemBackState>
         </>

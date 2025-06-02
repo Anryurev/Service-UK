@@ -16,17 +16,29 @@ export function ObjectsPage(){
     const [searchQuery, setSearchQuery] = useState('')
     const [objects, setObjects] = useState<IObject[]>([])
     const {worker} = getAuthDataFromLocalStorage()
+    const [isOperator, setIsOperator] = useState(false)
     const navigate = useNavigate()
     const edemContext = useContext(EdembackContext)
+    const {role} = getAuthDataFromLocalStorage()
 
     const LoadingData = async () => {
-        const response = await api.get(`/Objects/Worker`)
+        const response = await api.get(`/Objects${Number(role?.levelImportant) === 2? "" : "/Worker"}`)
         setObjects(response.data)
     }
+
+    const filteredObjects = objects.filter((object) =>
+        object.street.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        object.house.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        object.apartment.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        object.status.toLowerCase().includes(searchQuery.toLowerCase())
+    )
 
     useEffect(() => {
         LoadingData()
         console.log('useEffect')
+        if(worker?.id_Role === 4){
+            setIsOperator(true)
+        }
     }, [])
 
     const handleCreateObject = (newObject: IObject) => {
@@ -36,13 +48,6 @@ export function ObjectsPage(){
     const handleClickObject = (objectId: number) => {
         navigate(`/objects/${objectId}`)
     }
-
-    const filteredObjects = objects.filter((object) =>
-            object.street.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            object.house.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            object.apartment.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            object.status.toLowerCase().includes(searchQuery.toLowerCase())
-    )
 
     return(
         <>

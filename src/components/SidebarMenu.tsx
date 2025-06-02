@@ -15,33 +15,7 @@ export const SidebarMenu: React.FC<SidebarProps> = ({ isOpen}) => {
     const [isMobileOpen, setIsMobileOpen] = useState(false)
     const {worker} = getAuthDataFromLocalStorage()
     const [loading, setLoading] = useState(true)
-    const [role, setRole] = useState<IRole>({
-        role_Id: 0,
-        name: "",
-        salary: 0,
-        add_Parametrs: [],
-        levelImportant: 0
-    })
-
-    const fetchRole = async () => {
-        try {
-            const response = await api.get(`/Role/${worker?.id_Role}`)
-            localStorage.setItem('role', JSON.stringify(response.data))
-            setRole(response.data)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        const savedRole = localStorage.getItem('userRole')
-        if (savedRole) {
-            setRole(JSON.parse(savedRole))
-        } else {
-            console.log('fetchRole')
-            fetchRole()
-        }
-    }, [worker?.id_Role])
+    const {role} = getAuthDataFromLocalStorage()
 
     const logoutClick = () => {
         logout()

@@ -1,25 +1,28 @@
 import React, {useContext, useState} from "react";
 import {EdembackContext} from "../../context/edemback/EdembackContext";
-import {RequestContext} from "../../context/requestContext/RequestContext";
 import {IRequest} from "../../models";
 import {useNavigate} from "react-router-dom";
 import {Navbar} from "../../components/Navbar";
+import {getAuthDataFromLocalStorage} from "../../storage/loacalStorage";
 
 export function CreateRequestExecutPage(){
     const edemContext = useContext(EdembackContext)
+    const {worker} = getAuthDataFromLocalStorage()
     const [request, setRequest] = useState<IRequest>({
         request_Id: -1,
-        type_Work: "",
+        type_Work: "Администратор",
         description: "",
         roles_Id: null,
         object_Id: 0,
         status: "",
         urgency: false,
-        photos: null
+        admin_Id: worker? worker.id : 0,
+        photos: []
     })
     const navigate = useNavigate()
 
     const handleClickCreate = () => {
+        console.log('обратный request', request)
         edemContext.createRequest(request)
         navigate('/execut')
     }

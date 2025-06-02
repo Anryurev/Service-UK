@@ -21,7 +21,7 @@ export function WorkersPage(){
 
     const LoadingData = async () => {
         const officeId = worker?.id_Office
-        const response = await api.get(`/Workers?Office=${officeId}`)
+        const response = await api.get(`/Workers`)
         setWorkers(response.data)
     }
 

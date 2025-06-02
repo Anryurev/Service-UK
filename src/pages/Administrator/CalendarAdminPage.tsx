@@ -1,16 +1,17 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {Navbar} from "../../components/Navbar";
 import CalendarAdminMonth from "../../components/Calendar/CalendarAdmin/CalendarAdminMonth";
 import {useNavigate} from "react-router-dom";
-import {RequestContext} from "../../context/requestContext/RequestContext";
 import {IRequest} from "../../models";
 import CalendarAdminWeek from "../../components/Calendar/CalendarAdmin/CalendarAdminWeek";
+import {useRequest} from "../../storage/Request/useRequest";
+import {getAuthDataFromLocalStorage} from "../../storage/loacalStorage";
 
 export function CalendarAdminPage() {
     const navigate = useNavigate()
-    const requestContext = useContext(RequestContext)
     const [weekMode, setWeekMode] = useState(false)
-
+    const { worker } = getAuthDataFromLocalStorage()
+    const {saveRequestToLocalStorage} = useRequest()
     const request: IRequest = {
         request_Id: -1,
         type_Work: "",
@@ -20,11 +21,15 @@ export function CalendarAdminPage() {
         object_Id: 0,
         status: "1",
         urgency: false,
-        photos: null,
+        admin_Id: worker? worker.id : 0,
+        photos: [],
     }
 
+    useEffect(() => {
+        saveRequestToLocalStorage(request)
+    },[])
+
     const handleClickAssign = () => {
-        requestContext?.setRequest(request)
         navigate('/request/object')
     }
 

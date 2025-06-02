@@ -78,7 +78,7 @@ export function WorkNote ({work, onClick}: WorkNoteProps) {
                         type="button"
                         className="btn btn-danger"
                         onClick={async () => {
-                            // await api.delete(``)
+                            await api.delete(`/TypeWork/${work.id_Work}`)
                             setIsModalOpen(false)
                         }}
                     >

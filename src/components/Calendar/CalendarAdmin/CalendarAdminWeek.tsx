@@ -2,9 +2,9 @@ import React, {useContext, useEffect, useState} from 'react';
 import {IBooking, IObject} from '../../../models';
 import {useNavigate} from "react-router-dom";
 import api from "../../../api";
-import {RequestContext} from "../../../context/requestContext/RequestContext";
 import {getAuthDataFromLocalStorage} from "../../../storage/loacalStorage";
 import {Badge, Button} from "react-bootstrap";
+import {useRequest} from "../../../storage/Request/useRequest";
 
 interface CalendarDay {
     date: Date
@@ -19,7 +19,7 @@ const CalendarAdminWeek: React.FC = () => {
     const [bookingsAll, setBookingsAll] = useState<IBooking[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const requestContext = useContext(RequestContext)
+    const { updateRequestObject } = useRequest()
     const navigate = useNavigate()
 
     // Загрузка данных
@@ -87,16 +87,13 @@ const CalendarAdminWeek: React.FC = () => {
 
     const handleClickBooking = (booking: IBooking) => {
         const object = objectsAll?.find(obj => obj.id === booking.object_id)
-        console.log('object click', object)
-        if (object){
-            const selectedObjectId = object?.id
-            if (requestContext?.request) {
-                const updatedRequest = { ...requestContext.request, object_Id: selectedObjectId }
-                requestContext.setRequest(updatedRequest)
-            }
+        if(object){
+            console.log("объект выбирается", object)
+            updateRequestObject(object?.id)
+            navigate(`/request/execut`)
+        }else{
+            console.error("Ошибка при выборае объекта")
         }
-        console.log('request click', requestContext.request)
-        navigate(`/request/execut`)
     }
 
     // Получение цвета по статусу
@@ -143,6 +140,7 @@ const CalendarAdminWeek: React.FC = () => {
                         <div
                             key={index}
                             className={`day-cell ${day.date.toDateString() === new Date().toDateString() ? 'today' : ''}`}
+                            autoFocus={day.date.toDateString() === new Date().toDateString()}
                         >
                             <div className="day-header">
                                 <div className="weekday">{['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][day.date.getDay()]}</div>
@@ -154,9 +152,10 @@ const CalendarAdminWeek: React.FC = () => {
                                     day.bookings.map(booking => {
                                         const object = objectsAll.find(o => o.id === booking.object_id);
                                         return (
-                                            <div className="booking-item row">
+                                            <div
+                                                key={booking.id_Booking}
+                                                className="booking-item row">
                                                 <div
-                                                    key={booking.id_Booking}
                                                     className="col"
                                                     onClick={() => setSelectedBooking(booking)}
                                                 >
@@ -232,9 +231,7 @@ const CalendarAdminWeek: React.FC = () => {
                                 variant="primary"
                                 className="w-100"
                                 onClick={() => {
-                                    // Логика назначения задания
-                                    navigate(`/request/`)
-                                    setSelectedBooking(null);
+                                    handleClickBooking(selectedBooking)
                                 }}
                             >
                                 Назначить задание

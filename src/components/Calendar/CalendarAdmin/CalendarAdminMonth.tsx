@@ -3,9 +3,9 @@ import {IBooking, IObject, IRequest, IStatus} from '../../../models';
 import '../../../styles/CalendarAdmin.css';
 import {Link, useNavigate} from "react-router-dom";
 import api from "../../../api";
-import {RequestContext} from "../../../context/requestContext/RequestContext";
 import {getAuthDataFromLocalStorage} from "../../../storage/loacalStorage";
 import {log} from "util";
+import {useRequest} from "../../../storage/Request/useRequest";
 
 interface CalendarDay {
     date: Date
@@ -26,7 +26,7 @@ const CalendarAdminMonth: React.FC = () => {
     const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [statuses, setStatuses] = useState<IStatus[]>([])
-    const requestContext = useContext(RequestContext)
+    const { updateRequestObject } = useRequest()
 
     const LoadingData = async () => {
         try{
@@ -148,15 +148,11 @@ const CalendarAdminMonth: React.FC = () => {
         const object = objectsAll?.find(obj => obj.id === booking.object_id)
         console.log('object click', object)
         if (object){
-            const selectedObjectId = object?.id
-            if (requestContext?.request) {
-                console.log('selectesObject', selectedObject)
-                const updatedRequest = { ...requestContext.request, object_Id: selectedObjectId }
-                requestContext.setRequest(updatedRequest)
-            }
+            updateRequestObject(object?.id)
+            navigate(`/request/execut`)
+        } else{
+            console.error("Ошибка при выборае объекта")
         }
-        console.log('request click', requestContext.request)
-        navigate(`/request/execut`)
     }
 
     const styleDot = (booking: IBooking, day: Date) => {

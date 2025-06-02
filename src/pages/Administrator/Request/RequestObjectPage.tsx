@@ -1,12 +1,12 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Navbar} from "../../components/Navbar";
-import {EdembackContext} from "../../context/edemback/EdembackContext";
+import {Navbar} from "../../../components/Navbar";
+import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import api from "../../api";
-import {IObject, IOffice, IRequest, IRole, IWorkers} from "../../models";
+import api from "../../../api";
+import {IObject, IOffice, IRequest, IRole, IWorkers} from "../../../models";
 import {Form} from "react-bootstrap";
-import {RequestContext} from "../../context/requestContext/RequestContext";
-import RequestCard from "../../components/Request/RequestCard";
+import RequestCard from "../../../components/Request/RequestCard";
+import {useRequest} from "../../../storage/Request/useRequest";
 
 interface TaskCount {
     created: number
@@ -22,10 +22,8 @@ export function RequestObjectPage(){
     const [requestsObject, setRequestsObject] = useState<IRequest[]>([])
     const [requests, setRequests] = useState<IRequest[]>([])
     const [searchQuery, setSearchQuery] = useState('')
-    // const [objectsCard, setObjectsCard] = useState<Record<number, IObject>>({});
-    // const edemContext = useContext(EdembackContext)
-    const requestContext = useContext(RequestContext)
     const navigate = useNavigate()
+    const { updateRequestObject } = useRequest()
 
     const LoadingData = async () => {
         const responseObject = await api.get(`/Objects/Worker`)
@@ -40,19 +38,12 @@ export function RequestObjectPage(){
     }, [])
 
     useEffect(() => {
-        if (requestContext?.request) {
-            const updatedRequest = { ...requestContext.request, object_Id: selectedObject }
-            requestContext.setRequest(updatedRequest)
-        }
-
         if (Array.isArray(requests)) {
             const filteredRequests = requests.filter(r => r.object_Id === selectedObject);
             setRequestsObject(filteredRequests);
         } else {
             setRequestsObject([]);
         }
-
-        console.log('requestContext ', requestContext?.request)
     }, [selectedObject])
 
 
@@ -90,29 +81,29 @@ export function RequestObjectPage(){
     const styleItem = (object: IObject) => object.id === objectsOffice.find(obj => obj.id === selectedObject)?.id? "list-group-item border-1 border-success" : "list-group-item border-1"
 
     const handleClick = () => {
-        console.log('request objectPage', requestContext.request)
+        updateRequestObject(selectedObject)
         navigate(`/request/execut`)
     }
 
     const StatusBadges = ({ counts }: { counts: TaskCount }) => (
         <div className="d-flex gap-1 ms-2">
             {counts.created > 0 && (
-                <span className={`badge rounded-pill bg-success text-white`}>
+                <span className={`badge rounded-pill bg-danger text-white`}>
         {counts.created}
       </span>
             )}
             {counts.assigned > 0 && (
-                <span className={`badge rounded-pill bg-warning text-dark`}>
+                <span className={`badge rounded-pill bg-primary text-white`}>
         {counts.assigned}
       </span>
             )}
             {counts.inProgress > 0 && (
-                <span className={`badge rounded-pill bg-danger text-white`}>
+                <span className={`badge rounded-pill bg-warning text-white`}>
         {counts.inProgress}
       </span>
             )}
             {counts.completed > 0 && (
-                <span className={`badge rounded-pill bg-primary text-white`}>
+                <span className={`badge rounded-pill bg-success text-white`}>
         {counts.completed}
       </span>
             )}

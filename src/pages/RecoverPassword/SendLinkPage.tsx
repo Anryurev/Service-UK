@@ -6,6 +6,7 @@ export function SendLinkPage() {
     const [phone, setPhone] = useState("+7")
     const [email, setEmail] = useState("")
     const [error, setError] = useState(false)
+    const [isSend, setIsSend] = useState(false)
 
     const formatPhone = (value: string) => {
         const numbers = value.replace(/\D/g, '').substring(1)
@@ -56,29 +57,33 @@ export function SendLinkPage() {
         try{
             setError(false)
             const response = await api.post(`/request-password-reset`, requestPasswordReset)
+            setIsSend(true)
         }catch (err){
             console.error(err)
             setError(true)
         }
+
     }
 
     return(
         <>
             <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light auth-page">
                 <div className="p-4 rounded-3 shadow bg-white" style={{width: "100%", maxWidth: "450px"}}>
-                    <div className="d-flex justify-content-around">
-                        <i className="bi bi-at method-send" onClick={() => setIsEmail(true)}></i>
-                        <i className="bi bi-telegram method-send" onClick={() => setIsEmail(false)}></i>
-                    </div>
-                    <div className="d-flex">
-                        <form>
-                            <div className="mb-3">
+                    {!isSend &&
+                    <>
+                        <div className="d-flex justify-content-around">
+                            <i className="bi bi-at method-send" onClick={() => setIsEmail(true)}></i>
+                            <i className="bi bi-telegram method-send" onClick={() => setIsEmail(false)}></i>
+                        </div>
+                        <div className="d-flex">
+                            <form>
+                                <div className="mb-3">
                                 {isEmail? (
                                     <>
                                         <label htmlFor="email" className="form-label">Электронная почта</label>
                                         <div className="input-group mb-3">
                                             <span className="input-group-text bg-transparent border-end-0">
-                                                <i className="bi bi-at text-primary"></i>
+                                            <i className="bi bi-at text-primary"></i>
                                             </span>
                                             <input
                                                 type="email"
@@ -94,7 +99,9 @@ export function SendLinkPage() {
                                             На электронную почту мы отправим сслыку для сброса пароля
                                         </div>
                                     </>
-                                ) : (
+                                )
+                                :
+                                (
                                     <>
                                         <label htmlFor="phone" className="form-label">Номер телефона</label>
                                         <div className="input-group mb-3">
@@ -116,21 +123,32 @@ export function SendLinkPage() {
                                         </div>
                                     </>
                                 )}
-                            </div>
-                            {error && (
+                                </div>
+                        {
+                            error && (
                                 <div className="alert alert-danger animate__animated animate__headShake mb-3">
                                     <i className="bi bi-exclamation-circle me-2"></i>
-                                    {isEmail? "Неверный формат почты!" : "Неверный формат номера телефона!"}
+                                    {isEmail ? "Неверный формат почты!" : "Неверный формат номера телефона!"}
                                 </div>
-                            )}
-                            <button type="button"
-                                    className="btn btn-primary w-100"
-                                    onClick={handleSubmit}
-                            >
-                                Отправить
-                            </button>
-                        </form>
-                    </div>
+                            )
+                        }
+                                <button type="button"
+                                        className="btn btn-primary w-100"
+                                        onClick={handleSubmit}
+                                >
+                                    Отправить
+                                </button>
+                            </form>
+                        </div>
+                    </>}
+
+                    {isSend &&
+                        <div className="alert alert-info animate__animated animate__headShake mb-3">
+                            <i className="bi bi-exclamation-circle me-2"></i>
+                            {isEmail? "Ссылка направлена на Вашу электронную почту" : "Ссылка отправлена на Ваш аккаунт Telegram. "}
+                            Страница может быть закрыта.
+                        </div>
+                    }
                 </div>
             </div>
         </>

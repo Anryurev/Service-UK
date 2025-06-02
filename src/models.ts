@@ -47,8 +47,9 @@ export interface IRequest {
     worker_Id?: number[],
     object_Id: number,
     status: string,
-    urgency: boolean, // срочность
-    photos: number[] | null
+    urgency: boolean,
+    admin_Id: number,
+    photos: Array<{ id_photo: number; url: string }>
 }
 
 export interface IOffice {
@@ -78,13 +79,13 @@ export interface IStatus{
 }
 
 export interface IReport{
-    id_report: number,
-    request_id: number,
-    worker_id: number,
+    id_Report: number,
+    request_Id: number,
+    worker_Id: number,
     description: string,
     dateTime: Date,
     status: string,
-    photos: null,
+    photos: Array<{ id_photo: number; url: string }>,
     add_Parametrs?:Array<{
         id_report_parametr: number,
         report_Id: number,
@@ -107,8 +108,8 @@ export interface IState {
 }
 
 export interface IResponseAuth{
-    Worker: IWorkers,
-    Roles?: IRole[]
+    worker: IWorkers,
+    role: IRole
 }
 
 export type Action = {type: string, payload?: any}

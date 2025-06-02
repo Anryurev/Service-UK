@@ -67,6 +67,30 @@ export const Navbar = () => {
                             <i className="bi bi-box-arrow-right me-2"></i>
                             Выйти
                         </Dropdown.Item>
+                        {role.name === "Администратор" &&
+                        <>
+                            <Dropdown.Item onClick={() => navigate(`/request/object`)}>
+                                <i className="bi bi-list-task me-2"></i>
+                                Заявки
+                            </Dropdown.Item>
+                            <Dropdown.Item onClick={() => navigate(`/reports`)}>
+                                <i className="bi bi-clipboard-data me-2"></i>
+                                Отчеты
+                            </Dropdown.Item>
+                        </>
+                        }
+                        {role.levelImportant === 4 &&
+                            <>
+                                <Dropdown.Item onClick={() => navigate(`/execut`)}>
+                                    <i className="bi bi-list-task me-2"></i>
+                                    Заявки
+                                </Dropdown.Item>
+                                <Dropdown.Item onClick={() => navigate(`/reports`)}>
+                                    <i className="bi bi-clipboard-data me-2"></i>
+                                    Отчеты
+                                </Dropdown.Item>
+                            </>
+                        }
                     </Dropdown.Menu>
                 </Dropdown>
                 <div className="offcanvas offcanvas-end" tabIndex={-1} id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">

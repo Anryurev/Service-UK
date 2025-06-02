@@ -1,12 +1,11 @@
 import React, {useContext, useEffect, useState} from "react";
-import {EdembackContext} from "../../context/edemback/EdembackContext";
-import {Navbar} from "../../components/Navbar";
-import RequestCard from "../../components/Request/RequestCard";
+import {EdembackContext} from "../../../context/edemback/EdembackContext";
+import {Navbar} from "../../../components/Navbar";
+import RequestCard from "../../../components/Request/RequestCard";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {RequestContext} from "../../context/requestContext/RequestContext";
-import {IObject, IRequest, IRole, IStatus, IWork, IWorkers} from "../../models";
+import {IObject, IRequest, IRole, IStatus, IWork, IWorkers} from "../../../models";
 import {useParams} from "react-router-dom";
-import api from "../../api";
+import api from "../../../api";
 
 export function RequestPage() {
     const { requestId } = useParams<{ requestId: string }>()
@@ -82,7 +81,7 @@ export function RequestPage() {
                                 </li>
                             </ul>
                             <div>
-                                {request?.photos}
+                                {/*{request?.photos.map(photo)}*/}
                             </div>
                         </div>
                         <div

@@ -48,7 +48,6 @@ export function AuthorizationPage(){
         const input = e.target.value;
         if (input.startsWith('+7') || input === '+') {
             setPhone(formatPhone(input));
-            console.log('format phone', phone)
         }
     }
 
@@ -63,20 +62,19 @@ export function AuthorizationPage(){
             try{
                 const workerAuth: IAuthorizationData = {
                     login: cleanPhoneNumber(phone),
-                    password: password,
+                    password: password.trim(),
                     rememberMe: rememberMe
                 }
                 console.log('data auth', workerAuth)
-                const response = await api.post<IWorkers>(`/Auth`, workerAuth)
+                const response = await api.post<IResponseAuth>(`/Auth`, workerAuth)
                 console.log(response.data)
                 saveAuthDataToLocalStorage(response.data)
                 const {worker, role} = getAuthDataFromLocalStorage()
-                console.log('found', worker)
+                console.log('found', worker, role)
 
-                if (worker) {
-                    console.log('role', worker.id_Role)
+                if (worker && role) {
                     workerContext?.setWorker(worker)
-                    switch (worker.id_Role) {
+                    switch (role?.levelImportant) {
                         case 1:
                             localStorage.setItem('main_page', "/home")
                             navigate('/home')
@@ -86,26 +84,14 @@ export function AuthorizationPage(){
                             navigate('/objects')
                             break
                         case 3:
-                            localStorage.setItem('main_page', "/execut")
-                            navigate('/execut')
+                            localStorage.setItem('main_page', `${role?.name === "Оператор"? "/home" : role?.name === "Администратор"? "/calendar" : "/execut"}`)
+                            navigate(`${role?.name === "Оператор"? "/home" : role?.name === "Администратор"? "/calendar" : "/execut"}`)
                             break
                         case 4:
-                            localStorage.setItem('main_page', "/home")
-                            navigate('/home')
-                            break
-                        case 5:
-                            localStorage.setItem('main_page', "/calendar")
-                            navigate('/calendar')
-                            break
-                        case 6:
                             localStorage.setItem('main_page', "/execut")
                             navigate('/execut')
                             break
-                        case 7:
-                            localStorage.setItem('main_page', "/execut")
-                            navigate('/execut')
-                            break
-                        case 8:
+                        default:
                             localStorage.setItem('main_page', "/execut")
                             navigate('/execut')
                             break

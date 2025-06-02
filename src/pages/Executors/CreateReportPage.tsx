@@ -6,10 +6,10 @@ import api from "../../api";
 import {IReport, IRole} from "../../models";
 import {useNavigate, useParams} from "react-router-dom";
 
-export function ReportPage () {
+export function CreateReportPage () {
     const {requestId} = useParams<{ requestId: string }>()
     const [photos, setPhotos] = useState<File[]>([])
-    const [previews, setPreviews] = useState<string[]>([])
+    const [previews, setPreviews] = useState<Array<{ id_photo: number; url: string }>>([])
     const [error, setError] = useState<string | null>(null)
     const [showCamera, setShowCamera] = useState(false)
     const videoRef = useRef<HTMLVideoElement>(null)
@@ -18,13 +18,13 @@ export function ReportPage () {
     const {worker} = getAuthDataFromLocalStorage()
     const navigate = useNavigate()
     const [report, setReport] = useState<IReport>({
-        id_report: -1,
-        request_id: Number(requestId),
-        worker_id: worker?.id? worker.id : 0,
+        id_Report: -1,
+        request_Id: Number(requestId),
+        worker_Id: worker?.id? worker.id : 0,
         description: "",
         dateTime: new Date(),
         status: "3",
-        photos: null,
+        photos: [],
         add_Parametrs: [],
     })
 
@@ -46,7 +46,7 @@ export function ReportPage () {
         if (files){
             const validImageTypes = ["image/jpeg", "image/png", "image/gif"]
             const newPhotos: File[] = []
-            const newPreviews: string[] = []
+            const newPreviews: Array<{ id_photo: number; url: string }> = []
 
             for (let i = 0; i < files.length; i++){
                 const file = files[i]
@@ -56,10 +56,18 @@ export function ReportPage () {
 
                     const reader = new FileReader()
                     reader.onload = (event) => {
-                        if(event.target?.result){
-                            newPreviews.push(event.target.result as string)
-                            console.log(newPreviews)
+                        if (event.target?.result) {
+                            const newPreview = {
+                                id_photo: Date.now() + i, // Генерируем уникальный ID
+                                url: event.target.result as string
+                            };
+                            newPreviews.push(newPreview);
+                            console.log(newPreviews);
                             setPreviews([...newPreviews])
+                            setReport(prev => ({
+                                ...prev,
+                                photos: newPreviews
+                            }))
                         }
                     }
                     reader.readAsDataURL(file)
@@ -142,6 +150,8 @@ export function ReportPage () {
 
     const handleSubmit = async () => {
         console.log('submit report', report)
+        const status = "Выполнено"
+        await api.patch(`/ChangeStatusRequest/${requestId}?status=${status}`)
         await api.post(`/Report`, report)
     }
 
@@ -229,8 +239,8 @@ export function ReportPage () {
                                     {previews.map((preview, index) => (
                                         <div key={index} className="position-relative">
                                             <Image
-                                                src={preview}
-                                                alt={`Preview ${index}`}
+                                                src={preview.url}
+                                                alt={`Preview ${preview.id_photo}`}
                                                 thumbnail
                                                 style={{
                                                     width: "80px",

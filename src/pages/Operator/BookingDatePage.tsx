@@ -14,7 +14,7 @@ export function BookingDatePage(){
 
     const LoadingData = async (date: string) => {
         const responseBookings = await api.get(`/BookingDate/${date}`)
-        const responseObject = await api.get(`/Objects`)
+        const responseObject = await api.get(`/Objects/Worker`)
         setBookings(responseBookings.data)
         setObjects(responseObject.data)
         console.log('bookings op date', bookings)

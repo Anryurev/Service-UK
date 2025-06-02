@@ -123,7 +123,7 @@ const         RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request
                             }}
                             disabled={!["1", "2", "3"].includes(currentRequest.status)}
                         >
-                            <i className="bi bi-play-fill me-1"></i> {currentRequest.status === "3"? "Продолжить" : "Начать"}
+                            <i className="bi bi-play-fill me-1"></i> {currentRequest.status === "3"? "Продолжить" : currentRequest.status === "4"? "Завершено" : "Начать"}
                         </Button>
                     </div>
                 </div>

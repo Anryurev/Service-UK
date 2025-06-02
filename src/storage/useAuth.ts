@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {IRole, IWorkers} from "../models";
+import {IResponseAuth, IRole, IWorkers} from "../models";
 import {getAuthDataFromLocalStorage, saveAuthDataToLocalStorage} from "./loacalStorage";
 import api from "../api";
 
@@ -13,9 +13,9 @@ export const useAuth = () => {
         setRole(role)
     }, [])
 
-    const updateAuthData = (data: IWorkers ) => {
+    const updateAuthData = (data: IResponseAuth ) => {
         saveAuthDataToLocalStorage(data)
-        setWorker(data)
+        setWorker(data.worker)
     }
 
     const logoutCookie = async () => {

@@ -1,32 +1,25 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Navbar} from "../../components/Navbar";
-import {EdembackContext} from "../../context/edemback/EdembackContext";
+import {Navbar} from "../../../components/Navbar";
+import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {useNavigate} from "react-router-dom";
-import {RequestContext} from "../../context/requestContext/RequestContext";
-import {IRequest} from "../../models";
+import {IRequest} from "../../../models";
+import {useRequest} from "../../../storage/Request/useRequest";
 
 export function RequestDescriptionPage(){
     const edemContext = useContext(EdembackContext)
-    const requestContext = useContext(RequestContext)
-    const [updatedRequest, setUpdatedRequest] = useState<IRequest>(requestContext.request)
+    const [description, setDescription] = useState("")
+    const [urgency, setUrgency] = useState(false)
     const navigate = useNavigate()
+    const { getRequestFromLocalStorage, updateRequestDescription } = useRequest()
 
     const handleClickCreate = () => {
-        console.log('request descPage', requestContext.request)
-
-        edemContext.createRequest(requestContext.request)
+        updateRequestDescription(description, urgency)
+        const request = getRequestFromLocalStorage()
+        console.log('create request', request)
+        edemContext.createRequest(request)
         navigate('/calendar')
     }
 
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target
-        const checked = (e.target as HTMLInputElement).checked
-
-        requestContext.setRequest({
-            ...requestContext.request,
-            [name]: type === 'checkbox' ? checked : value
-        })
-    }
     return(
         <>
             <Navbar/>
@@ -39,8 +32,8 @@ export function RequestDescriptionPage(){
                                 rows={10}
                                 className="form-control"
                                 name="description"
-                                value={requestContext.request.description || ''}
-                                onChange={handleChange}
+                                value={description || ''}
+                                onChange={(e) => setDescription(e.target.value)}
                             />
                         </div>
                         <div className="mb-2">
@@ -49,8 +42,8 @@ export function RequestDescriptionPage(){
                                 className="form-check-input me-1"
                                 id='urgency'
                                 name='urgency'
-                                checked={requestContext.request.urgency || false}
-                                onChange={handleChange}
+                                checked={urgency || false}
+                                onChange={(e) => setUrgency(prev => !prev)}
                             />
                             <label htmlFor='urgency'>Это срочное задание</label>
                         </div>

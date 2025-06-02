@@ -1,11 +1,11 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Navbar} from "../../components/Navbar";
-import {EdembackContext} from "../../context/edemback/EdembackContext";
+import {Navbar} from "../../../components/Navbar";
+import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import api from "../../api";
-import {IObject, IRequest, IRole, IWork, IWorkers} from "../../models";
-import {WorkerContext} from "../../context/workerContext/WorkerContext";
-import {RequestContext} from "../../context/requestContext/RequestContext";
+import api from "../../../api";
+import {IObject, IRequest, IRole, IWork, IWorkers} from "../../../models";
+import {WorkerContext} from "../../../context/workerContext/WorkerContext";
+import {useRequest} from "../../../storage/Request/useRequest";
 
 export function RequestExecutPage(){
     const [workersRole, setWorkersRole] = useState<IWorkers[]>([])
@@ -15,8 +15,7 @@ export function RequestExecutPage(){
     const [errorRole, setErrorRole] = useState(false)
     const [typesWork, setTypesWork] = useState<IWork[]>([])
     const [allWorker, setAllWorker] = useState(false)
-    const requestContext = useContext(RequestContext)
-    const [updatedRequest, setUpdatedRequest] = useState<IRequest>(requestContext.request)
+    const { updateRequestTypeWork } = useRequest()
     const navigate = useNavigate()
 
     const LoadingTypesWork = async () => {
@@ -82,12 +81,7 @@ export function RequestExecutPage(){
     }
 
     const handleClick = () => {
-        requestContext.setRequest({
-            ...requestContext.request,
-            worker_Id: selectedWorkers,
-            type_Work: selectedTypeWork.name,
-        })
-        console.log('request executPage', requestContext.request)
+        updateRequestTypeWork(selectedTypeWork.name, selectedWorkers)
         navigate(`/request/description`)
     }
 
@@ -141,12 +135,6 @@ export function RequestExecutPage(){
                                 role="switch"
                                 checked={allWorker}
                                 onChange={() => {
-                                    const newRequest = {
-                                        ...requestContext.request,
-                                        type_Work: String(selectedTypeWork.id),
-                                        status: '1'
-                                    }
-                                    requestContext.setRequest(newRequest)
                                     setAllWorker(prev => (!prev))
                                 }}
                             />

@@ -1,13 +1,12 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Navbar} from "../../components/Navbar";
-import {EdembackContext} from "../../context/edemback/EdembackContext";
+import {Navbar} from "../../../components/Navbar";
+import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
-import api from "../../api";
-import {IObject, IOffice, IRequest, IRole, IWorkers} from "../../models";
+import api from "../../../api";
+import {IObject, IOffice, IRequest, IRole, IWorkers} from "../../../models";
 import {Form} from "react-bootstrap";
-import {RequestContext} from "../../context/requestContext/RequestContext";
-import RequestCard from "../../components/Request/RequestCard";
-import {getAuthDataFromLocalStorage} from "../../storage/loacalStorage";
+import RequestCard from "../../../components/Request/RequestCard";
+import {getAuthDataFromLocalStorage} from "../../../storage/loacalStorage";
 
 interface TaskCount {
     created: number
@@ -22,7 +21,6 @@ export function RequestsPage(){
     const [objectsOffice, setObjectsOffice] = useState<IObject[]>([])
     const [requestsObject, setRequestsObject] = useState<IRequest[]>([])
     const [requests, setRequests] = useState<IRequest[]>([])
-    const requestContext = useContext(RequestContext)
     const navigate = useNavigate()
     const location = useLocation();
 
@@ -31,7 +29,7 @@ export function RequestsPage(){
             const {worker} = getAuthDataFromLocalStorage();
             const officeId = worker?.id_Office;
             const [responseObject, responseRequests] = await Promise.all([
-                api.get(`/Objects?Office=${officeId}`),
+                api.get(`/Objects/Worker`),
                 api.get(`/Requests?Office=${officeId}`)
             ]);
 
@@ -61,11 +59,6 @@ export function RequestsPage(){
     }, [objectsOffice, location.state])
 
     useEffect(() => {
-        if (requestContext?.request) {
-            const updatedRequest = { ...requestContext.request, object_Id: selectedObject.id }
-            requestContext.setRequest(updatedRequest)
-        }
-
         const filteredRequests = selectedObject.id === 0
             ? requests
             : requests.filter(r => r.object_Id === selectedObject.id)
@@ -74,7 +67,6 @@ export function RequestsPage(){
     }, [selectedObject])
 
     const handleClick = () => {
-        console.log('request objectPage', requestContext.request)
         navigate(`/request/execut`)
     }
 

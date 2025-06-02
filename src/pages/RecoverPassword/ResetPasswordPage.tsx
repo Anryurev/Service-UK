@@ -1,26 +1,33 @@
-import React, {useState} from "react";
-import {useParams} from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import api from "../../api";
 
 export function ResetPasswordPage() {
-    const {token} = useParams<{ token: string }>()
+    const [searchParams, setSearchParams] = useSearchParams();
+    const token = searchParams.get('token');
     const [eye, setEye] = useState(false)
     const [eyeRepeat, setEyeRepeat] = useState(false)
     const [password, setPassword] = useState("")
     const [passwordRepeat, setPasswordRepead] = useState("")
     const [doNotMatch, setDoNotMatch] = useState(false)
+    const navigate = useNavigate()
 
-    const handleChangePassRepeat = (e: React.ChangeEvent<HTMLInputElement>) => {
+    useEffect(() => {
+        setDoNotMatch(passwordRepeat !== password);
+    }, [password, passwordRepeat])
+
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(e.target.value)
+    }
+
+    const handlePasswordRepeatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPasswordRepead(e.target.value)
-        if(passwordRepeat !== password){
-            setDoNotMatch(true)
-        } else{
-            setDoNotMatch(false)
-        }
     }
 
     const handleSubmit = async () => {
-        await api.patch(`/UpdatePassword/${token}`)
+        console.log('token', token)
+        await api.patch(`/UpdatePassword/${token}?password=${password}`)
+        navigate('/')
     }
 
     return(
@@ -31,48 +38,52 @@ export function ResetPasswordPage() {
                     </div>
                     <div className="d-flex">
                         <form className="w-100">
-                            <h3>Восстановление пароля</h3>
+                            <h3 className="method-send" style={{fontSize: "30px"}}>Восстановление пароля</h3>
                             <div className="mb-3">
-                                <label htmlFor="email" className="form-label">Придумайте новый пароль</label>
+                                <label htmlFor="password" className="form-label">Придумайте новый пароль</label>
                                 <div className="input-group mb-3">
                                     <span className="input-group-text bg-transparent border-end-0">
-                                        <i className="bi bi-lock"></i>
+                                      <i className="bi bi-lock"></i>
                                     </span>
                                     <input
-                                        type={eye? "text" : "password"}
+                                        type={eye ? "text" : "password"}
                                         className="form-control py-2 border-start-0"
                                         id="password"
-                                        name="password"
                                         value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
+                                        onChange={handlePasswordChange}
                                     />
-                                    <div className="form-control-lg">
-                                        { eye?
-                                            <i className="bi bi-eye" onClick={() => setEye(false)}></i>
-                                            : <i className="bi bi-eye-slash"  onClick={() => setEye(true)}></i>}
-                                    </div>
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-secondary"
+                                        onClick={() => setEye(!eye)}
+                                    >
+                                        <i className={`bi ${eye ? "bi-eye-slash" : "bi-eye"}`}></i>
+                                    </button>
                                 </div>
-                                <label htmlFor="phone" className="form-label">Подтвердите пароль</label>
+
+                                <label htmlFor="repeat" className="form-label">Подтвердите пароль</label>
                                 <div className="input-group mb-3">
                                     <span className="input-group-text bg-transparent border-end-0">
-                                        <i className="bi bi-lock-fill"></i>
+                                      <i className="bi bi-lock-fill"></i>
                                     </span>
                                     <input
-                                        type={eyeRepeat? "text" : "password"}
+                                        type={eyeRepeat ? "text" : "password"}
                                         id="repeat"
-                                        name="repeat"
-                                        className="form-control py-2 border-start-0"
+                                        className={`form-control py-2 border-start-0 ${doNotMatch ? "is-invalid" : ""}`}
                                         value={passwordRepeat}
-                                        onChange={handleChangePassRepeat}
+                                        onChange={handlePasswordRepeatChange}
                                     />
-                                    <div className="form-control-lg">
-                                        { eyeRepeat?
-                                            <i className="bi bi-eye" onClick={() => setEyeRepeat(false)}></i>
-                                            : <i className="bi bi-eye-slash"  onClick={() => setEyeRepeat(true)}></i>}
-                                    </div>
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-secondary"
+                                        onClick={() => setEyeRepeat(!eyeRepeat)}
+                                    >
+                                        <i className={`bi ${eyeRepeat ? "bi-eye-slash" : "bi-eye"}`}></i>
+                                    </button>
                                 </div>
+
                                 {doNotMatch && (
-                                    <div className="alert alert-danger animate__animated animate__headShake mb-3">
+                                    <div className="alert alert-danger animate__animated animate__headShake">
                                         <i className="bi bi-exclamation-circle me-2"></i>
                                         Пароли не совпадают!
                                     </div>
