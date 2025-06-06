@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {IObject, IRequest, IRole, IStatus, IWork, IWorkers} from "../../models";
+import {IObject, IRequest, IRole, IStatus, IWork, IWorkers, RoleItem} from "../../models";
 import api from "../../api";
 
 interface RequestCardProps {
@@ -10,23 +10,31 @@ interface RequestCardProps {
 
 const RequestCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) => {
 
-    const [typeWork, setTypeWork] = useState<IWork>()
+    // const [typeWork, setTypeWork] = useState<IWork>()
     const [object, setObject] = useState<IObject>()
     const [worker, setWorker] = useState<IWorkers>()
     const [status, setStatus] = useState<IStatus>()
+    const [roles, setRoles] = useState<IRole[]>([])
 
     const LoadingData = async () => {
         console.log('request in request card', request)
-        const responseTypeWork = await api.get(`/TypeWork/${request.type_Work}`)
         const responseObject = await api.get(`/Object/${request.object_Id}`)
+        fetchRoles(request.roles_Id || [])
         if(request.workers_Id){
             const responseWorker = await api.get(`/Worker/${request.workers_Id}`)
             setWorker(responseWorker.data)
         }
-        const responseStatuses = await api.get(`/Status_Request/${request.status}`)
-        setTypeWork(responseTypeWork.data)
         setObject(responseObject.data)
-        setStatus(responseStatuses.data)
+    }
+
+    const fetchRoles = async (roleItems: RoleItem[]) => {
+        const results = await Promise.all(
+            roleItems.map(async (item) => {
+                const res = await api.get<IRole>(`/Role/${item.role}`)
+                return res.data
+            })
+        )
+        setRoles(results)
     }
 
     useEffect(() => {
@@ -35,7 +43,7 @@ const RequestCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) 
 
     // Стили для статуса
     const getStatusClass = () => {
-        switch (status?.name) {
+        switch (request.status) {
             case 'Создано':
                 return 'bg-danger text-white'
             case 'Назначено':
@@ -57,7 +65,7 @@ const RequestCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) 
             <div className="card-body">
                 {/* Заголовок карточки */}
                 <div className="d-flex justify-content-between align-items-start mb-2">
-                    <h5 className="card-title mb-0">Задание: {typeWork?.name}</h5>
+                    <h5 className="card-title mb-0">Задание: {request.type_Work}</h5>
                     {request.urgency && (
                         <span className="badge bg-danger">Срочно</span>
                     )}
@@ -69,7 +77,7 @@ const RequestCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) 
                         <small className="text-muted">Объект:</small> ул. {object?.street}  д. {object?.house}  кв. {object?.apartment}
                     </p>
                     <p className="card-text mb-1">
-                        <small className="text-muted">Должность:</small> {typeWork?.roles.map(role => (<span key={role.role_Id}>{role.name} </span>))}
+                        <small className="text-muted">Должность:</small> {roles.map(role => (<span key={role.role_Id}>{role.name} </span>))}
                     </p>
                     {request.workers_Id && (
                         <p className="card-text">
@@ -81,7 +89,7 @@ const RequestCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) 
                 {/* Футер карточки */}
                 <div className="d-flex justify-content-between align-items-center">
           <span className={`badge ${getStatusClass()} rounded-pill`}>
-            {status?.name}
+            {request.status}
           </span>
 
                     {!request.workers_Id && onAssign && (

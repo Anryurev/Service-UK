@@ -39,23 +39,17 @@ export interface IRole{
     levelImportant: number
 }
 
-export interface IRequest {
-    request_Id: number,
-    type_Work: string,
-    description?: string,
-    roles_Id: number[] | null
-    workers_Id?: number[],
-    object_Id: number,
-    status: string,
-    urgency: boolean,
-    admin_Id: number,
-    photos: Array<{ id_photo: number; url: string }>
-}
-
 export interface IOffice {
     office_Id: number,
     street: string,
     house: string
+}
+
+export interface IWork{
+    id_Work: number,
+    name: string,
+    roles: IRole[],
+    roles_Id: number[]
 }
 
 export interface IBooking {
@@ -66,16 +60,25 @@ export interface IBooking {
     status: string
 }
 
-export interface IWork{
-    id_Work: number,
-    name: string,
-    roles: IRole[],
-    roles_Id: number[]
+export interface IRequest {
+    request_Id: number,
+    type_Work: string,
+    description?: string,
+    roles_Id: RoleItem[] | null
+    workers_Id?: number[],
+    object_Id: number,
+    status: string,
+    urgency: boolean,
+    admin_Id: number,
+    issue_Time: Date | string,
+    completion_Time: Date | string,
+    photos: Array<{ id_photo: number; url: string }>
 }
 
-export interface IStatus{
-    id_status: number,
-    name: string
+export interface RoleItem {
+    id: number;
+    role: string;
+    work: string;
 }
 
 export interface IReport{
@@ -92,6 +95,11 @@ export interface IReport{
         add_parametr_id: number,
         value: boolean
     }>,
+}
+
+export interface IStatus{
+    id_status: number,
+    name: string
 }
 
 export interface IState {

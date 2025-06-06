@@ -160,7 +160,7 @@ export function RequestsPage(){
                         className="btn btn-primary w-100"
                         onClick={handleClick}
                     >
-                        Далее
+                        Назначить задание на данный объект
                     </button>
                 </footer>
             </div>

@@ -4,6 +4,7 @@ import {Navbar} from "../../components/Navbar";
 import api from "../../api";
 import {useNavigate, useParams} from "react-router-dom";
 import {Badge, Button, Card, ListGroup} from "react-bootstrap";
+import {SidebarMenu} from "../../components/SidebarMenu";
 
 export function BookingDatePage(){
     const [bookings, setBookings] = useState<IBooking[]>([])
@@ -54,6 +55,7 @@ export function BookingDatePage(){
     return (
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container-fluid w-50" style={{paddingTop: "60px"}}>
                 <h1>Информация о бронированиях на {formattedDate}</h1>
                 {bookings.map(booking => (

@@ -17,6 +17,8 @@ export function CreateRequestExecutPage(){
         status: "",
         urgency: false,
         admin_Id: worker? worker.id : 0,
+        issue_Time: new Date(),
+        completion_Time: new Date(new Date().getDate() + 1),
         photos: []
     })
     const navigate = useNavigate()

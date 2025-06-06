@@ -5,6 +5,7 @@ import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {IObject, IOffice} from "../../../models";
 import {Navbar} from "../../../components/Navbar";
 import api from "../../../api";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function EditObjectPage(){
     const { objectId } = useParams<{ objectId: string }>()
@@ -142,6 +143,7 @@ export function EditObjectPage(){
     return(
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Редактирование объекта</h1>
                 {<ObjectForm

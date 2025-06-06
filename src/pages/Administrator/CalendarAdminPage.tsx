@@ -12,6 +12,9 @@ export function CalendarAdminPage() {
     const [weekMode, setWeekMode] = useState(false)
     const { worker } = getAuthDataFromLocalStorage()
     const {saveRequestToLocalStorage} = useRequest()
+    const now = new Date()
+    const tomorrow = new Date(now)
+    tomorrow.setDate(now.getDate() + 1)
     const request: IRequest = {
         request_Id: -1,
         type_Work: "",
@@ -22,6 +25,8 @@ export function CalendarAdminPage() {
         status: "1",
         urgency: false,
         admin_Id: worker? worker.id : 0,
+        issue_Time: now,
+        completion_Time: tomorrow,
         photos: [],
     }
 
@@ -55,7 +60,7 @@ export function CalendarAdminPage() {
                 </div>
                 <div className="row h-100">
                     <div className="col-sm-1 d-flex flex-column">
-                        <button type="button" className="btn-sm button_calendar mt-auto" onClick={handleClickAssign}>Назначить</button>
+                        <button type="button" className="btn-sm button_calendar mt-auto" onClick={handleClickAssign}>Создать заявку</button>
                     </div>
                 </div>
             </div>

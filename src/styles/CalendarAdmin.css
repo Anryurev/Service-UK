@@ -422,6 +422,16 @@
     padding: 15px;
 }
 
+.check-in-week {
+    color: #198754;
+    font-size: 20px;
+}
+
+.check-out-week {
+    color: #dc3545;
+    font-size: 20px;
+}
+
 /* Цвета статусов */
 .bg-success { background-color: #198754; }
 .bg-warning { background-color: #ffc107; color: #212529; }

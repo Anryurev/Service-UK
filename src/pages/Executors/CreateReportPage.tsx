@@ -60,7 +60,7 @@ export function CreateReportPage () {
                             const newPreview = {
                                 id_photo: Date.now() + i, // Генерируем уникальный ID
                                 url: event.target.result as string
-                            };
+                            }
                             newPreviews.push(newPreview);
                             console.log(newPreviews);
                             setPreviews([...newPreviews])

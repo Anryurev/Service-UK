@@ -281,10 +281,10 @@ const MobileDayModal: React.FC<MobileDayModalProps> = ({day, objectsAll, onClose
             .filter(request => request.object_Id === objectId)
             .forEach(request => {
                 switch(request.status) {
-                    case '1': counts.created++; break;
-                    case '2': counts.assigned++; break;
-                    case '3': counts.inProgress++; break;
-                    case '4': counts.completed++; break;
+                    case 'Создано': counts.created++; break;
+                    case 'Назначено': counts.assigned++; break;
+                    case 'В процессе': counts.inProgress++; break;
+                    case 'Выполнено': counts.completed++; break;
                     default: counts.other++; break;
                 }
             })

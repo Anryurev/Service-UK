@@ -1,7 +1,7 @@
 import React, { useEffect, useState} from "react";
 import {Navbar} from "../../../components/Navbar";
 import {useNavigate} from "react-router-dom";
-import {IObject, IRequest, IStatus, IWork, IWorkers} from "../../../models";
+import {IObject, IRequest, IRole, IStatus, IWork, IWorkers, RoleItem} from "../../../models";
 import {useParams} from "react-router-dom";
 import api from "../../../api";
 import {getAuthDataFromLocalStorage} from "../../../storage/loacalStorage";
@@ -12,28 +12,34 @@ export function RequestPage() {
     const [request, setRequest] = useState<IRequest>()
     const [typeWork, setTypeWork] = useState<IWork>()
     const [object, setObject] = useState<IObject>()
+    const [roles, setRoles] = useState<IRole[]>([])
     const [workerRequest, setWorkerRequest] = useState<IWorkers>()
-    const [status, setStatus] = useState<IStatus>()
     const {worker, role} = getAuthDataFromLocalStorage()
     const navigate = useNavigate()
 
     const LoadingData = async (request: IRequest) => {
-        const responseTypeWork = await api.get(`/TypeWork/${request.type_Work}`)
-        console.log('typeWork', responseTypeWork.data)
         const responseObject = await api.get(`/Object/${request.object_Id}`)
+        fetchRoles(request.roles_Id || [])
         if(request.workers_Id?.includes(worker? worker?.id : -1)){
             const responseWorker = await api.get(`/Worker/${request.workers_Id}`)
             setWorkerRequest(responseWorker.data)
         }
-        const responseStatuses = await api.get(`/Status_Request/${request.status}`)
-        setTypeWork(responseTypeWork.data)
         setObject(responseObject.data)
-        setStatus(responseStatuses.data)
     }
 
     useEffect(() => {
         if (request) LoadingData(request)
     }, [request])
+
+    const fetchRoles = async (roleItems: RoleItem[]) => {
+        const results = await Promise.all(
+            roleItems.map(async (item) => {
+                const res = await api.get<IRole>(`/Role/${item.role}`)
+                return res.data
+            })
+        )
+        setRoles(results)
+    }
 
     useEffect(() => {
         const fetchResponse = async () => {
@@ -59,8 +65,8 @@ export function RequestPage() {
     }
 
     const getStatusBadge = () => {
-        console.log(status)
-        switch(status?.name) {
+        console.log(request?.status)
+        switch(request?.status) {
             case "Создано": return "danger"
             case "Назначено": return "primary"
             case "В процессе": return  "warning"
@@ -80,7 +86,7 @@ export function RequestPage() {
                         <Row className="align-items-center">
                             <Col>
                                 <h2 className="mb-0">
-                                    <strong>Задание:</strong> {typeWork?.name}
+                                    <strong>Задание:</strong> {request?.type_Work}
                                 </h2>
                             </Col>
                             <Col xs="auto">
@@ -107,7 +113,7 @@ export function RequestPage() {
 
                                     <ListGroup.Item className="d-flex">
                                         <span className="fw-bold me-2" style={{ minWidth: '100px' }}>Должность:</span>
-                                        {typeWork?.roles.map(role => (<span key={role.role_Id}>{role.name} </span>))}
+                                        {roles.map(role => (<span key={role.role_Id}>{role.name} </span>))}
                                     </ListGroup.Item>
 
                                     <ListGroup.Item className="d-flex">
@@ -120,7 +126,7 @@ export function RequestPage() {
                                     <ListGroup.Item className="d-flex">
                                         <span className="fw-bold me-2" style={{ minWidth: '100px' }}>Статус:</span>
                                         <Badge bg={statusBadge} className="align-self-center">
-                                            {status?.name}
+                                            {request?.status}
                                         </Badge>
                                     </ListGroup.Item>
 

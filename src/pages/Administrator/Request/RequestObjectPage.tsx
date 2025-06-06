@@ -22,8 +22,10 @@ export function RequestObjectPage(){
     const [requestsObject, setRequestsObject] = useState<IRequest[]>([])
     const [requests, setRequests] = useState<IRequest[]>([])
     const [searchQuery, setSearchQuery] = useState('')
+    const [error, setError] = useState(false)
     const navigate = useNavigate()
-    const { updateRequestObject } = useRequest()
+    const { getRequestFromLocalStorage, updateRequestObject } = useRequest()
+    const request: IRequest = getRequestFromLocalStorage()
 
     const LoadingData = async () => {
         const responseObject = await api.get(`/Objects/Worker`)
@@ -38,6 +40,7 @@ export function RequestObjectPage(){
     }, [])
 
     useEffect(() => {
+        setError(false)
         if (Array.isArray(requests)) {
             const filteredRequests = requests.filter(r => r.object_Id === selectedObject);
             setRequestsObject(filteredRequests);
@@ -67,10 +70,10 @@ export function RequestObjectPage(){
             .filter(request => request.object_Id === objectId)
             .forEach(request => {
                 switch(request.status) {
-                    case '1': counts.created++; break;
-                    case '2': counts.assigned++; break;
-                    case '3': counts.inProgress++; break;
-                    case '4': counts.completed++; break;
+                    case 'Создано': counts.created++; break;
+                    case 'Назначено': counts.assigned++; break;
+                    case 'В процессе': counts.inProgress++; break;
+                    case 'Выполнено': counts.completed++; break;
                     default: counts.other++; break;
                 }
             })
@@ -81,8 +84,17 @@ export function RequestObjectPage(){
     const styleItem = (object: IObject) => object.id === objectsOffice.find(obj => obj.id === selectedObject)?.id? "list-group-item border-1 border-success" : "list-group-item border-1"
 
     const handleClick = () => {
-        updateRequestObject(selectedObject)
-        navigate(`/request/execut`)
+        if(request.object_Id !== 0 && selectedObject === 0){
+            navigate(`/request/execut`)
+        } else {
+            if (selectedObject !== 0){
+                setError(false)
+                navigate(`/request/execut`)
+                updateRequestObject(selectedObject)
+            } else {
+                setError(true)
+            }
+        }
     }
 
     const StatusBadges = ({ counts }: { counts: TaskCount }) => (
@@ -135,6 +147,7 @@ export function RequestObjectPage(){
                         </Form.Group>
 
                         <label>Выберите объект</label>
+                        {error && <div className="alert alert-danger">Выберите объект!</div>}
                         <ul className="list-group">
                             {filteredObjects.map(object => {
                                 const taskCounts = countTasksByStatus(requests, object.id)
@@ -157,7 +170,7 @@ export function RequestObjectPage(){
                         </ul>
                     </div>
                     <div>
-                        {requestsObject.length === 0 && <p>Заданий нет</p>}
+                        {selectedObject !== 0 && requestsObject.length === 0 && <p>Заданий нет</p>}
                         {requestsObject && <div className="container mt-3">
                             {requestsObject.map(request => (
                                 <RequestCard
@@ -174,7 +187,7 @@ export function RequestObjectPage(){
                         className="btn btn-primary w-100"
                         onClick={handleClick}
                     >
-                        Далее
+                        Выбрать тип работы
                     </button>
                 </footer>
             </div>

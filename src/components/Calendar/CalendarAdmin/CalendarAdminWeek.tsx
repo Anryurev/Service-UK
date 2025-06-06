@@ -61,11 +61,15 @@ const CalendarAdminWeek: React.FC = () => {
                 date.setDate(startOfWeek.getDate() + i)
 
                 const bookings = bookingsAll.filter(booking => {
-                    const bookingDate = new Date(booking.date_Start)
+                    const bookingDateStart = new Date(booking.date_Start)
+                    const bookingDateEnd = new Date(booking.date_End)
                     return (
-                        date.getDate() === bookingDate.getDate() &&
-                        date.getMonth() === bookingDate.getMonth() &&
-                        date.getFullYear() === bookingDate.getFullYear()
+                        (date.getDate() === bookingDateStart.getDate() &&
+                        date.getMonth() === bookingDateStart.getMonth() &&
+                        date.getFullYear() === bookingDateStart.getFullYear()) ||
+                        (date.getDate() === bookingDateEnd.getDate() &&
+                        date.getMonth() === bookingDateEnd.getMonth() &&
+                        date.getFullYear() === bookingDateEnd.getFullYear())
                     )
                 })
 
@@ -109,6 +113,10 @@ const CalendarAdminWeek: React.FC = () => {
 
     // Форматирование даты
     const formatDate = (date: Date) => {
+        console.log('date', date, ' and ' , date.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'short'
+        }))
         return date.toLocaleDateString('ru-RU', {
             day: 'numeric',
             month: 'short'
@@ -166,7 +174,11 @@ const CalendarAdminWeek: React.FC = () => {
                                                         {object ? `${object.street} ${object.house}${object.apartment ? ` кв.${object.apartment}` : ''}` : 'Адрес не указан'}
                                                     </div>
                                                 </div>
-                                                <div className="col-auto me-2">
+                                                <div className="d-flex col-auto align-items-center">
+                                                    {formatDate(day.date) === formatDate(new Date(booking.date_Start)) && <i className="bi bi-box-arrow-in-down me-1 check-in-week"></i>}
+                                                    {formatDate(day.date) === formatDate(new Date(booking.date_End)) && <i className="bi bi-box-arrow-up me-1 check-out-week"></i>}
+                                                </div>
+                                                <div className="d-flex col-auto align-items-center me-2">
                                                     <i
                                                         className="bi bi-person-plus"
                                                         style={{fontSize: "23px"}}

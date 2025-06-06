@@ -1,28 +1,29 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Navbar} from "../../../components/Navbar";
-import {EdembackContext} from "../../../context/edemback/EdembackContext";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import api from "../../../api";
 import {IObject, IRequest, IRole, IWork, IWorkers} from "../../../models";
-import {WorkerContext} from "../../../context/workerContext/WorkerContext";
 import {useRequest} from "../../../storage/Request/useRequest";
 
 export function RequestExecutPage(){
     const [workersRole, setWorkersRole] = useState<IWorkers[]>([])
     const [selectedTypeWork, setSelectedTypeWork] = useState({id: 0, name: "Выберите тип работы"})
     const [selectedWorkers, setSelectedWorkers] = useState<number[]>([])
-    // const [typeWorkRoles, setTypeWorkRoles] = useState<IWork>()
     const [errorRole, setErrorRole] = useState(false)
+    const [errorWorker, setErrorWorker] = useState(false)
     const [typesWork, setTypesWork] = useState<IWork[]>([])
     const [allWorker, setAllWorker] = useState(false)
-    const { updateRequestTypeWork } = useRequest()
+    const { getRequestFromLocalStorage, updateRequestTypeWork } = useRequest()
+    const [currentObject, setCurrentObject] = useState<IObject>()
     const navigate = useNavigate()
+    const request: IRequest = getRequestFromLocalStorage()
 
     const LoadingTypesWork = async () => {
         const response = await api.get(`/TypesWork`)
+        const responseObject = await api.get(`/Object/${request.object_Id}`)
         setTypesWork(response.data)
+        setCurrentObject(responseObject.data)
     }
-
 
     const LoadingWorkers = async (idTypeWork: number) => {
         let response: IWorkers[]
@@ -69,6 +70,7 @@ export function RequestExecutPage(){
     }, [])
 
     const handleCheckboxChange = (workerId: number) => {
+        setErrorWorker(false)
         setSelectedWorkers(prevSelected => {
             if (prevSelected.includes(workerId)) {
                 // Если ID уже есть в массиве - удаляем
@@ -81,8 +83,15 @@ export function RequestExecutPage(){
     }
 
     const handleClick = () => {
-        updateRequestTypeWork(selectedTypeWork.name, selectedWorkers)
-        navigate(`/request/description`)
+        if(selectedTypeWork.name === "Выберите тип работы"){
+            setErrorRole(true)
+        }else if (!allWorker && selectedWorkers.length === 0){
+            setErrorWorker(true)
+        }
+        else {
+            updateRequestTypeWork(selectedTypeWork.name, selectedWorkers)
+            navigate(`/request/description`)
+        }
     }
 
     return(
@@ -91,6 +100,9 @@ export function RequestExecutPage(){
             <div className="d-flex flex-column min-vh-100 container-sm" style={{paddingTop: '60px'}}>
                 <main className="flex-grow-1">
                     <header className="p-3 bg-light sticky-top" style={{zIndex: 1020}}>
+                        <div>
+                            Объект: {currentObject?.street} {currentObject?.house} кв. {currentObject?.apartment}
+                        </div>
                         <div className="dropdown mb-2">
                             <button
                                 className="btn btn-outline-secondary dropdown-toggle w-100 text-start"
@@ -124,7 +136,8 @@ export function RequestExecutPage(){
                                 ))}
                             </ul>
                             <input type="hidden" name="id_Role" value={selectedTypeWork.id}/>
-                            {errorRole && <small style={{color: "red"}}>Выберите роль!</small>}
+                            {errorRole && <div className="alert alert-danger">Выберите тип работы!</div>}
+                            {errorWorker && <div className="alert alert-danger">Выберите хотя бы одного работника!</div>}
                         </div>
 
                         <div className="form-check form-switch mb-2">
