@@ -9,7 +9,6 @@ import {ObjectPage} from "./pages/Manager/Objects/ObjectPage";
 import {EdemBackState} from "./context/edemback/EdemBackState";
 import {MainExecutorPage} from "./pages/Executors/MainExecutorPage";
 import {CreateReportPage} from "./pages/Executors/CreateReportPage";
-import  { RemoveScrollBar }  from  'react-remove-scroll-bar'
 import {WorkerState} from "./context/workerContext/WorkerState";
 import {CreateWorkerPage} from "./pages/Manager/Workers/CreateWorkerPage";
 import {RolesPage} from "./pages/Manager/Roles/RolesPage";

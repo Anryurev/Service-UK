@@ -34,10 +34,16 @@ export const useRequest = () => {
         request.urgency = urgency
         localStorage.setItem('request', JSON.stringify(request))
     }
+    const updateRequestPhotos = (photos: Array<{ id_photo: number; url: string }>) => {
+        const request: IRequest = getRequestFromLocalStorage()
+        request.photos = photos
+        localStorage.setItem('request', JSON.stringify(request))
+    }
+
 
     const removeRequest = () => {
         localStorage.removeItem('request')
     }
 
-    return { saveRequestToLocalStorage, getRequestFromLocalStorage, updateRequestObject, updateRequestTypeWork, updateRequestDescription, removeRequest }
+    return { saveRequestToLocalStorage, getRequestFromLocalStorage, updateRequestObject, updateRequestTypeWork, updateRequestDescription, updateRequestPhotos, removeRequest }
 }

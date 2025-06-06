@@ -22,7 +22,7 @@ export function CalendarAdminPage() {
         roles_Id: null,
         workers_Id: [],
         object_Id: 0,
-        status: "1",
+        status: "Назначено",
         urgency: false,
         admin_Id: worker? worker.id : 0,
         issue_Time: now,

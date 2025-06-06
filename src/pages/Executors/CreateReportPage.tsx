@@ -82,7 +82,10 @@ export function CreateReportPage () {
     }
 
     const startCamera = async () => {
-        try{
+        try {
+            setShowCamera(true)
+            await new Promise(resolve => setTimeout(resolve, 100))
+
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: 'environment' },
                 audio: false
@@ -92,12 +95,12 @@ export function CreateReportPage () {
                 videoRef.current.srcObject = stream
                 streamRef.current = stream
             }
-            setShowCamera(true)
-        } catch (err){
+        } catch (err) {
             setError("Не удалось получить доступ к камере")
             console.error(err)
+            setShowCamera(false)
         }
-    }
+    };
 
     const stopCamera = () => {
         if (streamRef.current) {
@@ -340,7 +343,9 @@ export function CreateReportPage () {
                         ref={videoRef}
                         autoPlay
                         playsInline
+                        muted
                         style={{ width: '100%', maxHeight: '70vh' }}
+                        onError={() => setError("Ошибка при подключении камеры")}
                     />
                 </Modal.Body>
                 <Modal.Footer className="justify-content-center">

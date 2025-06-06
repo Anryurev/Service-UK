@@ -1,7 +1,7 @@
 import React, { useEffect, useState} from "react";
 import {Navbar} from "../../../components/Navbar";
 import {useNavigate} from "react-router-dom";
-import {IObject, IRequest, IRole, IStatus, IWork, IWorkers, RoleItem} from "../../../models";
+import {IObject, IRequest, IRole, IStatus, IWorkers, RoleItem} from "../../../models";
 import {useParams} from "react-router-dom";
 import api from "../../../api";
 import {getAuthDataFromLocalStorage} from "../../../storage/loacalStorage";
@@ -10,19 +10,18 @@ import { Container, Card, Badge, ListGroup, Button, Row, Col} from "react-bootst
 export function RequestPage() {
     const { requestId } = useParams<{ requestId: string }>()
     const [request, setRequest] = useState<IRequest>()
-    const [typeWork, setTypeWork] = useState<IWork>()
     const [object, setObject] = useState<IObject>()
     const [roles, setRoles] = useState<IRole[]>([])
-    const [workerRequest, setWorkerRequest] = useState<IWorkers>()
+    const [workersRequest, setWorkersRequest] = useState<IWorkers[]>()
     const {worker, role} = getAuthDataFromLocalStorage()
     const navigate = useNavigate()
 
     const LoadingData = async (request: IRequest) => {
+        console.log('request log', request)
         const responseObject = await api.get(`/Object/${request.object_Id}`)
         fetchRoles(request.roles_Id || [])
-        if(request.workers_Id?.includes(worker? worker?.id : -1)){
-            const responseWorker = await api.get(`/Worker/${request.workers_Id}`)
-            setWorkerRequest(responseWorker.data)
+        if(request.workers_Id){
+            fetchWorkers(request.workers_Id || [])
         }
         setObject(responseObject.data)
     }
@@ -39,6 +38,17 @@ export function RequestPage() {
             })
         )
         setRoles(results)
+    }
+
+    const fetchWorkers = async (workers_Id: number[]) => {
+        console.log('fetchWorkers')
+        const results= await Promise.all(
+            workers_Id.map(async workerId => {
+                const res = await api.get<IWorkers>(`/Worker/${workerId}`)
+                return res.data
+            })
+        )
+        setWorkersRequest(results)
     }
 
     useEffect(() => {
@@ -119,7 +129,7 @@ export function RequestPage() {
                                     <ListGroup.Item className="d-flex">
                                         <span className="fw-bold me-2" style={{ minWidth: '100px' }}>Работник:</span>
                                         <span>
-                                          {worker ? `${worker.surname} ${worker.name} ${worker?.fathername || ''}` : 'Для всех работников'}
+                                          {workersRequest ? workersRequest.map(workerRequest => (`${workerRequest.surname} ${workerRequest.name} ${workerRequest?.fathername || ''}`))  : 'Для всех работников'}
                                         </span>
                                     </ListGroup.Item>
 

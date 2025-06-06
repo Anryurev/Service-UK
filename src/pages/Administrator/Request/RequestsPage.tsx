@@ -1,20 +1,9 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Navbar} from "../../../components/Navbar";
-import {EdembackContext} from "../../../context/edemback/EdembackContext";
-import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import api from "../../../api";
-import {IObject, IOffice, IRequest, IRole, IWorkers} from "../../../models";
-import {Form} from "react-bootstrap";
+import {IObject, IRequest} from "../../../models";
 import RequestCard from "../../../components/Request/RequestCard";
-import {getAuthDataFromLocalStorage} from "../../../storage/loacalStorage";
-
-interface TaskCount {
-    created: number
-    assigned: number
-    inProgress: number
-    completed: number
-    other: number
-}
 
 export function RequestsPage(){
     const [selectedObject, setSelectedObject] = useState({id: 0, name: "Выберите объект"})
@@ -26,18 +15,16 @@ export function RequestsPage(){
 
     const LoadingData = async () => {
         try {
-            const {worker} = getAuthDataFromLocalStorage();
-            const officeId = worker?.id_Office;
             const [responseObject, responseRequests] = await Promise.all([
                 api.get(`/Objects/Worker`),
-                api.get(`/Requests?Office=${officeId}`)
-            ]);
+                api.get(`/Requests`)
+            ])
 
-            setObjectsOffice(responseObject.data || []);
-            setRequests(responseRequests.data || []);
-            setRequestsObject(responseRequests.data || []);
+            setObjectsOffice(responseObject.data || [])
+            setRequests(responseRequests.data || [])
+            setRequestsObject(responseRequests.data || [])
         } catch (error) {
-            console.error('Error loading data:', error);
+            console.error('Error loading data:', error)
         }
     }
 
@@ -69,36 +56,6 @@ export function RequestsPage(){
     const handleClick = () => {
         navigate(`/request/execut`)
     }
-
-    const StatusBadges = ({ counts }: { counts: TaskCount }) => (
-        <div className="d-flex gap-1 ms-2">
-            {counts.created > 0 && (
-                <span className={`badge rounded-pill bg-success text-white`}>
-        {counts.created}
-      </span>
-            )}
-            {counts.assigned > 0 && (
-                <span className={`badge rounded-pill bg-warning text-dark`}>
-        {counts.assigned}
-      </span>
-            )}
-            {counts.inProgress > 0 && (
-                <span className={`badge rounded-pill bg-danger text-white`}>
-        {counts.inProgress}
-      </span>
-            )}
-            {counts.completed > 0 && (
-                <span className={`badge rounded-pill bg-primary text-white`}>
-        {counts.completed}
-      </span>
-            )}
-            {counts.other > 0 && (
-                <span className={`badge rounded-pill bg-secondary text-white`}>
-        {counts.other}
-      </span>
-            )}
-        </div>
-    )
 
     return(
         <>

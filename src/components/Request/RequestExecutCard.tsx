@@ -15,31 +15,17 @@ interface RequestCardProps {
 const         RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request, onAssign }) => {
     const navigate = useNavigate()
     const [currentRequest, setCurrentRequest] = useState<IRequest>(request)
-    const [typeWork, setTypeWork] = useState<IWork>()
     const [object, setObject] = useState<IObject>()
-    const [worker, setWorker] = useState<IWorkers>()
-    const [status, setStatus] = useState<IStatus>()
+    const [workers, setWorkers] = useState<IWorkers[]>()
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                console.log('currentRequest.status', currentRequest.status)
-                const [typeWorkRes, objectRes, statusRes] = await Promise.all([
-                    api.get(`/TypeWork/${currentRequest.type_Work}`),
-                    api.get(`/Object/${currentRequest.object_Id}`),
-                    api.get(`/Status_Request/${currentRequest.status}`),
-                ]);
+                const responseObject = await api.get(`/Object/${currentRequest.object_Id}`)
+                setObject(responseObject.data)
 
-                setTypeWork(typeWorkRes.data)
-                console.log('asdsd', objectRes.data)
-                setObject(objectRes.data)
-                setStatus(statusRes.data)
-
-                console.log('status', statusRes.data)
-
-                if (currentRequest.workers_Id) {
-                    const workerRes = await api.get(`/Worker/${currentRequest.workers_Id}`)
-                    setWorker(workerRes.data)
+                if(currentRequest.workers_Id){
+                    fetchWorkers(request.workers_Id || [])
                 }
             } catch (error) {
                 console.error('Error loading data:', error)
@@ -48,6 +34,17 @@ const         RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request
 
         loadData()
     }, [currentRequest])
+
+    const fetchWorkers = async (workers_Id: number[]) => {
+        console.log('fetchWorkers')
+        const results= await Promise.all(
+            workers_Id.map(async workerId => {
+                const res = await api.get<IWorkers>(`/Worker/${workerId}`)
+                return res.data
+            })
+        )
+        setWorkers(results)
+    }
 
     const updateRequestStatus = async (newStatus: IStatus) => {
         try {
@@ -63,7 +60,7 @@ const         RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request
     }
 
     const getStatusBadge = () => {
-        switch(status?.name) {
+        switch(currentRequest.status) {
             case "Создано": return "danger"
             case "Назначено": return "primary"
             case "В процессе": return  "warning"
@@ -80,7 +77,7 @@ const         RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request
                 <div className="d-flex justify-content-between align-items-start mb-2">
                     <div>
                         <Card.Title className="mb-1">
-                            {typeWork?.name || "Тип работы не указан"}
+                            {currentRequest.type_Work || "Тип работы не указан"}
                             {currentRequest.urgency && (
                                 <Badge bg="danger" className="ms-2">
                                     Срочно!
@@ -92,7 +89,7 @@ const         RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request
                         </Card.Subtitle>
                     </div>
                     <Badge pill bg={statusBadge} className="align-self-center">
-                        {status?.name}
+                        {currentRequest.status}
                     </Badge>
                 </div>
 
@@ -102,11 +99,11 @@ const         RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request
                     </Card.Text>
                 )}
 
-                {worker && (
+                {workers && (
                     <div className="mb-3">
                         <span className="text-muted">Исполнитель: </span>
                         <strong>
-                            {worker.surname} {worker.name} {worker.fathername}
+                            {workers ? workers.map(worker => (`${worker.surname} ${worker.name} ${worker?.fathername || ''}`))  : 'Для всех работников'}
                         </strong>
                     </div>
                 )}
@@ -121,7 +118,7 @@ const         RequestExecutCard: React.FC<RequestCardProps> = ({onClick, request
                                 updateRequestStatus({id_status: 3, name: "В процессе"})
                                 navigate(`/execut/report/${request.request_Id}`)
                             }}
-                            disabled={!["1", "2", "3"].includes(currentRequest.status)}
+                            disabled={!["Назначено", "Создано", "В процессе"].includes(currentRequest.status)}
                         >
                             <i className="bi bi-play-fill me-1"></i> {currentRequest.status === "3"? "Продолжить" : currentRequest.status === "4"? "Завершено" : "Начать"}
                         </Button>

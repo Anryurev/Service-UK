@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
+import React, {ChangeEvent, useContext, useRef, useState} from "react";
 import {Navbar} from "../../../components/Navbar";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {useNavigate} from "react-router-dom";
@@ -17,7 +17,7 @@ export function RequestDescriptionPage(){
     const [showCamera, setShowCamera] = useState(false)
     const [previews, setPreviews] = useState<Array<{ id_photo: number; url: string }>>([])
     const [photos, setPhotos] = useState<File[]>([])
-    const { getRequestFromLocalStorage, updateRequestDescription } = useRequest()
+    const { getRequestFromLocalStorage, updateRequestDescription, updateRequestPhotos } = useRequest()
     const request: IRequest = getRequestFromLocalStorage()
 
     const handleChangeInputFile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +64,10 @@ export function RequestDescriptionPage(){
     }
 
     const startCamera = async () => {
-        try{
+        try {
+            setShowCamera(true)
+            await new Promise(resolve => setTimeout(resolve, 100))
+
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: 'environment' },
                 audio: false
@@ -74,12 +77,12 @@ export function RequestDescriptionPage(){
                 videoRef.current.srcObject = stream
                 streamRef.current = stream
             }
-            setShowCamera(true)
-        } catch (err){
+        } catch (err) {
             setError("Не удалось получить доступ к камере")
             console.error(err)
+            setShowCamera(false)
         }
-    }
+    };
 
     const stopCamera = () => {
         if (streamRef.current) {
@@ -134,7 +137,8 @@ export function RequestDescriptionPage(){
 
     const handleClickCreate = () => {
         updateRequestDescription(description, urgency)
-        const request: IRequest = getRequestFromLocalStorage()
+        updateRequestPhotos(previews)
+        const request = getRequestFromLocalStorage()
         console.log('photos', request.photos)
         console.log('create request', request)
         edemContext.createRequest(request)
@@ -247,7 +251,7 @@ export function RequestDescriptionPage(){
                                 id='urgency'
                                 name='urgency'
                                 checked={urgency || false}
-                                onChange={(e) => setUrgency(prev => !prev)}
+                                onChange={() => setUrgency(prev => !prev)}
                             />
                             <label htmlFor='urgency'>Это срочное задание</label>
                         </div>
@@ -270,7 +274,9 @@ export function RequestDescriptionPage(){
                         ref={videoRef}
                         autoPlay
                         playsInline
+                        muted
                         style={{ width: '100%', maxHeight: '70vh' }}
+                        onError={() => setError("Ошибка при подключении камеры")}
                     />
                 </Modal.Body>
                 <Modal.Footer className="justify-content-center">
