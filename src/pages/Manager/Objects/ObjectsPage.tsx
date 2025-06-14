@@ -12,14 +12,13 @@ import {getAuthDataFromLocalStorage} from "../../../storage/loacalStorage";
 import api from "../../../api";
 
 export function ObjectsPage(){
-    const [isOpenModal, setIsOpenModal] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const [objects, setObjects] = useState<IObject[]>([])
-    const {worker} = getAuthDataFromLocalStorage()
+    const {worker, role} = getAuthDataFromLocalStorage()
     const [isOperator, setIsOperator] = useState(false)
+    const [refreshTrigger, setRefreshTrigger] = useState(0)
     const navigate = useNavigate()
     const edemContext = useContext(EdembackContext)
-    const {role} = getAuthDataFromLocalStorage()
 
     const LoadingData = async () => {
         const response = await api.get(`/Objects${Number(role?.levelImportant) === 2? "" : "/Worker"}`)
@@ -39,10 +38,10 @@ export function ObjectsPage(){
         if(worker?.id_Role === 4){
             setIsOperator(true)
         }
-    }, [])
+    }, [edemContext.state.objects])
 
-    const handleCreateObject = (newObject: IObject) => {
-        edemContext.createObject(newObject)
+    const handleCreateObject = async (newObject: IObject) => {
+        await edemContext.createObject(newObject)
     }
 
     const handleClickObject = (objectId: number) => {
@@ -51,7 +50,6 @@ export function ObjectsPage(){
 
     return(
         <>
-            {isOpenModal && <ModalCreateObject onSubmit={handleCreateObject} onClose={() => setIsOpenModal(false)} />}
             <Navbar/>
             <SidebarMenu isOpen={true}/>
             <SidebarOptions title="объект" handleClick={() => navigate('/objects/create')}/>

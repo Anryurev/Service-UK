@@ -259,7 +259,8 @@ export function RequestDescriptionPage(){
                 </main>
                 <footer className="p-3 bg-light">
                     <div className="col-sm-1 d-flex flex-column">
-                        <button type="button" className="btn-sm button_calendar" onClick={handleClickCreate}>Создать заявку</button>
+                        <button type="button" className="btn btn-primary" onClick={handleClickCreate}>Создать заявку</button>
+                        {/*<button type="button" className="btn-sm button_calendar" onClick={handleClickCreate}>Создать заявку</button>*/}
                     </div>
                 </footer>
             </div>

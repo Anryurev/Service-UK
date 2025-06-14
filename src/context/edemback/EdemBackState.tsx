@@ -261,10 +261,10 @@ export const EdemBackState = ({children}: IEdemBackState) => {
         const response = await api.post(`/Booking`, booking)
         console.log('CreateBooking', response.data)
 
-        dispatch({
-            type: CREATE_BOOKING,
-            payload: response.data
-        })
+        // dispatch({
+        //     type: CREATE_BOOKING,
+        //     payload: response.data
+        // })
     }
     const updateBooking = async (booking: IBooking) => {
         console.log('booking in state update', booking)

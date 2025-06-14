@@ -56,10 +56,9 @@ export const WorkerForm: React.FC<WorkerFormProps> = ({ formData, offices, roles
                         <i className="bi bi-telephone text-primary"></i>
                     </span>
                     <input
-                        type="tel"
+                        type="text"
                         value={formData.phoneNumber}
                         onChange={onChange}
-                        placeholder="+7 (123) 456-78-90"
                         className="form-control py-2 border-start-0"
                     />
                 </div>
