@@ -13,8 +13,8 @@ interface BookingFormProps{
 export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode, bookingId }) => {
     const [selectedObject, setSelectedObject] = useState<number | null>(null)
     const [isSelectedObject, setIsSelectedObject] = useState(false)
-    const [startDate, setStartDate] = useState("26.09.2003")
-    const [endDate, setEndDate] = useState("27.09.2003")
+    const [startDate, setStartDate] = useState("2003-09-26")
+    const [endDate, setEndDate] = useState("2003-09-27")
     const [status, setStatus] = useState("Бронь")
     const [searchParams] = useSearchParams()
     const edemContext = useContext(EdembackContext)
@@ -46,7 +46,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode, bookingId 
         const year = date.getFullYear()
 
         return `${day}.${month}.${year}`
-    };
+    }
 
     // Преобразует строку YYYY-MM-DD (из input type="date") в DD.MM.YYYY
     const formatDateInputToDisplay = (dateInput: string): string => {
@@ -113,7 +113,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode, bookingId 
     useEffect(() => {
         const fetchObjects = async () => {
             try{
-                const responseObj = await api.get(`/Objects/Worker/Dates?Start=${startDate}&End=${endDate}`)
+                const responseObj = await api.get(`/Objects/Worker/Dates?Start=${formatDisplayToDateInput(startDate)}&End=${formatDisplayToDateInput(endDate)}`)
                 setObjects(responseObj.data)
             }catch (err){
                 console.error(err)
@@ -121,7 +121,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode, bookingId 
         }
 
         fetchObjects()
-    }, [startDate, endDate, objects])
+    }, [startDate, endDate])
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedId = parseInt(event.target.value, 10)

@@ -4,6 +4,7 @@ import {IRole, IWorkers} from "../../../models";
 import {Navbar} from "../../../components/Navbar";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import api from "../../../api";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function WorkerPage(){
     const { workerId } = useParams<{ workerId: string }>()
@@ -23,6 +24,24 @@ export function WorkerPage(){
         id_Office: 0,
         password: ""
     })
+
+    // Форматирует Date в строку DD.MM.YYYY
+    const formatDateToString = (dateInput: string | Date): string => {
+        // Преобразуем в Date, если это строка
+        const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput
+
+        // Проверка на валидность даты
+        if (isNaN(date.getTime())) {
+            console.error('Invalid date:', dateInput)
+            return 'Некорректная дата'
+        }
+
+        const day = String(date.getDate()).padStart(2, '0')
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const year = date.getFullYear()
+
+        return `${day}.${month}.${year}`
+    }
 
     async function findWorker(){
         const response = await api.get(`/Worker/${workerId}`)
@@ -65,6 +84,7 @@ export function WorkerPage(){
     return(
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container" style={{paddingTop: "60px"}}>
                 <div className="container my-5">
                     <div className="row justify-content-center">
@@ -97,7 +117,7 @@ export function WorkerPage(){
                                                     <strong>Должность: </strong>{getRoleNameById(worker.id_Role)}
                                                 </li>
                                                 <li className="list-group-item">
-                                                    <strong>Дата рождения: </strong>{worker.birthday}
+                                                    <strong>Дата рождения: </strong>{formatDateToString(worker.birthday)}
                                                 </li>
                                             </ul>
                                         </div>

@@ -1,15 +1,19 @@
 import React, {useEffect, useState} from "react";
 import {Alert, Badge, Card, ListGroup, Spinner, Image} from "react-bootstrap";
 import {useParams} from "react-router-dom";
-import {IReport} from "../../models";
+import {IReport, IRequest, IWorkers} from "../../models";
 import {Navbar} from "../../components/Navbar";
 import api from "../../api";
+import {getAuthDataFromLocalStorage} from "../../storage/loacalStorage";
 
 const ReportPage: React.FC = () => {
     const { reportId } = useParams<{ reportId: string }>();
     const [report, setReport] = useState<IReport | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [request, setRequest] = useState<IRequest | null>(null)
+    const [workerReport, setWorkerReport] = useState<IWorkers | null>(null)
+    const {worker, role} = getAuthDataFromLocalStorage()
 
     useEffect(() => {
         const fetchReport = async () => {
@@ -29,11 +33,28 @@ const ReportPage: React.FC = () => {
         fetchReport()
     }, [reportId])
 
+    useEffect(() => {
+        const fetchData = async () => {
+            if(report){
+                const responseRequest = await api.get(`/Request/${report.request_Id}`)
+                setRequest(responseRequest.data)
+                if(role?.levelImportant === 4){
+                    setWorkerReport(worker)
+                }else{
+                    const response = await api.get(`/Worker/${report.worker_Id}`)
+                    setWorkerReport(response.data)
+                }
+            }
+        }
+
+        fetchData()
+    }, [report])
+
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'Завершено':
                 return 'success';
-            case 'В работе':
+            case 'В процессе':
                 return 'warning';
             case 'Отклонено':
                 return 'danger';
@@ -84,10 +105,10 @@ const ReportPage: React.FC = () => {
                     <Card.Body>
                         <ListGroup variant="flush">
                             <ListGroup.Item>
-                                <strong>ID задания:</strong> {report.request_Id}
+                                <strong>Задание:</strong> {request?.type_Work}
                             </ListGroup.Item>
                             <ListGroup.Item>
-                                <strong>ID исполнителя:</strong> {report.worker_Id}
+                                <strong>Иполнитель:</strong> {workerReport ? `${workerReport.surname} ${workerReport.name} ${workerReport?.fathername}` : 'Работник не найден'}
                             </ListGroup.Item>
                             <ListGroup.Item>
                                 <strong>Дата и время:</strong> {new Date(report.dateTime).toLocaleString()}
@@ -125,7 +146,7 @@ const ReportPage: React.FC = () => {
                                     {report.add_Parametrs.map((param) => (
                                         <ListGroup.Item key={param.id_report_parametr}>
                                             <div className="d-flex justify-content-between align-items-center">
-                                                <span>Параметр #{param.add_parametr_id}</span>
+                                                <span>{param.add_Parametr_Id}</span>
                                                 {param.value ? (
                                                     <Badge bg="success">Выполнено</Badge>
                                                 ) : (

@@ -33,6 +33,11 @@ export function CreateWorkerPage() {
         LoadingData()
     }, [])
 
+    const cleanPhoneNumber = (formattedPhone: string): string => {
+        // Удаляем всё, кроме цифр и +
+        return formattedPhone.replace(/[^\d+]/g, '')
+    }
+
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
         const { name, value } = e.target
 
@@ -41,7 +46,14 @@ export function CreateWorkerPage() {
                 ...prev,
                 [name]: Number(value)
             }))
-        } else{
+        } else if(name === 'phoneNumber'){
+            setFormData(prev => ({
+                ...prev,
+                [name]: cleanPhoneNumber(value)
+            }))
+
+        }
+        else{
             setFormData(prev => ({
                 ...prev,
                 [name]: value
@@ -55,6 +67,7 @@ export function CreateWorkerPage() {
     }
 
     const handleSubmit = async () => {
+        console.log('handleSubmit formData', formData)
         let isValid = true;
         (Object.keys(formData) as Array<keyof IWorkers>).forEach(key => {
             const value = formData[key as keyof IWorkers] // Явное приведение типа ключа

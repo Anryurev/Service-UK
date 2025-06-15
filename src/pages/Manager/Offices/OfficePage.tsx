@@ -6,6 +6,7 @@ import {Navbar} from "../../../components/Navbar";
 import {WorkerNote} from "../../../components/Worker/WorkerNote";
 import {ObjectNote} from "../../../components/Object/ObjectNote";
 import api from "../../../api";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function OfficePage(){
     const { officeId } = useParams<{ officeId: string }>()
@@ -52,6 +53,7 @@ export function OfficePage(){
     return (
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container" style={{paddingTop: "60px"}}>
                 <div className="container-fluid w-75 border">
                     <h1 className="mb-3">Информация об офисе</h1>

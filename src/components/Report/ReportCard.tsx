@@ -11,36 +11,30 @@ interface ReportCardProps {
 export const ReportCard = ({report, onClick} : ReportCardProps) => {
     const [workerReport, setWorkerReport] = useState<IWorkers | null>(null)
     const [request, setRequest] = useState<IRequest>()
-    const [typeWork, setTypeWork] = useState<IWork>()
     const {worker, role} = getAuthDataFromLocalStorage()
 
     const LoadingData = async () => {
-        if(role?.levelImportant === 4){
-            setWorkerReport(worker)
-        }else{
-            const responseWorker = await api.get(`/Worker/${report.worker_Id}`)
-            setWorkerReport(responseWorker.data)
-        }
-
         const responseRequest = await api.get(`/Request/${report.request_Id}`)
+        console.log('request in report', responseRequest.data)
         setRequest(responseRequest.data)
     }
 
     useEffect(() => {
         LoadingData()
+        console.log('report', report)
     }, [])
 
     useEffect(() => {
-        const fetchTypeWork = async () => {
-            if(request){
-                const response = await api.get(`/TypeWork/${request?.type_Work}`)
-                setTypeWork(response.data)
+        const fetchWorkers = async () => {
+            if(role?.levelImportant === 4){
+                setWorkerReport(worker)
+            }else{
+                const response = await api.get(`/Worker/${report.worker_Id}`)
+                setWorkerReport(response.data)
             }
         }
-
-        fetchTypeWork()
+        fetchWorkers()
     }, [request])
-
 
     function getStatusBadgeClass(status: string) {
         switch (status) {
@@ -69,13 +63,17 @@ export const ReportCard = ({report, onClick} : ReportCardProps) => {
                 <div className="card-body">
                     <div className="d-flex justify-content-between mb-2">
                         <div>
-                            <h6 className="card-title mb-1">
-                                <i className="bi bi-person-circle me-2"></i>
-                                Исполнитель: {worker?.surname} {worker?.name}
-                            </h6>
+                            {workerReport && (
+                                <div className="mb-3">
+                                    <span className="text-muted">Исполнитель: </span>
+                                    <strong>
+                                        {workerReport ? `${workerReport.surname} ${workerReport.name} ${workerReport?.fathername}` : 'Работник не найден'}
+                                    </strong>
+                                </div>
+                            )}
                             <h6 className="card-subtitle text-muted">
                                 <i className="bi bi-journal-text me-2"></i>
-                                Задание: {typeWork?.name}
+                                Задание: {request?.type_Work}
                             </h6>
                         </div>
 
@@ -106,7 +104,7 @@ export const ReportCard = ({report, onClick} : ReportCardProps) => {
                                       ) : (
                                           <i className="bi bi-x-circle-fill text-danger me-1"></i>
                                       )}
-                                        Параметр #{param.add_parametr_id}
+                                        {param.add_Parametr_Id}
                                     </span>
                                 ))}
                             </div>
@@ -116,10 +114,8 @@ export const ReportCard = ({report, onClick} : ReportCardProps) => {
 
                 <div className="card-footer bg-transparent">
                     <button className="btn btn-sm btn-outline-primary me-2">
-                        <i className="bi bi-eye"></i> Подробнее
-                    </button>
-                    <button className="btn btn-sm btn-outline-secondary">
-                        <i className="bi bi-download"></i> Скачать
+                        <i className="bi bi-eye"></i>
+                        Подробнее
                     </button>
                 </div>
             </div>

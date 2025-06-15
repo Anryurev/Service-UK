@@ -162,7 +162,7 @@ export function CreateReportPage () {
         setReport(prev => {
             const currentParams = prev.add_Parametrs || []
             if (checked) {
-                if (!currentParams.some(p => p.add_parametr_id === paramId)) {
+                if (!currentParams.some(p => p.add_Parametr_Id === paramId)) {
                     return {
                         ...prev,
                         add_Parametrs: [
@@ -170,7 +170,7 @@ export function CreateReportPage () {
                             {
                                 id_report_parametr: 0,
                                 report_Id: -1,
-                                add_parametr_id: paramId,
+                                add_Parametr_Id: paramId,
                                 value: true
                             }
                         ]
@@ -180,7 +180,7 @@ export function CreateReportPage () {
             } else {
                 return {
                     ...prev,
-                    add_Parametrs: currentParams.filter(p => p.add_parametr_id !== paramId)
+                    add_Parametrs: currentParams.filter(p => p.add_Parametr_Id !== paramId)
                 }
             }
         })
@@ -300,7 +300,7 @@ export function CreateReportPage () {
                                     id={`param-${roleParam.id_Parametr}`}
                                     label={roleParam.parametr}
                                     checked={report.add_Parametrs?.some(
-                                        reportParam => reportParam.add_parametr_id === roleParam.id_Parametr
+                                        reportParam => reportParam.add_Parametr_Id === roleParam.id_Parametr
                                     ) || false}
                                     onChange={(e) => handleParamsChange(roleParam.id_Parametr, e.target.checked)}
                                 />

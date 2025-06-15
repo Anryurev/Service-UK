@@ -5,6 +5,7 @@ import api from "../../../api";
 import {Navbar} from "../../../components/Navbar";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {log} from "util";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function RolePage(){
     const { roleId } = useParams<{ roleId: string }>()
@@ -47,6 +48,7 @@ export function RolePage(){
     return (
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container" style={{paddingTop: "60px"}}>
                 <div className="container my-5">
                     <div className="row justify-content-center">

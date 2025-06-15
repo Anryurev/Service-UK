@@ -1,5 +1,6 @@
-import React, {ChangeEvent} from "react";
+import React, {ChangeEvent, useState} from "react";
 import {IOffice, IRole, IWorkers} from "../../models";
+import {log} from "util";
 
 interface WorkerFormProps{
     formData: IWorkers,
@@ -11,6 +12,35 @@ interface WorkerFormProps{
 }
 
 export const WorkerForm: React.FC<WorkerFormProps> = ({ formData, offices, roles, isNotEditMode, onChange, onSubmit }) => {
+    const [phone, setPhone] = useState('+7')
+    const formatPhone = (value: string) => {
+        const numbers = value.replace(/\D/g, '').substring(1)
+        let formatted = '+7'
+
+        if (numbers.length > 0) {
+            formatted += ` (${numbers.substring(0, 3)}`
+        }
+        if (numbers.length > 3) {
+            formatted += `) ${numbers.substring(3, 6)}`
+        }
+        if (numbers.length > 6) {
+            formatted += `-${numbers.substring(6, 8)}`
+        }
+        if (numbers.length > 8) {
+            formatted += `-${numbers.substring(8, 10)}`
+        }
+
+        return formatted
+    }
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const input = e.target.value;
+        if (input.startsWith('+7') || input === '+') {
+            setPhone(formatPhone(input))
+            onChange(e)
+            console.log('e', e)
+        }
+    }
+
     return (
         <form>
             <div className="mb-2">
@@ -49,19 +79,18 @@ export const WorkerForm: React.FC<WorkerFormProps> = ({ formData, offices, roles
                 />
             </div>
 
-            <div className="mb-2">
-                <label htmlFor="phoneNumber" className="form-label mb-0">Номер телефона:</label> <i className="bi bi-asterisk text-danger" style={{fontSize: "10px"}}></i>
-                <div className="input-group mb-3">
-                    <span className="input-group-text bg-transparent border-end-0">
-                        <i className="bi bi-telephone text-primary"></i>
-                    </span>
-                    <input
-                        type="text"
-                        value={formData.phoneNumber}
-                        onChange={onChange}
-                        className="form-control py-2 border-start-0"
-                    />
-                </div>
+            <div className="input-group mb-3">
+                        <span className="input-group-text bg-transparent border-end-0">
+                            <i className="bi bi-telephone text-primary"></i>
+                        </span>
+                <input
+                    type="tel"
+                    value={phone}
+                    onChange={handleChange}
+                    name="phoneNumber"
+                    placeholder="+7 (123) 456-78-90"
+                    className="form-control py-2 border-start-0"
+                />
             </div>
 
             <div className="mb-2">

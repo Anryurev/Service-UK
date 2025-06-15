@@ -92,7 +92,7 @@ export interface IReport{
     add_Parametrs?:Array<{
         id_report_parametr: number,
         report_Id: number,
-        add_parametr_id: number,
+        add_Parametr_Id: number,
         value: boolean
     }>,
 }

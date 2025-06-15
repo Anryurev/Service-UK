@@ -4,6 +4,7 @@ import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {IWork} from "../../../models";
 import api from "../../../api";
 import {Navbar} from "../../../components/Navbar";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function WorkPage(){
     const { workId } = useParams<{ workId: string }>()
@@ -45,6 +46,7 @@ export function WorkPage(){
     return (
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container" style={{paddingTop: "60px"}}>
                 <div className="container my-5">
                     <div className="row justify-content-center">

@@ -4,6 +4,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {IObject} from "../../../models";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import api from "../../../api";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function ObjectPage() {
     const { objectId } = useParams<{ objectId: string }>()
@@ -85,6 +86,7 @@ export function ObjectPage() {
     return(
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container" style={{paddingTop: "60px"}}>
                 <div className="container my-5">
                     <div className="row justify-content-center">
