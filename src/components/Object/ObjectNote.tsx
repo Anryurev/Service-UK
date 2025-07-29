@@ -77,7 +77,11 @@ export function ObjectNote({ object, onClick }: ObjectProps){
     }
 
     const handleStatusChange = async (status: string) => {
+        const response = await api.get(`/Bookings/Worker`)
+        const bookings: IBooking[] = response.data
+        const booking = bookings.find(book => book.object_id === object.id && book.status === 'Сдана')
         await api.patch(`/ChangeStatusObject/${object.id}?status=${status}`)
+        await api.delete(`/Booking/${booking?.id_Booking}`)
     }
 
     const handleStatusChangeRepair = async () => {

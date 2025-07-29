@@ -1,15 +1,21 @@
 import React, {useContext, useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {Navbar} from "../../../components/Navbar";
-import {RoleForm} from "../../../components/Role/RoleForm";
-import {IRole, IWork} from "../../../models";
+// import {RoleForm} from "../../../components/Role/RoleForm";
+import {IWork} from "../../../models";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import api from "../../../api";
 import {WorkForm} from "../../../components/Work/WorkForm";
+import {SidebarMenu} from "../../../components/SidebarMenu";
+
+export interface IWorkEdit {
+    id: number,
+    work: string,
+    role: string
+}
 
 export function EditWorkPage(){
     const { workId } = useParams<{ workId: string }>()
-    const edemContext = useContext(EdembackContext)
     const navigate = useNavigate()
     const [formData, setFormData] = useState<IWork>({
         id_Work: -1,
@@ -36,7 +42,6 @@ export function EditWorkPage(){
     useEffect(() => {
         if(workId){
             LoadingWork(workId)
-
         } else{
             console.log('Информация о должности не загружена')
         }
@@ -55,10 +60,9 @@ export function EditWorkPage(){
 
     const handleRoleChange = (roleId: number, isChecked: boolean) => {
         console.log('fD in form', formData)
-
         setFormData(prev => {
             const currentRoles = prev.roles.length > 0? prev.roles.map(role => role.role_Id): prev.roles_Id
-
+            console.log('current roles', currentRoles)
             if (isChecked) {
                 return {
                     ...prev,
@@ -73,12 +77,13 @@ export function EditWorkPage(){
                 }
             }
         })
+        console.log('form data ', formData)
     }
 
     const onSubmit = async (formData: IWork): Promise<void> => {
         try {
             console.log(formData);
-            await api.put(`/UpdateTypeWork`, formData);
+            await api.put(`/UpdateWork_Role`, formData);
             navigate('/works');
         } catch (error) {
             console.error('Ошибка при отправке формы:', error);
@@ -109,9 +114,15 @@ export function EditWorkPage(){
     return(
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Редактирование типа работ</h1>
-                <WorkForm formData={formData} onChange={handleChange} handleRoleChange={handleRoleChange} onSubmit={handleSubmit}/>
+                <WorkForm
+                    formData={formData}
+                    onChange={handleChange}
+                    handleRoleChange={handleRoleChange}
+                    isNotEditMode={false}
+                    onSubmit={handleSubmit}/>
             </div>
         </>
     )

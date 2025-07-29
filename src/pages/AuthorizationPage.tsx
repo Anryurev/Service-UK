@@ -1,11 +1,9 @@
 import React, {useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {WorkerContext} from "../context/workerContext/WorkerContext";
-import {EdembackContext} from "../context/edemback/EdembackContext";
 import api from "../api";
-import {IResponseAuth, IRole, IWorkers} from "../models";
+import {IResponseAuth} from "../models";
 import {getAuthDataFromLocalStorage, saveAuthDataToLocalStorage} from "../storage/loacalStorage";
-import {log} from "util";
 
 interface IAuthorizationData{
     login: string,
@@ -65,13 +63,9 @@ export function AuthorizationPage(){
                     password: password.trim(),
                     rememberMe: rememberMe
                 }
-                console.log('data auth', workerAuth)
                 const response = await api.post<IResponseAuth>(`/Auth`, workerAuth)
-                console.log(response.data)
                 saveAuthDataToLocalStorage(response.data)
                 const {worker, role} = getAuthDataFromLocalStorage()
-                console.log('found', worker, role)
-
                 if (worker && role) {
                     workerContext?.setWorker(worker)
                     switch (role?.levelImportant) {
@@ -181,6 +175,12 @@ export function AuthorizationPage(){
                     >
                         Войти
                     </button>
+                    <p
+                        className="w-100 py-2 mb-3 fw-bold"
+                       onClick={() => navigate('/test')}
+                    >
+                        Быстрый вход
+                    </p>
                 </form>
             </div>
         </>

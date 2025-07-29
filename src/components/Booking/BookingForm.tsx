@@ -73,14 +73,18 @@ export const BookingForm: React.FC<BookingFormProps> = ({ isEditMode, bookingId 
             console.log('booking?', response.data)
             const booking = response.data
             setStartDate(formatDateToString(booking.date_Start))
+            console.log('booking.date_Start', booking.date_Start)
             setEndDate(formatDateToString(booking.date_End))
+            console.log('booking.date_End', booking.date_End)
             setSelectedObject(booking.object_id)
             setStatus(booking.status)
         }
     }
 
     useEffect(() => {
+        console.log('booking id', bookingId)
         if(bookingId){
+            console.log('booking id', bookingId)
             LoadingData(bookingId)
         }
     },[])

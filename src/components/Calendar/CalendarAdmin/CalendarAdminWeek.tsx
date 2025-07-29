@@ -26,7 +26,6 @@ const CalendarAdminWeek: React.FC = () => {
     const LoadingData = async () => {
         try {
             const {worker} = getAuthDataFromLocalStorage()
-            const officeId = worker?.id_Office
             setLoading(true)
 
             const [objectsRes, bookingsRes] = await Promise.all([
@@ -60,7 +59,7 @@ const CalendarAdminWeek: React.FC = () => {
                 const date = new Date(startOfWeek)
                 date.setDate(startOfWeek.getDate() + i)
 
-                const bookings = bookingsAll.filter(booking => {
+                const bookings = bookingsAll? bookingsAll.filter(booking => {
                     const bookingDateStart = new Date(booking.date_Start)
                     const bookingDateEnd = new Date(booking.date_End)
                     return (
@@ -71,7 +70,7 @@ const CalendarAdminWeek: React.FC = () => {
                         date.getMonth() === bookingDateEnd.getMonth() &&
                         date.getFullYear() === bookingDateEnd.getFullYear())
                     )
-                })
+                }) : []
 
                 days.push({ date, bookings })
             }

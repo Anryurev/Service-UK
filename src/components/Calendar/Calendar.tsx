@@ -1,11 +1,12 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {IBooking, IObject, IStatus} from '../../models';
+import {IBooking, IObject, IOffice, IStatus} from '../../models';
 import '../../styles/Calendar.css';
 import {EdembackContext} from "../../context/edemback/EdembackContext";
 import {useNavigate} from "react-router-dom";
 import api from "../../api";
 import {BookingDatePage} from "../../pages/Operator/BookingDatePage";
 import {getAuthDataFromLocalStorage} from "../../storage/loacalStorage";
+import {Form, FormSelect} from "react-bootstrap";
 
 interface CalendarDay {
     date: Date
@@ -18,8 +19,10 @@ const Calendar: React.FC = () => {
     const [selectedBooking, setSelectedBooking] = useState<IBooking | null>(null)
     const [selectedObject, setSelectedObject] = useState<IObject | null>(null)
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(0)
+    const [offices, setOffices] = useState<IOffice[]>([])
     const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([])
     const [statusBooking, setStatusBooking] = useState<Record<string, number>>({})
+    const [selectedOffice, setSelectedOffice] = useState<number>(0)
     const navigate = useNavigate()
     const [objectsAll, setObjectsAll] = useState<IObject[]>([])
     const [bookingsAll, setBookingsAll] = useState<IBooking[]>([])
@@ -27,20 +30,23 @@ const Calendar: React.FC = () => {
     const [statusFilter, setStatusFilter] = useState<string | null>(null);
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const {worker, role} = getAuthDataFromLocalStorage()
 
     const LoadingData = async () => {
         try{
-            const {worker} = getAuthDataFromLocalStorage()
-            const officeId = worker?.id_Office
             setLoading(true)
             setError(null)
             const responseObj = await api.get(`/Objects/Worker`)
-            const responseBookings = await api.get(`/Bookings/Worker`)
+            const responseBookings = await api.get(`/Bookings${Number(role?.levelImportant) === 1? "" : "/Worker"}`)
             const responseStatuses = await api.get(`/Status`)
 
             setObjectsAll(responseObj.data)
             setBookingsAll(responseBookings.data)
             setStatuses(responseStatuses.data)
+            if(role?.levelImportant === 1){
+                const responseOffices = await api.get(`/Offices`)
+                setOffices(responseOffices.data)
+            }
         } catch (err) {
             setError('Не удалось загрузить данные')
             console.error(err)
@@ -59,42 +65,52 @@ const Calendar: React.FC = () => {
 
     // Генерация дней месяца с бронированиями
     useEffect(() => {
+        const filterBookings = () => {
+            let filtered = bookingsAll
+
+            // Фильтр по статусу
+            if (statusFilter) {
+                filtered = filtered.filter(booking => booking.status === statusFilter)
+            }
+
+            // Фильтр по офису
+            if (selectedOffice > 0) {
+                // Сначала фильтруем объекты по офису
+                const officeObjects = objectsAll.filter(obj => obj.office_Id === selectedOffice)
+                const objectIds = officeObjects.map(obj => obj.id)
+
+                // Затем фильтруем бронирования по ID объектов
+                filtered = filtered.filter(booking =>
+                    objectIds.includes(booking.object_id))
+            }
+
+            return filtered
+        }
+
+        const filteredBookings = filterBookings()
+
+        // Обновляем счетчик статусов для отображения в кнопках фильтра
+        setStatusBooking(countOfBookingsByStatus(filteredBookings))
+
         const year = currentMonth.getFullYear()
         const month = currentMonth.getMonth()
-
-        // Устанавливаем первый день месяца
-        setFirstDayOfMonth(new Date(year, month, 1).getDay())
-
-        // Фильтруем бронирования по статусу, если фильтр активен
-        const filteredBookings = statusFilter
-            ? bookingsAll.filter(booking => booking.status === statusFilter)
-            : bookingsAll;
-
-        // Генерация дней месяца
         const daysInMonth = new Date(year, month + 1, 0).getDate()
+
+        // Генерация дней с отфильтрованными бронированиями
         const generatedDays = Array.from({ length: daysInMonth }, (_, i) => {
             const day = i + 1
             const date = new Date(year, month, day)
             const isCurrentMonth = true
 
-            const bookings = filteredBookings?.length
-                ? filteredBookings.filter(booking =>
-                    date >= new Date(booking.date_Start) && date <= new Date(booking.date_End)
-                )
-                : []
+            const bookings = filteredBookings.filter(booking =>
+                date >= new Date(booking.date_Start) && date <= new Date(booking.date_End)
+            )
 
             return { date, bookings, isCurrentMonth }
         })
 
         setCalendarDays(generatedDays)
-
-        // const countByStatus = bookingsAll.reduce((acc, booking) => {
-        //     const status = booking.status
-        //     acc[status] = (acc[status] || 0) + 1 // Если статус встречается впервые, инициализируем 0
-        //     return acc
-        // }, {} as Record<string, number>)
-        setStatusBooking(countOfBookingsByStatus(bookingsAll))
-    }, [currentMonth, bookingsAll, statusFilter])
+    }, [currentMonth, bookingsAll, objectsAll, statusFilter, selectedOffice])
 
     const getWeeksWithPadding = (days: CalendarDay[], firstDayOfWeek: number): CalendarDay[][] => {
         const weeks: CalendarDay[][] = [];
@@ -234,11 +250,14 @@ const Calendar: React.FC = () => {
         else return
     }
 
+    const handleOfficeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedOffice(Number(e.target.value))
+    }
+
     if (error) return <div>{error}</div>
 
     return (
         <div className="calendar-container" style={{paddingTop: "60px"}}>
-
             <div className="calendar-header">
                 <button onClick={() => changeMonth(-1)}>Предыдущий месяц</button>
                 <h2>
@@ -246,10 +265,38 @@ const Calendar: React.FC = () => {
                 </h2>
                 <button onClick={() => changeMonth(1)}>Следующий месяц</button>
             </div>
-            <div className="btn-group" role="group">
-                {Object.entries(statusBooking).map(([status, count]) => (
-                    <button type="button" key={status} className={styleItem(status)} onClick={() => handleClickFilter(status)}>{status}: <strong>{count}</strong></button>
-                ))}
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <div className="btn-group" role="group">
+                    {Object.entries(statusBooking).map(([status, count]) => (
+                        <button
+                            type="button"
+                            key={status}
+                            className={styleItem(status)}
+                            onClick={() => handleClickFilter(status)}
+                        >
+                            {status}: <strong>{count}</strong>
+                        </button>
+                    ))}
+                </div>
+
+                {/* Фильтрация по офисам - теперь справа */}
+                {role?.levelImportant === 1 && (
+                    <Form.Group className="ms-3" style={{ width: "300px" }}>
+                        <Form.Label className="mt-3">Фильтр по офисам:</Form.Label>
+                        <FormSelect
+                            className="form-control"
+                            value={selectedOffice}
+                            onChange={handleOfficeChange}
+                        >
+                            <option value={0}>Все офисы</option>
+                            {offices.map(office => (
+                                <option key={office.office_Id} value={office.office_Id}>
+                                    ул. {office.street} д. {office.house}
+                                </option>
+                            ))}
+                        </FormSelect>
+                    </Form.Group>
+                )}
             </div>
 
             <table className="calendar-table">
@@ -310,7 +357,7 @@ const Calendar: React.FC = () => {
                                         </div>
                                     )})}
                                 </div>
-                                <button
+                                {role?.levelImportant === 3 && (<button
                                     className="add-button"
                                     onClick={(e) => {
                                         e.stopPropagation()
@@ -318,7 +365,7 @@ const Calendar: React.FC = () => {
                                     }}
                                 >
                                     <i className="bi bi-plus-lg"></i>
-                                </button>
+                                </button>)}
                             </td>
                         ))}
                     </tr>

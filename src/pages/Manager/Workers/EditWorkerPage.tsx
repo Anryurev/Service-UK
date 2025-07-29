@@ -5,6 +5,7 @@ import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import {IWorkers} from "../../../models";
 import {WorkerForm} from "../../../components/Worker/WorkerForm";
 import api from "../../../api";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function EditWorkerPage() {
     const { workerId } = useParams<{ workerId: string }>()
@@ -70,6 +71,11 @@ export function EditWorkerPage() {
         }
     }
 
+    const cleanPhoneNumber = (formattedPhone: string): string => {
+        // Удаляем всё, кроме цифр и +
+        return formattedPhone.replace(/[^\d+]/g, '')
+    }
+
     useEffect(() => {
         if (workerId) {
             const id = Number(workerId)
@@ -87,7 +93,13 @@ export function EditWorkerPage() {
                 return {
                     ...prev,
                     [name]: Number(value),
-                };
+                }
+            } else if(name === 'phoneNumber'){
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: cleanPhoneNumber(value)
+                }))
+
             }
             return {
                 ...prev,
@@ -122,6 +134,7 @@ export function EditWorkerPage() {
     return(
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Редактирование пользователя</h1>
                 {<WorkerForm

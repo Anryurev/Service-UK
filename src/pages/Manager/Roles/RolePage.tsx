@@ -74,7 +74,7 @@ export function RolePage(){
                                         </div>
 
                                         <div className="mb-2">
-                                            {role.add_Parametrs && <h6>Доплнительные параметры для должности</h6>}
+                                            {role.add_Parametrs && role.add_Parametrs?.length > 0 && <h6>Доплнительные параметры для должности</h6>}
                                             {role.add_Parametrs && role.add_Parametrs.map((param, index) => (
                                                 <div
                                                     className="border px-2 py-2 rounded mb-2 d-flex justify-content-between"

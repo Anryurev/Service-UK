@@ -1,10 +1,9 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {IBooking, IObject, IRequest, IStatus} from '../../../models';
+import React, {useEffect, useState} from 'react';
+import {IBooking, IObject, IRequest} from '../../../models';
 import '../../../styles/CalendarAdmin.css';
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import api from "../../../api";
 import {getAuthDataFromLocalStorage} from "../../../storage/loacalStorage";
-import {log} from "util";
 import {useRequest} from "../../../storage/Request/useRequest";
 
 interface CalendarDay {
@@ -16,7 +15,6 @@ interface CalendarDay {
 const CalendarAdminMonth: React.FC = () => {
     const [currentMonth, setCurrentMonth] = useState(new Date())
     const [selectedBooking, setSelectedBooking] = useState<IBooking | null>(null)
-    const [selectedObject, setSelectedObject] = useState(0)
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(0)
     const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([])
     const navigate = useNavigate()
@@ -25,13 +23,10 @@ const CalendarAdminMonth: React.FC = () => {
     const [loading, setLoading] = useState(true)
     const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null)
     const [error, setError] = useState<string | null>(null)
-    const [statuses, setStatuses] = useState<IStatus[]>([])
     const { updateRequestObject } = useRequest()
 
     const LoadingData = async () => {
         try{
-            const {worker} = getAuthDataFromLocalStorage()
-            const officeId = worker?.id_Office
             setLoading(true)
             setError(null)
             const responseObj = await api.get(`/Objects/Worker`)
@@ -60,11 +55,11 @@ const CalendarAdminMonth: React.FC = () => {
             const day = i + 1
             const date = new Date(year, month, day)
 
-            const bookings = bookingsAll.filter(booking => {
+            const bookings = bookingsAll? bookingsAll.filter(booking => {
                 const currentDateStr = formatDateForComparison(date)
                 return formatDateForComparison(booking.date_Start) === currentDateStr ||
                     formatDateForComparison(booking.date_End) === currentDateStr
-            })
+            }) : []
 
             return { date, bookings, isCurrentMonth: true }
         })
@@ -277,7 +272,7 @@ const MobileDayModal: React.FC<MobileDayModalProps> = ({day, objectsAll, onClose
 
         if (!objectId) return counts
 
-        requests
+        requests && requests
             .filter(request => request.object_Id === objectId)
             .forEach(request => {
                 switch(request.status) {

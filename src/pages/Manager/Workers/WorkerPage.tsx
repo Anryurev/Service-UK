@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {IRole, IWorkers} from "../../../models";
+import {IOffice, IRole, IWorkers} from "../../../models";
 import {Navbar} from "../../../components/Navbar";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import api from "../../../api";
@@ -8,10 +8,10 @@ import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function WorkerPage(){
     const { workerId } = useParams<{ workerId: string }>()
-    const [isEditingMod, setIsEditingMod] = useState(false)
     const edemContext = useContext(EdembackContext)
     const navigate = useNavigate()
     const [roles, setRoles] = useState<IRole[]>([])
+    const [offices, setOffices] = useState<IOffice[]>([])
     const [worker, setWorker] = useState<IWorkers | undefined>({
         id: 0,
         name: "",
@@ -53,8 +53,14 @@ export function WorkerPage(){
         setRoles(responseRole.data)
     }
 
+    const LoadingOffices = async () => {
+        const responseOffice = await api.get(`/Offices`)
+        setOffices(responseOffice.data)
+    }
+
     useEffect(() => {
         LoadingRoles()
+        LoadingOffices()
         findWorker()
     }, [])
 
@@ -66,10 +72,6 @@ export function WorkerPage(){
         )
     }
 
-    const handleEditWorker = () => {
-
-    }
-
     const handleRemoveWorker = async (workerID: number) => {
         edemContext.deleteWorker(workerID)
         navigate(`/workers`)
@@ -79,6 +81,12 @@ export function WorkerPage(){
         console.log("roles", edemContext.state.roles)
         const role = roles.find((role) => role.role_Id === roleId)
         return role ? role.name : "Роль не найдена"
+    }
+
+    const getOfficeById = (officeId: number): string => {
+        console.log("roles", edemContext.state.roles)
+        const office = offices.find((office) => office.office_Id === officeId)
+        return office ? `${office.street} ${office.house}` : "Офис не найден"
     }
 
     return(
@@ -115,6 +123,9 @@ export function WorkerPage(){
                                                 </li>
                                                 <li className="list-group-item">
                                                     <strong>Должность: </strong>{getRoleNameById(worker.id_Role)}
+                                                </li>
+                                                <li className="list-group-item">
+                                                    <strong>Офис: </strong>{getOfficeById(worker.id_Office)}
                                                 </li>
                                                 <li className="list-group-item">
                                                     <strong>Дата рождения: </strong>{formatDateToString(worker.birthday)}

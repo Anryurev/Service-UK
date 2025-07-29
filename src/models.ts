@@ -65,7 +65,7 @@ export interface IRequest {
     type_Work: string,
     description?: string,
     roles_Id: RoleItem[] | null
-    workers_Id?: number[],
+    workers_Id?: number[] | null,
     object_Id: number,
     status: string,
     urgency: boolean,
@@ -86,13 +86,13 @@ export interface IReport{
     request_Id: number,
     worker_Id: number,
     description: string,
-    dateTime: Date,
+    dateTime: string,
     status: string,
     photos: Array<{ id_photo: number; url: string }>,
     add_Parametrs?:Array<{
         id_report_parametr: number,
         report_Id: number,
-        add_Parametr_Id: number,
+        add_Parametr_Id: string,
         value: boolean
     }>,
 }

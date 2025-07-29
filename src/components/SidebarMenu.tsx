@@ -57,7 +57,7 @@ export const SidebarMenu: React.FC<SidebarProps> = ({ isOpen}) => {
                             { to: "/objects", icon: "bi-building", text: "Объекты", for: [1, 2, 3] },
                             { to: "/workers", icon: "bi-people", text: "Сотрудники", for: [1, 2] },
                             { to: "/roles", icon: "bi-person-workspace", text: "Должности", for: [1, 2] },
-                            { to: "/offices", icon: "bi-buildings", text: "Офисы", for: [1, 2] },
+                            { to: "/offices", icon: "bi-buildings", text: "Офисы", for: [1] },
                             { to: "/works", icon: "bi-list-task", text: "Задания", for: [1, 2] }
                         ].filter(item => role ? item.for.includes(role.levelImportant) : false)
                             .map((item) => {

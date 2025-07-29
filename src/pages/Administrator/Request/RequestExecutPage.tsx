@@ -6,7 +6,7 @@ import {IObject, IRequest, IRole, IWork, IWorkers} from "../../../models";
 import {useRequest} from "../../../storage/Request/useRequest";
 
 export function RequestExecutPage(){
-    const [workersRole, setWorkersRole] = useState<IWorkers[]>([])
+    const [workersByRole, setWorkersByRole] = useState<Record<number, {role: IRole, workers: IWorkers[]}>>({})
     const [selectedTypeWork, setSelectedTypeWork] = useState({id: 0, name: "Выберите тип работы"})
     const [selectedWorkers, setSelectedWorkers] = useState<number[]>([])
     const [errorRole, setErrorRole] = useState(false)
@@ -26,38 +26,32 @@ export function RequestExecutPage(){
     }
 
     const LoadingWorkers = async (idTypeWork: number) => {
-        let response: IWorkers[]
-        if (idTypeWork === 0){
-            response = []
-        }else {
-            const responseRoles = await api.get(`/TypeWork/${idTypeWork}`)
-            console.log('typeWorks', responseRoles.data)
-            const typeWorkRoles: IWork = responseRoles.data
-
-            let roles: IRole[] = []
-
-            if(typeWorkRoles){
-                roles = typeWorkRoles.roles
-                console.log('roles', roles)
-            }
-
-            const requests = roles.map(role =>
-                api.get<IWorkers[]>(`/Workers/Worker?Role=${role.role_Id}`)
-            )
-
-            // Выполняем все запросы параллельно
-            const responses = await Promise.all(requests)
-
-            // Объединяем результаты (flatMap уберет вложенность)
-            const allWorkers = responses.flatMap(response => response.data)
-
-            // Удаляем дубликаты (если возможно повторение работников)
-            response = Array.from(new Map(
-                allWorkers.map(worker => [worker.id, worker])
-            ).values())
+        if (idTypeWork === 0) {
+            setWorkersByRole({})
+            return
         }
-        setWorkersRole(response)
-        console.log('workers role', workersRole)
+
+        const responseRoles = await api.get(`/TypeWork/${idTypeWork}`)
+        const typeWorkRoles: IWork = responseRoles.data
+
+        if (!typeWorkRoles) {
+            setWorkersByRole({})
+            return
+        }
+
+        const roles: IRole[] = typeWorkRoles.roles || []
+        const workersByRole: Record<number, {role: IRole, workers: IWorkers[]}> = {}
+
+        // Загружаем работников для каждой роли
+        await Promise.all(roles.map(async (role) => {
+            const response = await api.get<IWorkers[]>(`/Workers/Worker?Role=${role.role_Id}`)
+            workersByRole[role.role_Id] = {
+                role: role,
+                workers: response.data
+            }
+        }))
+
+        setWorkersByRole(workersByRole);
     }
 
     useEffect(() => {
@@ -73,10 +67,8 @@ export function RequestExecutPage(){
         setErrorWorker(false)
         setSelectedWorkers(prevSelected => {
             if (prevSelected.includes(workerId)) {
-                // Если ID уже есть в массиве - удаляем
                 return prevSelected.filter(id => id !== workerId)
             } else {
-                // Если ID нет в массиве - добавляем
                 return [...prevSelected, workerId]
             }
         })
@@ -89,7 +81,11 @@ export function RequestExecutPage(){
             setErrorWorker(true)
         }
         else {
-            updateRequestTypeWork(selectedTypeWork.name, selectedWorkers)
+            if(selectedWorkers.length === 0){
+                updateRequestTypeWork(selectedTypeWork.name, null)
+            } else{
+                updateRequestTypeWork(selectedTypeWork.name, selectedWorkers)
+            }
             navigate(`/request/description`)
         }
     }
@@ -128,7 +124,9 @@ export function RequestExecutPage(){
                                         <button
                                             className="dropdown-item"
                                             type="button"
-                                            onClick={() => setSelectedTypeWork({id: work.id_Work, name: work.name})}
+                                            onClick={() => {
+                                                setSelectedTypeWork({id: work.id_Work, name: work.name})
+                                            }}
                                         >
                                             {work.name}
                                         </button>
@@ -153,35 +151,44 @@ export function RequestExecutPage(){
                             />
                             <label htmlFor='allWorkersRole'>{allWorker? "Выполнение задания выбирает сам работник": "Выбор конкретного работника"}</label>
                         </div>
+                        {allWorker && (
+                            <div className="alert alert-warning">
+                                При данном режиме задание отправится всем подходящим сотрудникам для выбранной работы. Первый сотрудник, который начнет это задание назначается исполнителем данного задания.
+                            </div>
+                        )}
                     </header>
 
                     {!allWorker && <div>
                         <label>Выберите работника</label>
-                        <ul className="list-group">
-                            {workersRole.map(worker => (
-                                    <li
-                                        className="form-control"
-                                        aria-current="true"
-                                        key={worker.id}
-                                    >
-                                        <div className="input-group">
-                                            <div className="input-group-text me-2">
+                        {Object.values(workersByRole).map(({role, workers}) => (
+                            <div key={role.role_Id} className="mb-3">
+                                <h5 className="fw-bold mb-2">{role.name}</h5>
+                                <ul className="list-group">
+                                    {workers.map(worker => (
+                                        <li
+                                            className="list-group-item"
+                                            key={worker.id}
+                                        >
+                                            <div className="form-check">
                                                 <input
                                                     id={`checkWorker-${worker.id}`}
-                                                    className="form-check-input mt-0"
+                                                    className="form-check-input"
                                                     type="checkbox"
                                                     checked={selectedWorkers.includes(worker.id)}
                                                     onChange={() => handleCheckboxChange(worker.id)}
                                                 />
+                                                <label
+                                                    className="form-check-label"
+                                                    htmlFor={`checkWorker-${worker.id}`}
+                                                >
+                                                    {worker.surname} {worker.name} {worker.fathername}
+                                                </label>
                                             </div>
-                                            <label htmlFor={`checkWorker-${worker.id}`}>
-                                                {worker.surname + ' ' + worker.name + ' ' + worker.fathername}
-                                            </label>
-                                        </div>
-                                    </li>
-
-                            ))}
-                        </ul>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
                     </div>}
                 </main>
                 <footer className="p-3 bg-light">

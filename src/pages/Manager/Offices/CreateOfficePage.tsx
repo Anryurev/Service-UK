@@ -8,11 +8,15 @@ import {SidebarMenu} from "../../../components/SidebarMenu";
 export function CreateOfficePage(){
     const edemContext = useContext(EdembackContext)
     const navigate = useNavigate()
+    const [touched, setTouched] = useState<Record<string, boolean>>({})
     const [formData, setFormData] = useState<IOffice>({
         office_Id: -1,
         street: "",
         house: ""
-    });
+    })
+    const handleBlur = (field: string) => {
+        setTouched(prev => ({ ...prev, [field]: true }))
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
         const { name, value } = e.target
@@ -47,28 +51,44 @@ export function CreateOfficePage(){
             <SidebarMenu isOpen={true}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Создание нового офиса</h1>
-                <form>
+                <form
+                    noValidate
+                >
                     <div className="mb-2">
-                        <label htmlFor="street" className="form-label mb-0">Улица:</label>
+                        <label htmlFor="street" className="form-label mb-0">
+                            Улица:
+                            <span className="text-danger">*</span>
+                        </label>
                         <input
                             type="text"
-                            className="form-control"
+                            className={`form-control ${touched.street && !formData.street ? 'is-invalid' : ''}`}
                             id="street"
                             name="street"
                             value={formData.street}
+                            onBlur={() => handleBlur('street')}
                             onChange={handleChange}
                         />
+                        {touched.street && !formData.street && (
+                            <div className="invalid-feedback">Поле обязательно для заполнения</div>
+                        )}
                     </div>
                     <div className="mb-2">
-                        <label htmlFor="house" className="form-label mb-0">Дом:</label>
+                        <label htmlFor="house" className="form-label mb-0">
+                            Дом:
+                            <span className="text-danger">*</span>
+                        </label>
                         <input
                             type="text"
-                            className="form-control"
+                            className={`form-control ${touched.house && !formData.house ? 'is-invalid' : ''}`}
                             id="house"
                             name="house"
                             value={formData.house}
+                            onBlur={() => handleBlur('house')}
                             onChange={handleChange}
                         />
+                        {touched.house && !formData.house && (
+                            <div className="invalid-feedback">Поле обязательно для заполнения</div>
+                        )}
                     </div>
                     <button type="button" className="btn mb-4" style={{background: "#6096ba", color: "white"}} onClick={handleSubmit}>Создать</button>
                 </form>

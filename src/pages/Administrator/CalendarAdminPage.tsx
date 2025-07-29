@@ -20,7 +20,7 @@ export function CalendarAdminPage() {
         type_Work: "",
         description: "",
         roles_Id: null,
-        workers_Id: [],
+        workers_Id: null,
         object_Id: 0,
         status: "Назначено",
         urgency: false,

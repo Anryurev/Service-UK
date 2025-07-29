@@ -5,11 +5,12 @@ import api from "../../api";
 interface RoleFormProps{
     formData: IWork,
     onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+    isNotEditMode: boolean
     handleRoleChange: (roleId: number, isChecked: boolean) => void
     onSubmit: () => void
 }
 
-export const WorkForm: React.FC<RoleFormProps> = ({ formData, onChange, handleRoleChange, onSubmit }) => {
+export const WorkForm: React.FC<RoleFormProps> = ({ formData, onChange, isNotEditMode, handleRoleChange, onSubmit }) => {
     const [roles, setRoles] = useState<IRole[]>([])
 
     const LoadingData = async () => {
@@ -19,6 +20,9 @@ export const WorkForm: React.FC<RoleFormProps> = ({ formData, onChange, handleRo
 
     useEffect(() => {
         LoadingData()
+        const currentRolesId: number[] = []
+        formData.roles.map(role => currentRolesId.push(role.role_Id))
+        console.log('roles id', currentRolesId)
     }, [])
 
     return(
@@ -49,7 +53,7 @@ export const WorkForm: React.FC<RoleFormProps> = ({ formData, onChange, handleRo
                         </div>
                     ))}
                 </div>
-                <button type="button" className="btn mb-4" style={{background: "#6096ba", color: "white"}} onClick={onSubmit}>Создать</button>
+                <button type="button" className="btn mb-4" style={{background: "#6096ba", color: "white"}} onClick={onSubmit}>{isNotEditMode? 'Создать': 'Изменить'}</button>
             </form>
         </>
     )

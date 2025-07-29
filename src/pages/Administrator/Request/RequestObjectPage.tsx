@@ -66,7 +66,7 @@ export function RequestObjectPage(){
             other: 0
         }
 
-        requests
+        requests && requests
             .filter(request => request.object_Id === objectId)
             .forEach(request => {
                 switch(request.status) {

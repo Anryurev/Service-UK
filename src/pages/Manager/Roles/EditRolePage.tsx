@@ -5,6 +5,7 @@ import {RoleForm} from "../../../components/Role/RoleForm";
 import {IRole} from "../../../models";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import api from "../../../api";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function EditRolePage(){
     const { roleId } = useParams<{ roleId: string }>()
@@ -84,12 +85,14 @@ export function EditRolePage(){
     return(
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Редактирование должности</h1>
                 <RoleForm
                     formData={formData}
                     onChange={handleChange}
                     onChangeParamList={handleChangeAddParametrList}
+                    isNotEditMode={false}
                     onSubmit={handleSubmit}/>
             </div>
         </>

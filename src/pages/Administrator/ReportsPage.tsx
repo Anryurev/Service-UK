@@ -16,10 +16,17 @@ export function ReportsPage() {
     const navigate = useNavigate()
 
     const LoadingData = async () => {
-        const response = await api.get(`/Report${role?.levelImportant === 4? "/Worker" : ""}`)
-        setReports(response.data)
-        console.log('reports worker', response.data)
-    }
+        try {
+            const response = await api.get(`/Report${role?.levelImportant === 4 ? "/Worker" : ""}`)
+            const sortedReports = response.data.sort((a: IReport, b: IReport) => {
+                return new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
+            })
+
+            setReports(sortedReports);
+        } catch (error) {
+            console.error("Ошибка при загрузке отчетов:", error);
+        }
+    };
 
     useEffect(() => {
         LoadingData()

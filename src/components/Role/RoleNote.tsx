@@ -38,19 +38,11 @@ export function RoleNote({ role, onClick }: RoleProps){
             >
                 <div className="card-body py-2 px-3 d-flex flex-wrap align-items-center">
                     {/* Название должности */}
-                    <div className="col-lg-5 col-md-6 col-12 mb-md-0 mb-2">
+                    <div className="col-lg-8 col-md-10 col-12 mb-md-0 mb-2">
                         <h6 className="card-title mb-0 text-truncate">
                             {role.name}
                         </h6>
                     </div>
-
-                    {/* Ставка */}
-                    <div className="col-lg-3 col-md-4 col-6">
-                        <span className="badge bg-primary bg-opacity-10 text-primary w-100 py-2">
-                            {role.salary}
-                        </span>
-                    </div>
-
 
                     {/* Кнопки действий */}
                     <div className="col-lg-4 col-md-2 col-6 text-end">

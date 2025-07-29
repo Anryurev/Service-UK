@@ -38,6 +38,7 @@ import {SendLinkPage} from "./pages/RecoverPassword/SendLinkPage";
 import {ResetPasswordPage} from "./pages/RecoverPassword/ResetPasswordPage";
 import {ReportsPage} from "./pages/Administrator/ReportsPage";
 import ReportPage from "./pages/Administrator/ReportPage";
+import {TestAuth} from "./pages/TestAuth";
 
 function App() {
     return (
@@ -84,6 +85,7 @@ function App() {
                             <Route path="/work/:workId" element={<EditWorkPage/>}/>
                             <Route path="/recover-password" element={<SendLinkPage/>}/>
                             <Route path="/reset-password" element={<ResetPasswordPage/>}/>
+                            <Route path="/test" element={<TestAuth/>}/>
                         </Routes>
                 </WorkerState>
             </EdemBackState>

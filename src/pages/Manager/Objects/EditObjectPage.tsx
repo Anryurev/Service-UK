@@ -149,6 +149,7 @@ export function EditObjectPage(){
                 {<ObjectForm
                     formData={formData}
                     offices={offices}
+                    isNotEditMode={false}
                     onChange={handleChange}
                     onSubmit={handleSubmit}
                 />}

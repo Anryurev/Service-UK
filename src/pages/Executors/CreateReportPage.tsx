@@ -17,16 +17,31 @@ export function CreateReportPage () {
     const [role, setRole] = useState<IRole | null>(null)
     const {worker} = getAuthDataFromLocalStorage()
     const navigate = useNavigate()
+    const [validated, setValidated] = useState(false)
+    const [validationErrors, setValidationErrors] = useState({
+        photos: '',
+        description: ''
+    })
     const [report, setReport] = useState<IReport>({
         id_Report: -1,
         request_Id: Number(requestId),
         worker_Id: worker?.id? worker.id : 0,
         description: "",
-        dateTime: new Date(),
+        dateTime: convertToISODate(new Date()),
         status: "3",
         photos: [],
         add_Parametrs: [],
     })
+
+    function convertToISODate(localDateString: Date): string {
+        const date = new Date(localDateString);
+
+        if (isNaN(date.getTime())) {
+            throw new Error('Invalid date string');
+        }
+        const isoString = date.toISOString();
+        return isoString;
+    }
 
     const LoadingData = async () => {
         const roleId = worker?.id_Role
@@ -151,14 +166,65 @@ export function CreateReportPage () {
         })
     }
 
-    const handleSubmit = async () => {
-        console.log('submit report', report)
-        const status = "Выполнено"
-        await api.patch(`/ChangeStatusRequest/${requestId}?status=${status}`)
-        await api.post(`/Report`, report)
+    const handleSubmit = async (e?: React.FormEvent) => {
+        if (e) {
+            e.preventDefault()
+        }
+
+        setValidated(true)
+
+        if (!validateForm()) {
+            return
+        }
+
+        try {
+            console.log('submit report', report)
+            const status = "Выполнено"
+            await api.patch(`/ChangeStatusRequest/${requestId}?status=${status}`)
+            await api.post(`/Report`, report)
+
+        } catch (error) {
+            console.error('Ошибка при отправке отчета:', error)
+            setError('Произошла ошибка при отправке отчета')
+        }
     }
 
-    const handleParamsChange = (paramId: number, checked: boolean) => {
+    const validateForm = () => {
+        const errors = {
+            photos: '',
+            description: ''
+        }
+
+        let isValid = true
+
+        if (previews.length === 0) {
+            errors.photos = 'Необходимо добавить хотя бы одно фото'
+            isValid = false
+        }
+
+        if (!report.description.trim()) {
+            errors.description = 'Необходимо добавить описание'
+            isValid = false
+        }
+
+        setValidationErrors(errors)
+        return isValid
+    }
+
+    const handleCompleteAndRedirect = async (path: string) => {
+        if (validateForm()) {
+            await handleSubmit()
+            navigate(path)
+        }
+    }
+
+    useEffect(() => {
+        if (validated) {
+            validateForm()
+        }
+    }, [report.description, previews])
+
+    const handleParamsChange = (paramId: string, checked: boolean) => {
         setReport(prev => {
             const currentParams = prev.add_Parametrs || []
             if (checked) {
@@ -191,10 +257,14 @@ export function CreateReportPage () {
             <Navbar/>
             <div style={{paddingTop: '63px'}}>
                 <div className="container mb-4">
-                    <Form>
+                    <Form noValidate validated={validated} onSubmit={handleSubmit}>
                         <Form.Group className="mb-3">
                             <Form.Label className="fw-bold">Загрузите фотографии выполненной работы</Form.Label>
-
+                            {validationErrors.photos && (
+                                <Alert variant="danger" className="mt-1 py-1">
+                                    {validationErrors.photos}
+                                </Alert>
+                            )}
                             <div className="d-flex flex-column gap-2">
                                 {/* Кнопка загрузки файлов */}
                                 <div className="d-grid">
@@ -282,13 +352,24 @@ export function CreateReportPage () {
                                 as="textarea"
                                 rows={3}
                                 value={report.description}
-                                onChange={e =>
+                                onChange={e => {
                                     setReport(prev => ({
                                         ...prev,
                                         description: e.target.value
                                     }))
-                                }
+                                    if (validated && !e.target.value.trim()) {
+                                        setValidationErrors(prev => ({
+                                            ...prev,
+                                            description: 'Необходимо добавить описание'
+                                        }))
+                                    }
+                                }}
+                                isInvalid={!!validationErrors.description}
+                                required
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {validationErrors.description}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
                         <FormGroup className="mb-3">
@@ -300,35 +381,28 @@ export function CreateReportPage () {
                                     id={`param-${roleParam.id_Parametr}`}
                                     label={roleParam.parametr}
                                     checked={report.add_Parametrs?.some(
-                                        reportParam => reportParam.add_Parametr_Id === roleParam.id_Parametr
+                                        reportParam => reportParam.add_Parametr_Id === String(roleParam.id_Parametr)
                                     ) || false}
-                                    onChange={(e) => handleParamsChange(roleParam.id_Parametr, e.target.checked)}
+                                    onChange={(e) => handleParamsChange(String(roleParam.id_Parametr), e.target.checked)}
                                 />
                             ))}
                         </FormGroup>
-
                         <Button
+                            type="submit"
                             className="btn w-100 mb-2"
-                            style={{ background: "#6096ba"}}
-                            onClick={() => {
-                                handleSubmit()
-                                navigate(`/execut`)
-                            }}
+                            style={{ background: "#6096ba" }}
+                            onClick={() => handleCompleteAndRedirect('/execut')}
                         >
                             Завершить задание
                         </Button>
 
                         <Button
                             className="btn w-100"
-                            style={{ background: "#6096ba"}}
-                            onClick={() => {
-                                handleSubmit()
-                                navigate(`/execut/request`)
-                            }}
+                            style={{ background: "#6096ba" }}
+                            onClick={() => handleCompleteAndRedirect('/execut/request')}
                         >
                             Завершить задание и создать заявку
                         </Button>
-
                     </Form>
                 </div>
             </div>

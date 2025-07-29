@@ -5,6 +5,7 @@ import {Navbar} from "../../../components/Navbar";
 import {useNavigate} from "react-router-dom";
 import {log} from "util";
 import {WorkForm} from "../../../components/Work/WorkForm";
+import {SidebarMenu} from "../../../components/SidebarMenu";
 
 export function CreateWorkPage(){
     const navigate = useNavigate()
@@ -85,10 +86,17 @@ export function CreateWorkPage(){
     return(
         <>
             <Navbar/>
+            <SidebarMenu isOpen={true}/>
             <div className="container-fluid w-50" style={{paddingTop: '65px'}}>
                 <h1>Создание нового типа работы</h1>
                 
-                <WorkForm formData={formData} onChange={handleChange} handleRoleChange={handleRoleChange} onSubmit={handleSubmit}/>
+                <WorkForm
+                    formData={formData}
+                    onChange={handleChange}
+                    handleRoleChange={handleRoleChange}
+                    isNotEditMode={true}
+                    onSubmit={handleSubmit}
+                />
             </div>
         </>
     )

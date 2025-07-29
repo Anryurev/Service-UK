@@ -9,10 +9,11 @@ interface RoleFormProps{
         role_Id: number,
         parametr: string
     }>) => void
+    isNotEditMode: boolean
     onSubmit: () => void
 }
 
-export const RoleForm: React.FC<RoleFormProps> = ({ formData, onChange, onChangeParamList, onSubmit }) => {
+export const RoleForm: React.FC<RoleFormProps> = ({ formData, onChange, onChangeParamList, isNotEditMode, onSubmit }) => {
     const [isEmptyInput, setIsEmptyInput] = useState(false)
     const [addParametrsList, setAddParametrsList] = useState<
         Array<{
@@ -29,6 +30,11 @@ export const RoleForm: React.FC<RoleFormProps> = ({ formData, onChange, onChange
         role_Id: -1,
         parametr: ""
     })
+    const [touched, setTouched] = useState<Record<string, boolean>>({})
+
+    const handleBlur = (field: string) => {
+        setTouched(prev => ({ ...prev, [field]: true }))
+    }
 
     const handleClickAddParametr = () => {
         if (addParametr.parametr.trim()) {
@@ -49,28 +55,45 @@ export const RoleForm: React.FC<RoleFormProps> = ({ formData, onChange, onChange
     }
 
     return(
-        <form>
+        <form
+            noValidate
+            onSubmit={onSubmit}
+        >
             <div className="mb-2">
-                <label htmlFor="name" className="form-label mb-0">Название должности:</label>
+                <label htmlFor="name" className="form-label mb-0">
+                    Название должности:
+                    <span className="text-danger">*</span>
+                </label>
                 <input
                     type="text"
-                    className="form-control"
+                    className={`form-control ${touched.name && !formData.name ? 'is-invalid' : ''}`}
                     id="name"
                     name="name"
                     value={formData.name}
+                    onBlur={() => handleBlur('name')}
                     onChange={onChange}
                 />
+                {touched.name && !formData.name && (
+                    <div className="invalid-feedback">Поле обязательно для заполнения</div>
+                )}
             </div>
             <div className="mb-2">
-                <label htmlFor="salary" className="form-label mb-0">Оклад:</label>
+                <label htmlFor="salary" className="form-label mb-0">
+                    Оклад:
+                    <span className="text-danger">*</span>
+                </label>
                 <input
                     type="text"
-                    className="form-control"
+                    className={`form-control ${touched.salary && !formData.salary ? 'is-invalid' : ''}`}
                     id="salary"
                     name="salary"
                     value={formData.salary}
+                    onBlur={() => handleBlur('salary')}
                     onChange={onChange}
                 />
+                {touched.salary && !formData.salary && (
+                    <div className="invalid-feedback">Поле обязательно для заполнения</div>
+                )}
             </div>
             <div className="mb-2">
                 <h6>Добавьте доплнительные параметры для должности</h6>
@@ -118,7 +141,7 @@ export const RoleForm: React.FC<RoleFormProps> = ({ formData, onChange, onChange
                 </div>
                 {isEmptyInput && <small style={{color: "red"}}>Введите значение</small>}
             </div>
-            <button type="button" className="btn mb-4" style={{background: "#6096ba", color: "white"}} onClick={onSubmit}>Создать</button>
+            <button type="button" className="btn mb-4" style={{background: "#6096ba", color: "white"}} onClick={onSubmit}>{isNotEditMode? 'Создать': 'Изменить'}</button>
         </form>
     )
 }

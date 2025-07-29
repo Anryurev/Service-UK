@@ -4,10 +4,6 @@ import Calendar from "../../../components/Calendar/Calendar";
 import {SidebarMenu} from "../../../components/SidebarMenu";
 import {IBooking} from "../../../models";
 
-interface BookingObjectProps {
-    date: Date,
-    objects: IBooking[]
-}
 
  export  const CalendarPage: React.FC = () => {
     return (

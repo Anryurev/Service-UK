@@ -23,7 +23,6 @@ export function MainExecutorPage(){
 
     const LoadingData = async () => {
         try {
-            const {worker} = getAuthDataFromLocalStorage()
             const responseRequest = await api.get(`/Requests/Worker`)
             console.log('requests', responseRequest.data)
             setRequests(responseRequest.data)
@@ -38,9 +37,11 @@ export function MainExecutorPage(){
     }, [])
 
     // Фильтрация заданий по статусу
-    const filteredTasks = requests.length > 0? requests.filter(request =>
-        filterStatus === "0" ? true : request.status === filterStatus
-    ): []
+    const filteredTasks = requests.length > 0
+        ? requests
+            .filter(request => filterStatus === "0" ? true : request.status === filterStatus)
+            .sort((a, b) => b.request_Id - a.request_Id) // Сортировка по ID в обратном порядке
+        : []
 
     // Изменение статуса задания
     const updateRequestStatus = async (requestId: number, newStatus: IRequest["status"]) => {

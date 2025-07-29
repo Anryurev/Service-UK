@@ -4,6 +4,7 @@ import {useLocation, useNavigate} from "react-router-dom";
 import api from "../../../api";
 import {IObject, IRequest} from "../../../models";
 import RequestCard from "../../../components/Request/RequestCard";
+import {useRequest} from "../../../storage/Request/useRequest";
 
 export function RequestsPage(){
     const [selectedObject, setSelectedObject] = useState({id: 0, name: "Выберите объект"})
@@ -11,7 +12,8 @@ export function RequestsPage(){
     const [requestsObject, setRequestsObject] = useState<IRequest[]>([])
     const [requests, setRequests] = useState<IRequest[]>([])
     const navigate = useNavigate()
-    const location = useLocation();
+    const location = useLocation()
+    const { updateRequestObject } = useRequest()
 
     const LoadingData = async () => {
         try {
@@ -54,7 +56,14 @@ export function RequestsPage(){
     }, [selectedObject])
 
     const handleClick = () => {
-        navigate(`/request/execut`)
+        const { objectId } = location.state || {}
+        const object = objectsOffice.find(obj => obj.id === objectId)
+        if (object){
+            updateRequestObject(object?.id)
+            navigate(`/request/execut`)
+        } else{
+            console.error("Ошибка при выборае объекта")
+        }
     }
 
     return(

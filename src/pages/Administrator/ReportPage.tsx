@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {Alert, Badge, Card, ListGroup, Spinner, Image} from "react-bootstrap";
-import {useParams} from "react-router-dom";
+import {Alert, Badge, Card, ListGroup, Spinner, Image, Button, Accordion} from "react-bootstrap";
+import {useNavigate, useParams} from "react-router-dom";
 import {IReport, IRequest, IWorkers} from "../../models";
 import {Navbar} from "../../components/Navbar";
 import api from "../../api";
 import {getAuthDataFromLocalStorage} from "../../storage/loacalStorage";
+import {RequestPagesCard} from "../../components/Request/RequestPagesCard";
 
 const ReportPage: React.FC = () => {
     const { reportId } = useParams<{ reportId: string }>();
@@ -14,6 +15,7 @@ const ReportPage: React.FC = () => {
     const [request, setRequest] = useState<IRequest | null>(null)
     const [workerReport, setWorkerReport] = useState<IWorkers | null>(null)
     const {worker, role} = getAuthDataFromLocalStorage()
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchReport = async () => {
@@ -90,6 +92,13 @@ const ReportPage: React.FC = () => {
         )
     }
 
+    const handleClickRepeat = async () => {
+        const status = 'Назначено'
+        await api.patch(`/ChangeStatusRequest/${report.request_Id}?status=${status}`)
+        await api.delete(`/Report/${reportId}`)
+        navigate(`/reports`)
+    }
+
     return (
         <>
             <Navbar/>
@@ -158,7 +167,28 @@ const ReportPage: React.FC = () => {
                                 </ListGroup>
                             </div>
                         )}
+                        {request && (
+                            <Accordion defaultActiveKey="1" className="mt-3">
+                                <Accordion.Item eventKey="0">
+                                    <Accordion.Header>Развернуть задание</Accordion.Header>
+                                    <Accordion.Body>
+                                        <RequestPagesCard request={request} fromReport={true} />
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                            </Accordion>
+                        )}
                     </Card.Body>
+                    <Card.Footer>
+                        {role?.levelImportant === 3 && (
+                            <>
+                                <Button
+                                    onClick={handleClickRepeat}
+                                >
+                                    Назначить заново
+                                </Button>
+                            </>
+                        )}
+                    </Card.Footer>
                 </Card>
             </div>
         </>

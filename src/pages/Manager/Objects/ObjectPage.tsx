@@ -1,17 +1,20 @@
 import React, {useContext, useEffect, useState} from "react";
 import {Navbar} from "../../../components/Navbar";
 import {useNavigate, useParams} from "react-router-dom";
-import {IObject} from "../../../models";
+import {IObject, IOffice} from "../../../models";
 import {EdembackContext} from "../../../context/edemback/EdembackContext";
 import api from "../../../api";
 import {SidebarMenu} from "../../../components/SidebarMenu";
+import {getAuthDataFromLocalStorage} from "../../../storage/loacalStorage";
 
 export function ObjectPage() {
     const { objectId } = useParams<{ objectId: string }>()
     const edemContext = useContext(EdembackContext)
     const navigate = useNavigate()
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const [offices, setOffices] = useState<IOffice[]>([])
+    const {worker, role} = getAuthDataFromLocalStorage()
     const [object, setObject] = useState<IObject>({
         id: -1,
         office_Id: 0,
@@ -57,15 +60,26 @@ export function ObjectPage() {
         }
     }
 
+    const LoadingOffices = async () => {
+        const responseOffice = await api.get(`/Offices`)
+        setOffices(responseOffice.data)
+    }
 
     useEffect(() => {
         if (objectId) {
             const id = Number(objectId)
             if (!isNaN(id)) {
                 fetchObject(id)
+                LoadingOffices()
             }
         }
     }, [objectId])
+
+    const getOfficeById = (officeId: number): string => {
+        console.log("roles", edemContext.state.roles)
+        const office = offices.find((office) => office.office_Id === officeId)
+        return office ? `${office.street} ${office.house}` : "Офис не найден"
+    }
 
     if(!object){
         return (
@@ -112,6 +126,9 @@ export function ObjectPage() {
                                                         <strong>Площадь: </strong>{object.area}
                                                     </li>
                                                     <li className="list-group-item">
+                                                        <strong>Офис: </strong> {getOfficeById(object.office_Id)}
+                                                    </li>
+                                                    <li className="list-group-item">
                                                         <strong>Кухня: </strong>{object.kitchen ? "Есть" : "Нет"}
                                                     </li>
                                                     <li className="list-group-item">
@@ -122,18 +139,19 @@ export function ObjectPage() {
                                                     </li>
                                                 </ul>
                                             </div>
-                                            <div
+                                            {role?.levelImportant === 2 && <div
                                                 className="card-footer bg-light d-flex justify-content-between align-items-center">
                                                 <button
                                                     className="btn btn-sm btn-outline-primary"
                                                     onClick={() => navigate(`/object/${object.id}`)}
-                                                >Редактировать</button>
+                                                >Редактировать
+                                                </button>
                                                 <button
-                                                    className="btn btn-sm btn-outline-danger"
+                                                    className="btn btn-s30 m btn-outline-danger"
                                                     onClick={() => removeClick(object.id)}
                                                 >Удалить
                                                 </button>
-                                            </div>
+                                            </div>}
                                         </div>
                                     </div>
                             </div>

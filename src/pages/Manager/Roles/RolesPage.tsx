@@ -8,24 +8,33 @@ import {SidebarOptions} from "../../../components/SidebarOptions";
 import api from "../../../api";
 import {IRole} from "../../../models";
 import {Form} from "react-bootstrap";
+import {getAuthDataFromLocalStorage} from "../../../storage/loacalStorage";
 
 export function RolesPage(){
     const navigate = useNavigate()
     const [roles, setRoles] = useState<IRole[]>([])
     const [searchQuery, setSearchQuery] = useState('')
+    const [loading, setLoading] = useState(false)
     const edemContext = useContext(EdembackContext)
+    const {role} = getAuthDataFromLocalStorage()
 
     const LoadingRoles = async () => {
-        const response = await api.get(`/Roles`)
-        console.log('Get all roles', response.data)
-        setRoles(response.data)
+        try{
+            setLoading(true)
+            const response = await api.get(`/Roles`)
+            setRoles(response.data)
+            setLoading(false)
+        }catch (e){
+            setLoading(true)
+            console.error(e)
+        }
     }
 
     useEffect(() => {
         LoadingRoles()
     }, [])
 
-    const filteredRoles = roles.filter((role) =>
+    const filteredRoles = roles.length > 0 && roles.filter((role) =>
         String(role.salary).toLowerCase().includes(searchQuery.toLowerCase()) ||
         role.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
@@ -35,9 +44,19 @@ export function RolesPage(){
         <>
             <Navbar/>
             <SidebarMenu isOpen={true}/>
-            <SidebarOptions title="должность" handleClick={() => navigate('/roles/create')}/>
+            {/*<SidebarOptions title="должность" handleClick={() => navigate('/roles/create')}/>*/}
             <div className="container-fluid w-50" style={{paddingTop: "60px"}}>
-                <h1 className="mb-3">Должности</h1>
+                <div className="d-flex justify-content-between flex-row h-100 p-2 border-start align-items-center">
+                    <h1 className="mb-3">Список должностей</h1>
+                    {Number(role?.levelImportant) < 3
+                        && <button
+                            className="btn h-75"
+                            style={{background: "#6096ba", color: "white"}}
+                            onClick={() => navigate('/roles/create')}
+                        >
+                            Добавить должность
+                    </button>}
+                </div>
                 <Form.Group className="mb-4">
                     <Form.Label>Поиск по должностям:</Form.Label>
                     <Form.Control
@@ -50,13 +69,15 @@ export function RolesPage(){
                     >
                     </Form.Control>
                 </Form.Group>
-                <div className="border px-2 py-2 rounded mb-2 d-flex justify-content-between">
-                    <div className="mb-0 col text-start" style={{display: "inline-block"}}><strong>Должность</strong></div>
-                    <div className="mb-0 col text-center" style={{display: "inline-block"}}><strong>Ставка</strong></div>
-                    <div className="mb-0 col"></div>
-
-                </div>
-                {filteredRoles.map(role => <RoleNote role={role} onClick={(roleId) =>  navigate(`/roles/${roleId}`)} key={role.role_Id}/>)}
+                {loading && (
+                    <div className="d-flex justify-content-center">
+                        <div className="spinner-border" role="status">
+                            <span className="visually-hidden">Загрузка...</span>
+                        </div>
+                    </div>
+                )}
+                {filteredRoles && filteredRoles.map(role => <RoleNote role={role} onClick={(roleId) =>  navigate(`/roles/${roleId}`)} key={role.role_Id}/>)}
+                { !filteredRoles && !loading && <div className="alert alert-warning">Роли отсутствуют!</div> }
             </div>
         </>
     )
